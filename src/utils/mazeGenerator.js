@@ -189,6 +189,7 @@ export const placeFriendlies = (
   challenges,
   friendlyEmojis = ['🌟', '🛸', '🤖', '🧸', '🐶'],
   count = 5,
+  rescueMessages = undefined,
 ) => {
   const friendlies = [];
   const height = maze.length;
@@ -198,10 +199,15 @@ export const placeFriendlies = (
 
   const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
   const minDistFromChallenges = 4;
-  const minDistFromOthers = 6; // Iets kleiner voor 5 friendlies
+  const minDistFromOthers = 6;
 
-  // Alle vriendjes zijn verdwaald - 30 verschillende teksten!
-  const verdwaaldMessages = [
+  // Kies een random subset van unieke emoji's voor deze run
+  const shuffledEmojis = [...friendlyEmojis]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count);
+
+  // Fallback standaard teksten
+  const defaultMessages = [
     'Help! Ik ben verdwaald... mag ik met je mee naar de uitgang?',
     'Ik loop hier al zo lang rond! Weet jij de weg?',
     'Oh gelukkig! Eindelijk iemand die me kan helpen!',
@@ -234,11 +240,20 @@ export const placeFriendlies = (
     'Super mega bedankt dat je er bent!',
   ];
 
+  // rescueMessages wordt straks als extra argument doorgegeven vanuit MazeGame
+
   let attempts = 0;
-  // Shuffle de berichten zodat we unieke teksten kunnen toewijzen
-  const shuffledMessages = [...verdwaaldMessages].sort(
-    () => Math.random() - 0.5,
-  );
+
+  // De rescue teksten worden random geshuffeld en per doolhof uniek toegekend
+  // (deze array wordt straks als argument doorgegeven)
+
+  // Bepaal rescue teksten: als er een rescueTexts array is meegegeven, shuffle en gebruik die, anders fallback
+  // (deze logica wordt straks geactiveerd als MazeGame de juiste array doorgeeft)
+  // Voor nu: gebruik alleen defaultMessages, maar code is voorbereid op uitbreiding
+  const rescueTexts =
+    Array.isArray(rescueMessages) && rescueMessages.length >= count
+      ? [...rescueMessages].sort(() => Math.random() - 0.5).slice(0, count)
+      : [...defaultMessages].sort(() => Math.random() - 0.5).slice(0, count);
 
   while (friendlies.length < count && attempts < 2000) {
     attempts++;
@@ -264,10 +279,9 @@ export const placeFriendlies = (
     );
     if (!farFromOthers) continue;
 
-    // Kies random emoji en uniek bericht (uit geshuffelde lijst)
-    const emoji = friendlyEmojis[friendlies.length % friendlyEmojis.length];
-    const message =
-      shuffledMessages[friendlies.length % shuffledMessages.length];
+    // Kies random emoji uit de geshuffelde subset
+    const emoji = shuffledEmojis[friendlies.length];
+    const message = rescueTexts[friendlies.length];
 
     friendlies.push({
       x,

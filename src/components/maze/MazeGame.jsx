@@ -74,7 +74,13 @@ function MazeGame() {
       // Nieuw spel starten
       const newMaze = generateMaze(mazeConfig.size, mazeConfig.size);
       const newChallenges = placeChallenges(newMaze, mazeConfig.challenges);
-      const newFriendlies = placeFriendlies(newMaze, newChallenges, theme.friendlies || ['🌟', '�', '🤖', '🧸', '🐶'], mazeConfig.friendlies);
+      const newFriendlies = placeFriendlies(
+        newMaze,
+        newChallenges,
+        theme.friendlies || ['🌟', '�', '🤖', '🧸', '🐶'],
+        mazeConfig.friendlies,
+        theme.friendTexts // geef de theme-specifieke rescue teksten mee
+      );
       setMaze(newMaze);
       setChallenges(newChallenges);
       setFriendlies(newFriendlies);
