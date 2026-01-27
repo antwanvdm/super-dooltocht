@@ -170,7 +170,7 @@ function MazeGame() {
         return;
       }
 
-      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal || showOnboarding) return; // Geen beweging als popup open staat
+      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal) return; // Geen beweging als popup open staat
 
       // Toggle minimap met M
       if (e.key === 'm' || e.key === 'M') {
