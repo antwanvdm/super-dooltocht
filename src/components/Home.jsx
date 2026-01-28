@@ -377,14 +377,30 @@ function Home() {
             </p>
             
             <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-left">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600">⭐ Uitdagingen:</span>
-                <span className="font-bold text-gray-800">{continueModal.completedCount}/10</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">🤝 Geredde vriendjes:</span>
-                <span className="font-bold text-gray-800">{continueModal.collectedFriends}/5</span>
-              </div>
+              {(() => {
+                let totalChallenges = 7, totalFriends = 4;
+                switch (continueModal.adventureLength) {
+                  case 'short':
+                    totalChallenges = 4; totalFriends = 2; break;
+                  case 'long':
+                    totalChallenges = 10; totalFriends = 6; break;
+                  case 'medium':
+                  default:
+                    totalChallenges = 7; totalFriends = 4;
+                }
+                return (
+                  <>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-gray-600">⭐ Uitdagingen:</span>
+                      <span className="font-bold text-gray-800">{continueModal.completedCount}/{totalChallenges}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">🤝 Geredde vriendjes:</span>
+                      <span className="font-bold text-gray-800">{continueModal.collectedFriends}/{totalFriends}</span>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div className="space-y-3">
