@@ -1,5 +1,5 @@
 // Genereer rekensommen op basis van gekozen instellingen
-// settings: { 
+// settings: {
 //   enabledOperations: { add, sub, mul, placeValue, lovingHearts, money },
 //   maxValue: number,
 //   mulTables: string,
@@ -59,16 +59,29 @@ const randBetween = (min, max) =>
 // Helper: bepaal het tiental van een getal
 const getTens = (n) => Math.floor(n / 10) * 10;
 
-const generateAddition = (max, mode, beyondDigits) => {
+const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
   if (mode === 'within') {
     // Binnen het tiental: resultaat blijft in hetzelfde tiental als eerste getal
     // Bijv: 45+4=49 (blijft in de 40), niet 45+8=53 (gaat naar 50)
+    
+    // Prevent infinite loops voor kleine ranges
+    if (attempts > 20) {
+      // Fallback: kies gewoon een simpele som binnen max
+      const a = randBetween(1, Math.floor(max / 2));
+      const b = randBetween(1, Math.min(5, max - a));
+      return {
+        question: `${a} + ${b}`,
+        answer: a + b,
+        type: 'addition',
+      };
+    }
+    
     const a = randBetween(Math.max(1, Math.floor(max * 0.2)), max - 1);
     const tensOfA = getTens(a);
     const maxB = Math.min(9 - (a % 10), max - a); // niet over tiental EN niet over max
     if (maxB < 1) {
       // Als a al op 9 eindigt, kies nieuw getal
-      return generateAddition(max, mode, beyondDigits);
+      return generateAddition(max, mode, beyondDigits, attempts + 1);
     }
     const b = randBetween(1, maxB);
     return {
@@ -77,17 +90,29 @@ const generateAddition = (max, mode, beyondDigits) => {
       type: 'addition',
     };
   }
-  
+
   // Buiten het tiental
   if (beyondDigits === 'units') {
     // Alleen eenheden: bijv. 78+3=81 (gaat over tiental maar b is eenheid)
+    
+    // Prevent infinite loops
+    if (attempts > 20) {
+      const a = randBetween(1, Math.floor(max / 2));
+      const b = randBetween(1, Math.min(9, max - a));
+      return {
+        question: `${a} + ${b}`,
+        answer: a + b,
+        type: 'addition',
+      };
+    }
+    
     const a = randBetween(Math.max(10, Math.floor(max * 0.3)), max - 9);
     const unitsOfA = a % 10;
     // We willen dat a+b over het tiental gaat, dus b > (10 - unitsOfA)
     const minB = Math.max(1, 10 - unitsOfA + 1);
     const maxB = Math.min(9, max - a);
     if (maxB < minB) {
-      return generateAddition(max, mode, beyondDigits);
+      return generateAddition(max, mode, beyondDigits, attempts + 1);
     }
     const b = randBetween(minB, maxB);
     return {
@@ -134,7 +159,7 @@ const generateSubtraction = (max, mode, beyondDigits) => {
       type: 'subtraction',
     };
   }
-  
+
   // Buiten het tiental
   if (beyondDigits === 'units') {
     // Alleen eenheden: bijv. 61-9=52 (gaat over tiental maar b is eenheid)
@@ -194,12 +219,15 @@ const generateMultiplication = (mulTables) => {
       break;
     case 'allplus':
     default:
-      availableTables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+      availableTables = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+      ];
       break;
   }
 
   // Kies een random tafel uit de beschikbare tafels
-  const table = availableTables[Math.floor(Math.random() * availableTables.length)];
+  const table =
+    availableTables[Math.floor(Math.random() * availableTables.length)];
   // Kies een random vermenigvuldiger van 1 t/m 10
   const multiplier = randBetween(1, 10);
 
@@ -215,21 +243,21 @@ const generateMultiplication = (mulTables) => {
 // Antwoorden zijn de werkelijke plaatswaarden: 44 -> eenheid=4, tiental=40
 const generatePlaceValue = (level) => {
   let number, position, answer, positionName, allPlaceValues;
-  
+
   switch (level) {
     case 'tens':
       // Getal van 10-99, vraag naar tiental of eenheid
       number = randBetween(10, 99);
       position = Math.random() < 0.5 ? 'units' : 'tens';
       allPlaceValues = [
-        number % 10,                        // eenheid: 4
-        Math.floor(number / 10) % 10 * 10,  // tiental: 40
+        number % 10, // eenheid: 4
+        (Math.floor(number / 10) % 10) * 10, // tiental: 40
       ];
       if (position === 'units') {
         answer = number % 10;
         positionName = 'eenheid';
       } else {
-        answer = Math.floor(number / 10) % 10 * 10;
+        answer = (Math.floor(number / 10) % 10) * 10;
         positionName = 'tiental';
       }
       break;
@@ -239,18 +267,18 @@ const generatePlaceValue = (level) => {
       const positions100 = ['units', 'tens', 'hundreds'];
       position = positions100[Math.floor(Math.random() * positions100.length)];
       allPlaceValues = [
-        number % 10,                          // eenheid: 8
-        Math.floor(number / 10) % 10 * 10,    // tiental: 70
-        Math.floor(number / 100) % 10 * 100,  // honderdtal: 600
+        number % 10, // eenheid: 8
+        (Math.floor(number / 10) % 10) * 10, // tiental: 70
+        (Math.floor(number / 100) % 10) * 100, // honderdtal: 600
       ];
       if (position === 'units') {
         answer = number % 10;
         positionName = 'eenheid';
       } else if (position === 'tens') {
-        answer = Math.floor(number / 10) % 10 * 10;
+        answer = (Math.floor(number / 10) % 10) * 10;
         positionName = 'tiental';
       } else {
-        answer = Math.floor(number / 100) % 10 * 100;
+        answer = (Math.floor(number / 100) % 10) * 100;
         positionName = 'honderdtal';
       }
       break;
@@ -259,24 +287,25 @@ const generatePlaceValue = (level) => {
       // Getal van 1000-9999, vraag naar eenheid/tiental/honderdtal/duizendtal
       number = randBetween(1000, 9999);
       const positions1000 = ['units', 'tens', 'hundreds', 'thousands'];
-      position = positions1000[Math.floor(Math.random() * positions1000.length)];
+      position =
+        positions1000[Math.floor(Math.random() * positions1000.length)];
       allPlaceValues = [
-        number % 10,                            // eenheid: 1
-        Math.floor(number / 10) % 10 * 10,      // tiental: 20
-        Math.floor(number / 100) % 10 * 100,    // honderdtal: 300
-        Math.floor(number / 1000) % 10 * 1000,  // duizendtal: 4000
+        number % 10, // eenheid: 1
+        (Math.floor(number / 10) % 10) * 10, // tiental: 20
+        (Math.floor(number / 100) % 10) * 100, // honderdtal: 300
+        (Math.floor(number / 1000) % 10) * 1000, // duizendtal: 4000
       ];
       if (position === 'units') {
         answer = number % 10;
         positionName = 'eenheid';
       } else if (position === 'tens') {
-        answer = Math.floor(number / 10) % 10 * 10;
+        answer = (Math.floor(number / 10) % 10) * 10;
         positionName = 'tiental';
       } else if (position === 'hundreds') {
-        answer = Math.floor(number / 100) % 10 * 100;
+        answer = (Math.floor(number / 100) % 10) * 100;
         positionName = 'honderdtal';
       } else {
-        answer = Math.floor(number / 1000) % 10 * 1000;
+        answer = (Math.floor(number / 1000) % 10) * 1000;
         positionName = 'duizendtal';
       }
       break;
@@ -288,7 +317,7 @@ const generatePlaceValue = (level) => {
     type: 'placeValue',
     positionName: positionName,
     number: number,
-    allPlaceValues: allPlaceValues,  // alle plaatswaarden als antwoordopties
+    allPlaceValues: allPlaceValues, // alle plaatswaarden als antwoordopties
   };
 };
 
@@ -297,7 +326,7 @@ const generateLovingHearts = () => {
   // Paren die samen 10 maken: 1+9, 2+8, 3+7, 4+6, 5+5
   const a = randBetween(1, 9);
   const b = 10 - a;
-  
+
   return {
     question: `${a} + ? = 10`,
     answer: b,
@@ -361,23 +390,23 @@ const CURRENCY = {
 // Helper: krijg beschikbare valuta op basis van niveau
 const getCurrencyForLevel = (maxAmount, includeCents) => {
   const currency = [...CURRENCY.euroCoins, ...CURRENCY.smallBills];
-  
+
   if (includeCents) {
     currency.push(...CURRENCY.cents);
   }
-  
+
   if (maxAmount >= 10000) {
     currency.push(...CURRENCY.mediumBills);
   }
-  
+
   if (maxAmount >= 50000) {
     currency.push(10000, 20000);
   }
-  
+
   if (maxAmount >= 100000) {
     currency.push(50000);
   }
-  
+
   return currency.sort((a, b) => a - b);
 };
 
@@ -389,7 +418,9 @@ const generateValidAmount = (maxAmount, includeCents, minAmount = 100) => {
   } else {
     const minEuros = Math.max(Math.ceil(minAmount / 100), 1);
     const maxEuros = Math.floor(maxAmount / 100);
-    return (Math.floor(Math.random() * (maxEuros - minEuros + 1)) + minEuros) * 100;
+    return (
+      (Math.floor(Math.random() * (maxEuros - minEuros + 1)) + minEuros) * 100
+    );
   }
 };
 
@@ -398,14 +429,14 @@ const findOptimalCombination = (targetCents, availableCurrency) => {
   const sorted = [...availableCurrency].sort((a, b) => b - a);
   const combination = [];
   let remaining = targetCents;
-  
+
   for (const value of sorted) {
     while (remaining >= value) {
       combination.push(value);
       remaining -= value;
     }
   }
-  
+
   return remaining === 0 ? combination : null;
 };
 
@@ -413,7 +444,7 @@ const findOptimalCombination = (targetCents, availableCurrency) => {
 const formatMoney = (cents) => {
   const euros = Math.floor(cents / 100);
   const remainingCents = cents % 100;
-  
+
   if (remainingCents === 0) {
     return `€${euros}`;
   }
@@ -424,10 +455,10 @@ const formatMoney = (cents) => {
 const generateMoneyProblem = (maxAmount, includeCents) => {
   const types = ['makeAmount', 'countMoney', 'smartPay', 'change'];
   const type = types[Math.floor(Math.random() * types.length)];
-  
+
   const currency = getCurrencyForLevel(maxAmount, includeCents);
   const amount = generateValidAmount(maxAmount, includeCents, 100);
-  
+
   switch (type) {
     case 'makeAmount':
       return generateMakeAmount(amount, currency);
@@ -445,13 +476,13 @@ const generateMoneyProblem = (maxAmount, includeCents) => {
 // Type 1: Maak het bedrag - welke combinatie is juist?
 const generateMakeAmount = (amount, currency) => {
   const correctCombination = findOptimalCombination(amount, currency);
-  
+
   if (!correctCombination) {
     // Fallback: genereer een makkelijker bedrag
     const simpleAmount = Math.floor(amount / 100) * 100;
     return generateMakeAmount(simpleAmount, currency);
   }
-  
+
   return {
     type: 'makeAmount',
     moneyType: 'makeAmount',
@@ -468,7 +499,7 @@ const generateCountMoney = (maxAmount, currency) => {
   const numItems = randBetween(3, 6);
   const money = [];
   let total = 0;
-  
+
   for (let i = 0; i < numItems; i++) {
     const value = currency[Math.floor(Math.random() * currency.length)];
     if (total + value <= maxAmount) {
@@ -476,13 +507,13 @@ const generateCountMoney = (maxAmount, currency) => {
       total += value;
     }
   }
-  
+
   // Zorg dat we minstens iets hebben
   if (money.length === 0) {
     money.push(currency[0]);
     total = currency[0];
   }
-  
+
   return {
     type: 'countMoney',
     moneyType: 'countMoney',
@@ -498,7 +529,7 @@ const generateSmartPay = (amount, currency) => {
   // Simuleer een portemonnee met wat geld
   const wallet = [];
   let walletTotal = 0;
-  
+
   // Voeg genoeg geld toe om te kunnen betalen
   const sorted = [...currency].sort((a, b) => b - a);
   for (const value of sorted) {
@@ -509,16 +540,16 @@ const generateSmartPay = (amount, currency) => {
       walletTotal += value;
     }
   }
-  
+
   // Zorg dat we genoeg hebben
   while (walletTotal < amount) {
     const value = currency[Math.floor(Math.random() * currency.length)];
     wallet.push(value);
     walletTotal += value;
   }
-  
+
   const optimalCombination = findOptimalCombination(amount, wallet);
-  
+
   return {
     type: 'smartPay',
     moneyType: 'smartPay',
@@ -533,16 +564,23 @@ const generateSmartPay = (amount, currency) => {
 // Type 4: Wisselgeld - hoeveel krijg je terug?
 const generateChange = (maxAmount, includeCents, currency) => {
   // Genereer een prijs
-  const price = generateValidAmount(Math.min(maxAmount, 5000), includeCents, 50);
-  
+  const price = generateValidAmount(
+    Math.min(maxAmount, 5000),
+    includeCents,
+    50,
+  );
+
   // Bepaal betaald bedrag (rond getal groter dan prijs)
-  const paymentOptions = [500, 1000, 2000, 5000, 10000].filter(p => p > price && p <= maxAmount);
-  const paid = paymentOptions.length > 0 
-    ? paymentOptions[Math.floor(Math.random() * paymentOptions.length)]
-    : Math.ceil(price / 100) * 100 + 100;
-  
+  const paymentOptions = [500, 1000, 2000, 5000, 10000].filter(
+    (p) => p > price && p <= maxAmount,
+  );
+  const paid =
+    paymentOptions.length > 0
+      ? paymentOptions[Math.floor(Math.random() * paymentOptions.length)]
+      : Math.ceil(price / 100) * 100 + 100;
+
   const change = paid - price;
-  
+
   return {
     type: 'change',
     moneyType: 'change',
@@ -557,4 +595,9 @@ const generateChange = (maxAmount, includeCents, currency) => {
 };
 
 // Exporteer ook helpers voor de minigames
-export { formatMoney, findOptimalCombination, getCurrencyForLevel, generateValidAmount };
+export {
+  formatMoney,
+  findOptimalCombination,
+  getCurrencyForLevel,
+  generateValidAmount,
+};
