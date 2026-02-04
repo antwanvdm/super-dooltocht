@@ -432,11 +432,8 @@ function MazeGame() {
                 {theme.emoji} {theme.name}
               </h2>
             </div>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-5 flex-wrap">
               {renderCollectedFriends()}
-              <div className="text-lg font-bold text-gray-800">
-                ⭐ {completedCount}/{totalChallenges}
-              </div>
               {renderKeyProgress()}
             </div>
           </div>
