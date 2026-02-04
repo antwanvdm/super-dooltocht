@@ -12,9 +12,12 @@ function Home() {
   const navigate = useNavigate();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
-  const [ops, setOps] = useState({ add: true, sub: false, mul: false });
+  const [ops, setOps] = useState({ add: false, sub: false, mul: false, placeValue: false, lovingHearts: false });
   const [maxValue, setMaxValue] = useState(100);
-  const [mulTables, setMulTables] = useState('easy'); // 'easy', 'medium', 'hard', 'all'
+  const [mulTables, setMulTables] = useState('easy'); // 'easy', 'medium', 'hard', 'expert', 'all', 'allplus'
+  const [addSubMode, setAddSubMode] = useState('beyond'); // 'within' of 'beyond' (binnen/buiten tiental)
+  const [beyondDigits, setBeyondDigits] = useState('units'); // 'units', 'tens', 'hundreds'
+  const [placeValueLevel, setPlaceValueLevel] = useState('tens'); // 'tens', 'hundreds', 'thousands'
   const [adventureLength, setAdventureLength] = useState('medium'); // 'short', 'medium', 'long'
   const [playerEmoji, setPlayerEmoji] = useState(PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
@@ -68,6 +71,9 @@ function Home() {
           enabledOperations: ops,
           maxValue: Number(maxValue),
           mulTables: mulTables,
+          addSubMode: addSubMode,
+          beyondDigits: beyondDigits,
+          placeValueLevel: placeValueLevel,
         },
         playerEmoji,
         adventureLength,
@@ -75,7 +81,7 @@ function Home() {
     });
   };
 
-  const canStart = ops.add || ops.sub || ops.mul;
+  const canStart = ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts;
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -129,13 +135,15 @@ function Home() {
             {/* Operations */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-7 border-2 border-blue-100">
               <h3 className="flex items-center gap-3 text-lg font-bold text-gray-700 mb-6">
-                <span className="text-2xl">➕</span> Soort sommen
+                <span className="text-2xl">➕</span> Soort oefening
               </h3>
               <div className="space-y-4">
                 {[  
                   { key: 'add', label: 'Plussommen', icon: '➕' },
                   { key: 'sub', label: 'Minsommen', icon: '➖' },
                   { key: 'mul', label: 'Keersommen', icon: '✖️' },
+                  { key: 'placeValue', label: 'Begripsoefening', icon: '🔢' },
+                  { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
                 ].map(({ key, label, icon }) => (
                   <label
                     key={key}
@@ -159,7 +167,7 @@ function Home() {
               </div>
               {!canStart && (
                 <p className="mt-4 text-sm text-red-500 font-medium text-center">
-                  ⚠️ Kies minstens één soort som
+                  ⚠️ Kies minstens één soort oefening
                 </p>
               )}
             </div>
@@ -174,7 +182,7 @@ function Home() {
               {(ops.add || ops.sub) && (
                 <>
                   <p className="text-sm font-medium text-gray-600 mb-3">➕➖ Plus/Min sommen tot:</p>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2 mb-4">
                     {[20, 50, 100, 200, 500, 1000].map((val) => (
                       <label
                         key={val}
@@ -196,19 +204,87 @@ function Home() {
                       </label>
                     ))}
                   </div>
+                  
+                  {/* Binnen/Buiten tiental */}
+                  <p className="text-sm font-medium text-gray-600 mb-2">Binnen of buiten het tiental:</p>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      { key: 'within', label: 'Binnen tiental', desc: '45+4, 56-3' },
+                      { key: 'beyond', label: 'Over tiental', desc: '47+5, 52-8' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex flex-col p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          addSubMode === key
+                            ? 'bg-teal-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-teal-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="addSubMode"
+                          value={key}
+                          checked={addSubMode === key}
+                          onChange={(e) => setAddSubMode(e.target.value)}
+                          className="sr-only"
+                        />
+                        <span className="font-medium">{label}</span>
+                        <span className={`text-xs ${addSubMode === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  {/* Opties voor buiten het tiental */}
+                  {addSubMode === 'beyond' && (
+                    <>
+                      <p className="text-sm font-medium text-gray-600 mb-2">Rekenen met:</p>
+                      <div className="space-y-2">
+                        {[
+                          { key: 'units', label: 'Alleen eenheden', desc: '78+3, 61-9' },
+                          { key: 'tens', label: 'Met tientallen', desc: '78+13, 61-39' },
+                          ...(maxValue >= 200 ? [{ key: 'hundreds', label: 'Met honderdtallen', desc: '178+123, 461-239' }] : []),
+                        ].map(({ key, label, desc }) => (
+                          <label
+                            key={key}
+                            className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                              beyondDigits === key
+                                ? 'bg-cyan-500 text-white shadow-sm'
+                                : 'bg-white text-gray-700 hover:bg-cyan-50 border border-gray-200'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="beyondDigits"
+                              value={key}
+                              checked={beyondDigits === key}
+                              onChange={(e) => setBeyondDigits(e.target.value)}
+                              className="sr-only"
+                            />
+                            <div>
+                              <span className="font-medium">{label}</span>
+                              <span className={`ml-2 text-xs ${beyondDigits === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                            </div>
+                            {beyondDigits === key && <span>✓</span>}
+                          </label>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </>
               )}
               
               {/* Tafel selectie - alleen zichtbaar als keersommen aan staat */}
               {ops.mul && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub) ? 'mt-4 pt-4 border-t border-green-200' : ''}`}>✖️ Keersommen tafels:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>✖️ Keersommen tafels:</p>
                   <div className="space-y-2">
                     {[
                       { key: 'easy', label: 'Tafels van 1, 2, 5, 10' },
                       { key: 'medium', label: 'Tafels van 3, 4, 6, 7, 8, 9' },
+                      { key: 'all', label: 'Tafels van 1 t/m 10' },
                       { key: 'hard', label: 'Tafels van 11 en 12' },
-                      { key: 'all', label: 'Alle tafels (1 t/m 12)' },
+                      { key: 'expert', label: 'Tafels van 13 t/m 20' },
+                      { key: 'allplus', label: 'Tafels van 1 t/m 20' },
                     ].map(({ key, label }) => (
                       <label
                         key={key}
@@ -232,6 +308,53 @@ function Home() {
                     ))}
                   </div>
                 </>
+              )}
+              
+              {/* Begripsoefening niveau */}
+              {ops.placeValue && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🔢 Begripsoefening niveau:</p>
+                  <div className="space-y-2">
+                    {[
+                      { key: 'tens', label: 'Tientallen', desc: 'Getallen 10-99' },
+                      { key: 'hundreds', label: 'Honderdtallen', desc: 'Getallen 100-999' },
+                      { key: 'thousands', label: 'Duizendtallen', desc: 'Getallen 1000-9999' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          placeValueLevel === key
+                            ? 'bg-purple-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-purple-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="placeValueLevel"
+                          value={key}
+                          checked={placeValueLevel === key}
+                          onChange={(e) => setPlaceValueLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${placeValueLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {placeValueLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {/* Verliefde harten heeft geen extra niveau opties */}
+              {ops.lovingHearts && (
+                <p className={`text-sm text-gray-500 italic ${(ops.add || ops.sub || ops.mul || ops.placeValue) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💕 Verliefde harten: oefen getallenparen die samen 10 maken</p>
+              )}
+              
+              {/* Geen opties geselecteerd */}
+              {!ops.add && !ops.sub && !ops.mul && !ops.placeValue && !ops.lovingHearts && (
+                <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
               )}
             </div>
 

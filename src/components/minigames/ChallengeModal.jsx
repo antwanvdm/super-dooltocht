@@ -3,15 +3,20 @@ import MultipleChoice from './MultipleChoice';
 import MemoryGame from './MemoryGame';
 import MathPuzzle from './MathPuzzle';
 import DartsGame from './DartsGame';
+import PlaceValueGame from './PlaceValueGame';
+import LovingHeartsGame from './LovingHeartsGame';
 import Confetti from '../Confetti';
 
-const GAME_TYPES = ['multiple-choice', 'memory', 'puzzle', 'darts'];
+// Standaard minigames voor reguliere sommen (add/sub/mul)
+const STANDARD_GAMES = ['multiple-choice', 'memory', 'puzzle', 'darts'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
   'memory': 'Memory',
   'puzzle': 'Sommenblad',
   'darts': 'Darts',
+  'placeValue': 'Begripsoefening',
+  'lovingHearts': 'Verliefde harten',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -19,10 +24,33 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
-    // Bepaal game type en moeilijkheidsgraad
-    const randomType = GAME_TYPES[Math.floor(Math.random() * GAME_TYPES.length)];
+    // Bepaal welke game types beschikbaar zijn op basis van instellingen
+    const enabled = mathSettings?.enabledOperations || {};
+    const hasStandardOps = enabled.add || enabled.sub || enabled.mul;
+    const hasPlaceValue = enabled.placeValue;
+    const hasLovingHearts = enabled.lovingHearts;
+
+    // Bouw pool van beschikbare game types
+    const availableTypes = [];
+    
+    if (hasStandardOps) {
+      availableTypes.push(...STANDARD_GAMES);
+    }
+    if (hasPlaceValue) {
+      availableTypes.push('placeValue');
+    }
+    if (hasLovingHearts) {
+      availableTypes.push('lovingHearts');
+    }
+
+    // Fallback naar multiple-choice als niets beschikbaar
+    if (availableTypes.length === 0) {
+      availableTypes.push('multiple-choice');
+    }
+
+    const randomType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
     setGameType(randomType);
-  }, [challenge]);
+  }, [challenge, mathSettings]);
 
   const handleSuccess = () => {
     // Toon confetti!
@@ -98,6 +126,24 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
 
             {gameType === 'darts' && (
               <DartsGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'placeValue' && (
+              <PlaceValueGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'lovingHearts' && (
+              <LovingHeartsGame
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}
