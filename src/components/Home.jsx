@@ -12,12 +12,14 @@ function Home() {
   const navigate = useNavigate();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
-  const [ops, setOps] = useState({ add: false, sub: false, mul: false, placeValue: false, lovingHearts: false });
+  const [ops, setOps] = useState({ add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false });
   const [maxValue, setMaxValue] = useState(100);
   const [mulTables, setMulTables] = useState('easy'); // 'easy', 'medium', 'hard', 'expert', 'all', 'allplus'
   const [addSubMode, setAddSubMode] = useState('beyond'); // 'within' of 'beyond' (binnen/buiten tiental)
   const [beyondDigits, setBeyondDigits] = useState('units'); // 'units', 'tens', 'hundreds'
   const [placeValueLevel, setPlaceValueLevel] = useState('tens'); // 'tens', 'hundreds', 'thousands'
+  const [moneyMaxAmount, setMoneyMaxAmount] = useState(2000); // max bedrag in centen
+  const [moneyIncludeCents, setMoneyIncludeCents] = useState(false); // met of zonder centen
   const [adventureLength, setAdventureLength] = useState('medium'); // 'short', 'medium', 'long'
   const [playerEmoji, setPlayerEmoji] = useState(PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
@@ -74,6 +76,8 @@ function Home() {
           addSubMode: addSubMode,
           beyondDigits: beyondDigits,
           placeValueLevel: placeValueLevel,
+          moneyMaxAmount: moneyMaxAmount,
+          moneyIncludeCents: moneyIncludeCents,
         },
         playerEmoji,
         adventureLength,
@@ -81,7 +85,7 @@ function Home() {
     });
   };
 
-  const canStart = ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts;
+  const canStart = ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money;
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -144,6 +148,7 @@ function Home() {
                   { key: 'mul', label: 'Keersommen', icon: '✖️' },
                   { key: 'placeValue', label: 'Begripsoefening', icon: '🔢' },
                   { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
+                  { key: 'money', label: 'Rekenen met geld', icon: '💶' },
                 ].map(({ key, label, icon }) => (
                   <label
                     key={key}
@@ -352,8 +357,61 @@ function Home() {
                 <p className={`text-sm text-gray-500 italic ${(ops.add || ops.sub || ops.mul || ops.placeValue) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💕 Verliefde harten: oefen getallenparen die samen 10 maken</p>
               )}
               
+              {/* Geld instellingen */}
+              {ops.money && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💶 Rekenen met geld:</p>
+                  
+                  <p className="text-xs text-gray-500 mb-2">Bedrag tot:</p>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      { key: 2000, label: 'Tot €20' },
+                      { key: 10000, label: 'Tot €100' },
+                      { key: 50000, label: 'Tot €500' },
+                      { key: 100000, label: 'Tot €1000' },
+                    ].map(({ key, label }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-center p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          moneyMaxAmount === key
+                            ? 'bg-emerald-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-emerald-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="moneyMaxAmount"
+                          value={key}
+                          checked={moneyMaxAmount === key}
+                          onChange={(e) => setMoneyMaxAmount(Number(e.target.value))}
+                          className="sr-only"
+                        />
+                        <span className="font-medium">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  <label
+                    className={`flex items-center justify-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                      moneyIncludeCents
+                        ? 'bg-amber-500 text-white shadow-sm'
+                        : 'bg-white text-gray-700 hover:bg-amber-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={moneyIncludeCents}
+                      onChange={() => setMoneyIncludeCents(!moneyIncludeCents)}
+                      className="sr-only"
+                    />
+                    <span className="font-medium">Met centen (5c, 10c, 20c, 50c)</span>
+                    {moneyIncludeCents && <span>✓</span>}
+                  </label>
+                </>
+              )}
+              
               {/* Geen opties geselecteerd */}
-              {!ops.add && !ops.sub && !ops.mul && !ops.placeValue && !ops.lovingHearts && (
+              {!ops.add && !ops.sub && !ops.mul && !ops.placeValue && !ops.lovingHearts && !ops.money && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
               )}
             </div>

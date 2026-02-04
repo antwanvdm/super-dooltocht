@@ -1,11 +1,13 @@
 // Genereer rekensommen op basis van gekozen instellingen
 // settings: { 
-//   enabledOperations: { add, sub, mul, placeValue, lovingHearts },
+//   enabledOperations: { add, sub, mul, placeValue, lovingHearts, money },
 //   maxValue: number,
 //   mulTables: string,
 //   addSubMode: 'within' | 'beyond',  // binnen of buiten het tiental
 //   beyondDigits: 'units' | 'tens' | 'hundreds',  // bij buiten tiental: enkel eenheid, met tiental, met honderdtal
-//   placeValueLevel: 'tens' | 'hundreds' | 'thousands'  // niveau voor begripsoefening
+//   placeValueLevel: 'tens' | 'hundreds' | 'thousands',  // niveau voor begripsoefening
+//   moneyMaxAmount: 2000 | 10000 | 50000 | 100000,  // max bedrag in centen
+//   moneyIncludeCents: boolean  // wel of niet met centen
 // }
 export const generateMathProblem = (settings) => {
   const maxValue = Math.max(5, settings?.maxValue || 20);
@@ -13,12 +15,15 @@ export const generateMathProblem = (settings) => {
   const addSubMode = settings?.addSubMode || 'beyond';
   const beyondDigits = settings?.beyondDigits || 'units';
   const placeValueLevel = settings?.placeValueLevel || 'tens';
+  const moneyMaxAmount = settings?.moneyMaxAmount || 2000;
+  const moneyIncludeCents = settings?.moneyIncludeCents || false;
   const enabled = settings?.enabledOperations || {
     add: true,
     sub: true,
     mul: true,
     placeValue: false,
     lovingHearts: false,
+    money: false,
   };
   const pool = [];
   if (enabled.add) pool.push('add');
@@ -26,6 +31,7 @@ export const generateMathProblem = (settings) => {
   if (enabled.mul) pool.push('mul');
   if (enabled.placeValue) pool.push('placeValue');
   if (enabled.lovingHearts) pool.push('lovingHearts');
+  if (enabled.money) pool.push('money');
 
   const type = pool.length
     ? pool[Math.floor(Math.random() * pool.length)]
@@ -40,6 +46,8 @@ export const generateMathProblem = (settings) => {
       return generatePlaceValue(placeValueLevel);
     case 'lovingHearts':
       return generateLovingHearts();
+    case 'money':
+      return generateMoneyProblem(moneyMaxAmount, moneyIncludeCents);
     default:
       return generateAddition(maxValue, addSubMode, beyondDigits);
   }
@@ -336,3 +344,217 @@ export const generateWrongAnswers = (correctAnswer, count = 3) => {
 
   return Array.from(wrong);
 };
+
+// ============================================
+// GELD OEFENINGEN
+// ============================================
+
+// Beschikbare valuta (waarden in centen)
+const CURRENCY = {
+  cents: [5, 10, 20, 50],
+  euroCoins: [100, 200],
+  smallBills: [500, 1000, 2000],
+  mediumBills: [5000],
+  largeBills: [10000, 20000, 50000],
+};
+
+// Helper: krijg beschikbare valuta op basis van niveau
+const getCurrencyForLevel = (maxAmount, includeCents) => {
+  const currency = [...CURRENCY.euroCoins, ...CURRENCY.smallBills];
+  
+  if (includeCents) {
+    currency.push(...CURRENCY.cents);
+  }
+  
+  if (maxAmount >= 10000) {
+    currency.push(...CURRENCY.mediumBills);
+  }
+  
+  if (maxAmount >= 50000) {
+    currency.push(10000, 20000);
+  }
+  
+  if (maxAmount >= 100000) {
+    currency.push(50000);
+  }
+  
+  return currency.sort((a, b) => a - b);
+};
+
+// Helper: genereer een valide bedrag
+const generateValidAmount = (maxAmount, includeCents, minAmount = 100) => {
+  if (includeCents) {
+    const min = Math.max(minAmount, 5);
+    return Math.floor(Math.random() * ((maxAmount - min) / 5 + 1)) * 5 + min;
+  } else {
+    const minEuros = Math.max(Math.ceil(minAmount / 100), 1);
+    const maxEuros = Math.floor(maxAmount / 100);
+    return (Math.floor(Math.random() * (maxEuros - minEuros + 1)) + minEuros) * 100;
+  }
+};
+
+// Helper: vind optimale combinatie (greedy)
+const findOptimalCombination = (targetCents, availableCurrency) => {
+  const sorted = [...availableCurrency].sort((a, b) => b - a);
+  const combination = [];
+  let remaining = targetCents;
+  
+  for (const value of sorted) {
+    while (remaining >= value) {
+      combination.push(value);
+      remaining -= value;
+    }
+  }
+  
+  return remaining === 0 ? combination : null;
+};
+
+// Helper: formatteer bedrag
+const formatMoney = (cents) => {
+  const euros = Math.floor(cents / 100);
+  const remainingCents = cents % 100;
+  
+  if (remainingCents === 0) {
+    return `€${euros}`;
+  }
+  return `€${euros},${remainingCents.toString().padStart(2, '0')}`;
+};
+
+// Genereer een geld probleem (kiest random uit de 4 types)
+const generateMoneyProblem = (maxAmount, includeCents) => {
+  const types = ['makeAmount', 'countMoney', 'smartPay', 'change'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  
+  const currency = getCurrencyForLevel(maxAmount, includeCents);
+  const amount = generateValidAmount(maxAmount, includeCents, 100);
+  
+  switch (type) {
+    case 'makeAmount':
+      return generateMakeAmount(amount, currency);
+    case 'countMoney':
+      return generateCountMoney(maxAmount, currency);
+    case 'smartPay':
+      return generateSmartPay(amount, currency);
+    case 'change':
+      return generateChange(maxAmount, includeCents, currency);
+    default:
+      return generateMakeAmount(amount, currency);
+  }
+};
+
+// Type 1: Maak het bedrag - welke combinatie is juist?
+const generateMakeAmount = (amount, currency) => {
+  const correctCombination = findOptimalCombination(amount, currency);
+  
+  if (!correctCombination) {
+    // Fallback: genereer een makkelijker bedrag
+    const simpleAmount = Math.floor(amount / 100) * 100;
+    return generateMakeAmount(simpleAmount, currency);
+  }
+  
+  return {
+    type: 'makeAmount',
+    moneyType: 'makeAmount',
+    amount: amount,
+    amountFormatted: formatMoney(amount),
+    correctCombination: correctCombination,
+    currency: currency,
+  };
+};
+
+// Type 2: Tel het geld - hoeveel is dit bij elkaar?
+const generateCountMoney = (maxAmount, currency) => {
+  // Genereer random verzameling geld
+  const numItems = randBetween(3, 6);
+  const money = [];
+  let total = 0;
+  
+  for (let i = 0; i < numItems; i++) {
+    const value = currency[Math.floor(Math.random() * currency.length)];
+    if (total + value <= maxAmount) {
+      money.push(value);
+      total += value;
+    }
+  }
+  
+  // Zorg dat we minstens iets hebben
+  if (money.length === 0) {
+    money.push(currency[0]);
+    total = currency[0];
+  }
+  
+  return {
+    type: 'countMoney',
+    moneyType: 'countMoney',
+    money: money.sort((a, b) => b - a),
+    answer: total,
+    amountFormatted: formatMoney(total),
+    currency: currency,
+  };
+};
+
+// Type 3: Slim betalen - betaal met zo min mogelijk
+const generateSmartPay = (amount, currency) => {
+  // Simuleer een portemonnee met wat geld
+  const wallet = [];
+  let walletTotal = 0;
+  
+  // Voeg genoeg geld toe om te kunnen betalen
+  const sorted = [...currency].sort((a, b) => b - a);
+  for (const value of sorted) {
+    // Voeg 1-2 van elk toe
+    const count = randBetween(1, 2);
+    for (let i = 0; i < count; i++) {
+      wallet.push(value);
+      walletTotal += value;
+    }
+  }
+  
+  // Zorg dat we genoeg hebben
+  while (walletTotal < amount) {
+    const value = currency[Math.floor(Math.random() * currency.length)];
+    wallet.push(value);
+    walletTotal += value;
+  }
+  
+  const optimalCombination = findOptimalCombination(amount, wallet);
+  
+  return {
+    type: 'smartPay',
+    moneyType: 'smartPay',
+    amount: amount,
+    amountFormatted: formatMoney(amount),
+    wallet: wallet.sort((a, b) => b - a),
+    optimalCombination: optimalCombination || [],
+    currency: currency,
+  };
+};
+
+// Type 4: Wisselgeld - hoeveel krijg je terug?
+const generateChange = (maxAmount, includeCents, currency) => {
+  // Genereer een prijs
+  const price = generateValidAmount(Math.min(maxAmount, 5000), includeCents, 50);
+  
+  // Bepaal betaald bedrag (rond getal groter dan prijs)
+  const paymentOptions = [500, 1000, 2000, 5000, 10000].filter(p => p > price && p <= maxAmount);
+  const paid = paymentOptions.length > 0 
+    ? paymentOptions[Math.floor(Math.random() * paymentOptions.length)]
+    : Math.ceil(price / 100) * 100 + 100;
+  
+  const change = paid - price;
+  
+  return {
+    type: 'change',
+    moneyType: 'change',
+    price: price,
+    priceFormatted: formatMoney(price),
+    paid: paid,
+    paidFormatted: formatMoney(paid),
+    change: change,
+    changeFormatted: formatMoney(change),
+    currency: currency,
+  };
+};
+
+// Exporteer ook helpers voor de minigames
+export { formatMoney, findOptimalCombination, getCurrencyForLevel, generateValidAmount };

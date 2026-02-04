@@ -5,10 +5,17 @@ import MathPuzzle from './MathPuzzle';
 import DartsGame from './DartsGame';
 import PlaceValueGame from './PlaceValueGame';
 import LovingHeartsGame from './LovingHeartsGame';
+import MakeAmountGame from './MakeAmountGame';
+import CountMoneyGame from './CountMoneyGame';
+import SmartPayGame from './SmartPayGame';
+import ChangeGame from './ChangeGame';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
 const STANDARD_GAMES = ['multiple-choice', 'memory', 'puzzle', 'darts'];
+
+// Money minigames
+const MONEY_GAMES = ['makeAmount', 'countMoney', 'smartPay', 'change'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -17,6 +24,10 @@ const GAME_NAMES = {
   'darts': 'Darts',
   'placeValue': 'Begripsoefening',
   'lovingHearts': 'Verliefde harten',
+  'makeAmount': 'Maak het bedrag',
+  'countMoney': 'Tel het geld',
+  'smartPay': 'Slim betalen',
+  'change': 'Wisselgeld',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -29,6 +40,7 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     const hasStandardOps = enabled.add || enabled.sub || enabled.mul;
     const hasPlaceValue = enabled.placeValue;
     const hasLovingHearts = enabled.lovingHearts;
+    const hasMoney = enabled.money;
 
     // Bouw pool van beschikbare game types
     const availableTypes = [];
@@ -41,6 +53,9 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     }
     if (hasLovingHearts) {
       availableTypes.push('lovingHearts');
+    }
+    if (hasMoney) {
+      availableTypes.push(...MONEY_GAMES);
     }
 
     // Fallback naar multiple-choice als niets beschikbaar
@@ -144,6 +159,42 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
 
             {gameType === 'lovingHearts' && (
               <LovingHeartsGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'makeAmount' && (
+              <MakeAmountGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'countMoney' && (
+              <CountMoneyGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'smartPay' && (
+              <SmartPayGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'change' && (
+              <ChangeGame
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}
