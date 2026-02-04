@@ -8,7 +8,27 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
   const inputRefs = useRef([]);
 
   useEffect(() => {
-    const newProblems = Array(4).fill(null).map(() => generateMathProblem(mathSettings));
+    // Force alleen standard operations voor MathPuzzle
+    const standardSettings = {
+      ...mathSettings,
+      enabledOperations: {
+        add: mathSettings?.enabledOperations?.add || false,
+        sub: mathSettings?.enabledOperations?.sub || false,
+        mul: mathSettings?.enabledOperations?.mul || false,
+        placeValue: false,
+        lovingHearts: false,
+        money: false,
+      },
+    };
+    
+    // Fallback to add if no standard ops enabled
+    if (!standardSettings.enabledOperations.add && 
+        !standardSettings.enabledOperations.sub && 
+        !standardSettings.enabledOperations.mul) {
+      standardSettings.enabledOperations.add = true;
+    }
+    
+    const newProblems = Array(4).fill(null).map(() => generateMathProblem(standardSettings));
     setProblems(newProblems);
     setAnswers({});
     setFeedback({});

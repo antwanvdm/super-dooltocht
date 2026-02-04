@@ -387,7 +387,7 @@ describe('Place Value (Begripsoefening)', () => {
       expect(number).toBeLessThanOrEqual(999);
 
       const units = number % 10;
-      const tens = Math.floor(number / 10) % 10 * 10;
+      const tens = (Math.floor(number / 10) % 10) * 10;
       const hundreds = Math.floor(number / 100) * 100;
 
       // Sum of place values equals original number
@@ -417,8 +417,8 @@ describe('Place Value (Begripsoefening)', () => {
       expect(number).toBeLessThanOrEqual(9999);
 
       const units = number % 10;
-      const tens = Math.floor(number / 10) % 10 * 10;
-      const hundreds = Math.floor(number / 100) % 10 * 100;
+      const tens = (Math.floor(number / 10) % 10) * 10;
+      const hundreds = (Math.floor(number / 100) % 10) * 100;
       const thousands = Math.floor(number / 1000) * 1000;
 
       // Sum equals original
@@ -492,7 +492,7 @@ describe('Money - Count Money', () => {
 
     for (let i = 0; i < 50; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'countMoney') {
         expect(problem.type).toBe('countMoney');
         expect(problem.answer).toBeLessThanOrEqual(10000);
@@ -503,7 +503,9 @@ describe('Money - Count Money', () => {
         expect(total).toBe(problem.answer);
 
         // All denominations should be valid
-        const validDenominations = [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+        const validDenominations = [
+          5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000,
+        ];
         problem.money.forEach((value) => {
           expect(validDenominations).toContain(value);
         });
@@ -520,7 +522,7 @@ describe('Money - Count Money', () => {
 
     for (let i = 0; i < 30; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'countMoney') {
         problem.money.forEach((value) => {
           // Should not have €50 bills or larger with €20 max
@@ -539,11 +541,11 @@ describe('Money - Count Money', () => {
 
     for (let i = 0; i < 50; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'countMoney') {
         // Answer should be whole euros (divisible by 100)
         expect(problem.answer % 100).toBe(0);
-        
+
         // No cents in money array
         problem.money.forEach((value) => {
           expect(value).toBeGreaterThanOrEqual(100);
@@ -562,7 +564,7 @@ describe('Money - Count Money', () => {
     let foundCents = false;
     for (let i = 0; i < 50; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'countMoney') {
         // Check if any cents were generated
         if (problem.money.some((v) => v < 100)) {
@@ -589,7 +591,7 @@ describe('Money - Make Amount', () => {
 
     for (let i = 0; i < 30; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'makeAmount') {
         expect(problem.type).toBe('makeAmount');
         expect(problem.amount).toBeGreaterThan(0);
@@ -622,7 +624,7 @@ describe('Money - Smart Pay', () => {
 
     for (let i = 0; i < 30; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'smartPay') {
         expect(problem.type).toBe('smartPay');
 
@@ -631,7 +633,10 @@ describe('Money - Smart Pay', () => {
         expect(walletTotal).toBeGreaterThanOrEqual(problem.amount);
 
         // Optimal combination should sum to exact amount
-        if (problem.optimalCombination && problem.optimalCombination.length > 0) {
+        if (
+          problem.optimalCombination &&
+          problem.optimalCombination.length > 0
+        ) {
           const optimalTotal = problem.optimalCombination.reduce(
             (sum, v) => sum + v,
             0,
@@ -662,7 +667,7 @@ describe('Money - Change (Wisselgeld)', () => {
 
     for (let i = 0; i < 50; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'change') {
         expect(problem.type).toBe('change');
 
@@ -691,7 +696,7 @@ describe('Money - Change (Wisselgeld)', () => {
 
     for (let i = 0; i < 30; i++) {
       const problem = generateMathProblem(settings);
-      
+
       if (problem.moneyType === 'change') {
         // Should have formatted strings
         expect(problem.priceFormatted).toMatch(/^€\d+/);
@@ -778,8 +783,12 @@ describe('generateWrongAnswers helper', () => {
     const largeWrong = generateWrongAnswers(largeCorrect, 3);
 
     // For large numbers, wrong answers should be further away
-    const smallMaxDiff = Math.max(...smallWrong.map((w) => Math.abs(w - smallCorrect)));
-    const largeMaxDiff = Math.max(...largeWrong.map((w) => Math.abs(w - largeCorrect)));
+    const smallMaxDiff = Math.max(
+      ...smallWrong.map((w) => Math.abs(w - smallCorrect)),
+    );
+    const largeMaxDiff = Math.max(
+      ...largeWrong.map((w) => Math.abs(w - largeCorrect)),
+    );
 
     expect(largeMaxDiff).toBeGreaterThan(smallMaxDiff);
   });
@@ -853,9 +862,11 @@ describe('Mixed Operations', () => {
 
     // Should have generated multiple types
     expect(types.size).toBeGreaterThan(1);
-    expect(Array.from(types).every((t) =>
-      ['addition', 'subtraction', 'multiplication'].includes(t),
-    )).toBe(true);
+    expect(
+      Array.from(types).every((t) =>
+        ['addition', 'subtraction', 'multiplication'].includes(t),
+      ),
+    ).toBe(true);
   });
 
   it('should only generate enabled operation types', () => {
@@ -875,5 +886,335 @@ describe('Mixed Operations', () => {
       const problem = generateMathProblem(settings);
       expect(problem.type).toBe('multiplication');
     }
+  });
+
+  it('should generate correct problem types when mixing standard ops with special ops', () => {
+    // This test ensures that when placeValue is enabled alongside add,
+    // the problem generator correctly returns either type
+    const settings = {
+      enabledOperations: {
+        add: true,
+        sub: false,
+        mul: false,
+        placeValue: true,
+        lovingHearts: false,
+        money: false,
+      },
+      maxValue: 100,
+      placeValueLevel: 'tens',
+    };
+
+    const types = new Set();
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      types.add(problem.type);
+
+      // Each problem type should have the expected format
+      if (problem.type === 'addition') {
+        // Standard addition should have question like "5 + 3"
+        expect(problem.question).toMatch(/^\d+ \+ \d+$/);
+        expect(typeof problem.answer).toBe('number');
+      } else if (problem.type === 'placeValue') {
+        // PlaceValue should have number, positionName, allPlaceValues
+        expect(typeof problem.number).toBe('number');
+        expect(problem.positionName).toBeDefined();
+        expect(Array.isArray(problem.allPlaceValues)).toBe(true);
+      }
+    }
+
+    // Both types should appear when both are enabled
+    expect(types.has('addition')).toBe(true);
+    expect(types.has('placeValue')).toBe(true);
+  });
+
+  it('should handle placeValue-only without crashing', () => {
+    const settings = {
+      enabledOperations: {
+        add: false,
+        sub: false,
+        mul: false,
+        placeValue: true,
+        lovingHearts: false,
+        money: false,
+      },
+      placeValueLevel: 'hundreds',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('placeValue');
+      expect(typeof problem.number).toBe('number');
+      expect(problem.positionName).toBeDefined();
+    }
+  });
+
+  it('should handle lovingHearts-only without crashing', () => {
+    const settings = {
+      enabledOperations: {
+        add: false,
+        sub: false,
+        mul: false,
+        placeValue: false,
+        lovingHearts: true,
+        money: false,
+      },
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('lovingHearts');
+      expect(problem.firstNumber + problem.answer).toBe(10);
+    }
+  });
+
+  it('should handle money-only without crashing', () => {
+    const settings = {
+      enabledOperations: {
+        add: false,
+        sub: false,
+        mul: false,
+        placeValue: false,
+        lovingHearts: false,
+        money: true,
+      },
+      moneyMaxAmount: 5000,
+      moneyIncludeCents: true,
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(['makeAmount', 'countMoney', 'smartPay', 'change']).toContain(
+        problem.moneyType,
+      );
+    }
+  });
+});
+
+// ============================================
+// EDGE CASE TESTS - Potential Crash Scenarios
+// ============================================
+
+describe('Edge Cases - Potential Crash Scenarios', () => {
+  it('should handle very small money amounts (€1 max)', () => {
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 100, // €1 max
+      moneyIncludeCents: false,
+    };
+
+    for (let i = 0; i < 30; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem).toBeDefined();
+      // Should not crash, amount should be within range
+      if (problem.amount) {
+        expect(problem.amount).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it('should handle money with cents at minimum amount', () => {
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 200, // €2 max
+      moneyIncludeCents: true,
+    };
+
+    for (let i = 0; i < 30; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem).toBeDefined();
+    }
+  });
+
+  it('should handle subtraction with very small maxValue (potential negative)', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 10,
+      addSubMode: 'beyond',
+      beyondDigits: 'units',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      // Answer should NEVER be negative
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should handle generateWrongAnswers with answer = 1 (edge case)', () => {
+    const wrong = generateWrongAnswers(1, 3);
+
+    expect(wrong).toHaveLength(3);
+    expect(wrong).not.toContain(1); // Should not contain correct answer
+    wrong.forEach((w) => {
+      expect(w).toBeGreaterThan(0); // All should be positive
+    });
+  });
+
+  it('should handle generateWrongAnswers with answer = 0 (edge case)', () => {
+    const wrong = generateWrongAnswers(0, 3);
+
+    expect(wrong).toHaveLength(3);
+    expect(wrong).not.toContain(0);
+    wrong.forEach((w) => {
+      expect(w).toBeGreaterThan(0);
+    });
+  });
+
+  it('should handle generateWrongAnswers with very large answer', () => {
+    const wrong = generateWrongAnswers(10000, 3);
+
+    expect(wrong).toHaveLength(3);
+    expect(wrong).not.toContain(10000);
+    // Wrong answers should be reasonably close to correct answer
+    wrong.forEach((w) => {
+      expect(Math.abs(w - 10000)).toBeLessThan(5000);
+    });
+  });
+
+  it('should handle placeValue with numbers containing zeros (e.g., 102, 1005)', () => {
+    const settings = {
+      enabledOperations: { placeValue: true },
+      placeValueLevel: 'hundreds',
+    };
+
+    // Run many times to catch numbers with zeros
+    for (let i = 0; i < 100; i++) {
+      const problem = generateMathProblem(settings);
+
+      // Verify the place values sum to the original number
+      const sum = problem.allPlaceValues.reduce((a, b) => a + b, 0);
+      expect(sum).toBe(problem.number);
+
+      // Answer should be one of the place values
+      expect(problem.allPlaceValues).toContain(problem.answer);
+    }
+  });
+
+  it('should handle placeValue where a digit is 0 (tiental = 0)', () => {
+    // Manually test specific case: number like 105 where tiental = 0
+    const settings = {
+      enabledOperations: { placeValue: true },
+      placeValueLevel: 'hundreds',
+    };
+
+    let foundZeroPlaceValue = false;
+    for (let i = 0; i < 200; i++) {
+      const problem = generateMathProblem(settings);
+      if (problem.allPlaceValues.includes(0)) {
+        foundZeroPlaceValue = true;
+        // Even when a place value is 0, the sum should still equal the number
+        const sum = problem.allPlaceValues.reduce((a, b) => a + b, 0);
+        expect(sum).toBe(problem.number);
+      }
+    }
+    // With 200 iterations, we should have found at least one number with a 0 digit
+    expect(foundZeroPlaceValue).toBe(true);
+  });
+
+  it('should handle change game where price is close to max payment options', () => {
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 5000, // €50 max
+      moneyIncludeCents: false,
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+
+      if (problem.moneyType === 'change') {
+        // paid should always be > price
+        expect(problem.paid).toBeGreaterThan(problem.price);
+        // change should be non-negative
+        expect(problem.change).toBeGreaterThanOrEqual(0);
+        // change calculation should be correct
+        expect(problem.paid - problem.price).toBe(problem.change);
+      }
+    }
+  });
+
+  it('should handle smartPay where exact amount might be tricky', () => {
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 2000,
+      moneyIncludeCents: true,
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+
+      if (problem.moneyType === 'smartPay') {
+        // Wallet total should be >= amount
+        const walletTotal = problem.wallet.reduce((sum, v) => sum + v, 0);
+        expect(walletTotal).toBeGreaterThanOrEqual(problem.amount);
+
+        // If optimalCombination exists, it should sum to exact amount
+        if (
+          problem.optimalCombination &&
+          problem.optimalCombination.length > 0
+        ) {
+          const optimalSum = problem.optimalCombination.reduce(
+            (sum, v) => sum + v,
+            0,
+          );
+          expect(optimalSum).toBe(problem.amount);
+        }
+      }
+    }
+  });
+
+  it('should never generate infinite loops with any valid settings combination', () => {
+    // Test various edge case combinations
+    const edgeCases = [
+      { enabledOperations: { add: true }, maxValue: 5, addSubMode: 'within' },
+      { enabledOperations: { sub: true }, maxValue: 15, addSubMode: 'within' },
+      { enabledOperations: { mul: true }, mulTables: 'hard' }, // Only tables 11, 12
+      { enabledOperations: { add: true, placeValue: true }, maxValue: 20 },
+      {
+        enabledOperations: { money: true },
+        moneyMaxAmount: 500,
+        moneyIncludeCents: true,
+      },
+      { enabledOperations: { lovingHearts: true } }, // Only loving hearts
+    ];
+
+    edgeCases.forEach((settings, index) => {
+      // Each case should complete within reasonable time (no infinite loop)
+      const startTime = Date.now();
+      for (let i = 0; i < 20; i++) {
+        const problem = generateMathProblem(settings);
+        expect(problem).toBeDefined();
+      }
+      const duration = Date.now() - startTime;
+      // Should complete 20 generations in under 1 second
+      expect(duration).toBeLessThan(1000);
+    });
+  });
+
+  it('should handle all operations enabled simultaneously', () => {
+    const settings = {
+      enabledOperations: {
+        add: true,
+        sub: true,
+        mul: true,
+        placeValue: true,
+        lovingHearts: true,
+        money: true,
+      },
+      maxValue: 100,
+      mulTables: 'all',
+      placeValueLevel: 'hundreds',
+      moneyMaxAmount: 5000,
+      moneyIncludeCents: true,
+    };
+
+    const types = new Set();
+    for (let i = 0; i < 100; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem).toBeDefined();
+      types.add(problem.type);
+    }
+
+    // Should generate variety of types
+    expect(types.size).toBeGreaterThan(3);
   });
 });

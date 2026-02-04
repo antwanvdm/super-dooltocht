@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   PERFORMANCE_HISTORY: 'super-dooltocht-performance',
   SAVED_FRIENDS: 'super-dooltocht-saved-friends',
   GAME_STATE: 'super-dooltocht-game-state',
+  USER_SETTINGS: 'super-dooltocht-user-settings',
 };
 
 export const getCompletedMazes = () => {
@@ -71,6 +72,16 @@ export const addPerformanceRecord = (isCorrect) => {
     JSON.stringify(newHistory),
   );
   return newHistory;
+};
+
+// User settings save/load
+export const saveUserSettings = (settings) => {
+  localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(settings));
+};
+
+export const getUserSettings = () => {
+  const data = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
+  return data ? JSON.parse(data) : null;
 };
 
 export const clearAllData = () => {

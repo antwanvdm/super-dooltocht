@@ -5,9 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
-  base: mode === "production" ? "/super-dooltocht/" : "/",
+  base: mode === 'production' ? '/super-dooltocht/' : '/',
   test: {
     globals: true,
     environment: 'node',
-  }
+  },
 }));

@@ -10,7 +10,27 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
   const [won, setWon] = useState(false);
 
   useEffect(() => {
-    const mathProblem = generateMathProblem(mathSettings);
+    // Force alleen standard operations voor DartsGame
+    const standardSettings = {
+      ...mathSettings,
+      enabledOperations: {
+        add: mathSettings?.enabledOperations?.add || false,
+        sub: mathSettings?.enabledOperations?.sub || false,
+        mul: mathSettings?.enabledOperations?.mul || false,
+        placeValue: false,
+        lovingHearts: false,
+        money: false,
+      },
+    };
+    
+    // Fallback to add if no standard ops enabled
+    if (!standardSettings.enabledOperations.add && 
+        !standardSettings.enabledOperations.sub && 
+        !standardSettings.enabledOperations.mul) {
+      standardSettings.enabledOperations.add = true;
+    }
+    
+    const mathProblem = generateMathProblem(standardSettings);
     setProblem(mathProblem);
     setTargetScore(mathProblem.answer);
   }, [mathSettings]);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { THEMES, getTheme } from '../utils/themes';
-import { getCompletedMazes, getSavedFriends, getGameState, clearGameState } from '../utils/localStorage';
+import { getCompletedMazes, getSavedFriends, getGameState, clearGameState, getUserSettings, saveUserSettings } from '../utils/localStorage';
 
 const PLAYER_EMOJIS = [
   '🤖','🧙','🧚','🧜','🧛','🧞','🧟','🧝','🧞‍♂️','🧚‍♀️','🧜‍♂️','🧙‍♂️',
@@ -12,18 +12,37 @@ function Home() {
   const navigate = useNavigate();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
-  const [ops, setOps] = useState({ add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false });
-  const [maxValue, setMaxValue] = useState(100);
-  const [mulTables, setMulTables] = useState('easy'); // 'easy', 'medium', 'hard', 'expert', 'all', 'allplus'
-  const [addSubMode, setAddSubMode] = useState('beyond'); // 'within' of 'beyond' (binnen/buiten tiental)
-  const [beyondDigits, setBeyondDigits] = useState('units'); // 'units', 'tens', 'hundreds'
-  const [placeValueLevel, setPlaceValueLevel] = useState('tens'); // 'tens', 'hundreds', 'thousands'
-  const [moneyMaxAmount, setMoneyMaxAmount] = useState(2000); // max bedrag in centen
-  const [moneyIncludeCents, setMoneyIncludeCents] = useState(false); // met of zonder centen
-  const [adventureLength, setAdventureLength] = useState('medium'); // 'short', 'medium', 'long'
-  const [playerEmoji, setPlayerEmoji] = useState(PLAYER_EMOJIS[0]);
+  
+  // Load saved settings or use defaults
+  const savedSettings = getUserSettings();
+  const [ops, setOps] = useState(savedSettings?.ops || { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false });
+  const [maxValue, setMaxValue] = useState(savedSettings?.maxValue || 100);
+  const [mulTables, setMulTables] = useState(savedSettings?.mulTables || 'easy');
+  const [addSubMode, setAddSubMode] = useState(savedSettings?.addSubMode || 'beyond');
+  const [beyondDigits, setBeyondDigits] = useState(savedSettings?.beyondDigits || 'units');
+  const [placeValueLevel, setPlaceValueLevel] = useState(savedSettings?.placeValueLevel || 'tens');
+  const [moneyMaxAmount, setMoneyMaxAmount] = useState(savedSettings?.moneyMaxAmount || 2000);
+  const [moneyIncludeCents, setMoneyIncludeCents] = useState(savedSettings?.moneyIncludeCents || false);
+  const [adventureLength, setAdventureLength] = useState(savedSettings?.adventureLength || 'medium');
+  const [playerEmoji, setPlayerEmoji] = useState(savedSettings?.playerEmoji || PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [continueModal, setContinueModal] = useState(null);
+
+  // Save settings whenever they change
+  useEffect(() => {
+    saveUserSettings({
+      ops,
+      maxValue,
+      mulTables,
+      addSubMode,
+      beyondDigits,
+      placeValueLevel,
+      moneyMaxAmount,
+      moneyIncludeCents,
+      adventureLength,
+      playerEmoji,
+    });
+  }, [ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {

@@ -8,7 +8,28 @@ function MultipleChoice({ mathSettings, onSuccess, onFailure, theme }) {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    const mathProblem = generateMathProblem(mathSettings);
+    // Force alleen standard operations voor MultipleChoice
+    const standardSettings = {
+      ...mathSettings,
+      enabledOperations: {
+        add: mathSettings?.enabledOperations?.add || false,
+        sub: mathSettings?.enabledOperations?.sub || false,
+        mul: mathSettings?.enabledOperations?.mul || false,
+        // Exclude special types that have different formats
+        placeValue: false,
+        lovingHearts: false,
+        money: false,
+      },
+    };
+    
+    // Fallback to add if no standard ops enabled
+    if (!standardSettings.enabledOperations.add && 
+        !standardSettings.enabledOperations.sub && 
+        !standardSettings.enabledOperations.mul) {
+      standardSettings.enabledOperations.add = true;
+    }
+    
+    const mathProblem = generateMathProblem(standardSettings);
     setProblem(mathProblem);
 
     const wrongAnswers = generateWrongAnswers(mathProblem.answer, 3);

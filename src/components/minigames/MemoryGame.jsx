@@ -9,6 +9,26 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
   const [canFlip, setCanFlip] = useState(true);
 
   useEffect(() => {
+    // Force alleen standard operations voor MemoryGame
+    const standardSettings = {
+      ...mathSettings,
+      enabledOperations: {
+        add: mathSettings?.enabledOperations?.add || false,
+        sub: mathSettings?.enabledOperations?.sub || false,
+        mul: mathSettings?.enabledOperations?.mul || false,
+        placeValue: false,
+        lovingHearts: false,
+        money: false,
+      },
+    };
+    
+    // Fallback to add if no standard ops enabled
+    if (!standardSettings.enabledOperations.add && 
+        !standardSettings.enabledOperations.sub && 
+        !standardSettings.enabledOperations.mul) {
+      standardSettings.enabledOperations.add = true;
+    }
+    
     // Genereer 4 paren (8 kaarten totaal) met unieke antwoorden
     const pairs = [];
     const usedAnswers = new Set();
@@ -19,7 +39,7 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
     
     while (pairs.length < targetPairs * 2 && attempts < maxAttempts) {
       attempts++;
-      const problem = generateMathProblem(mathSettings);
+      const problem = generateMathProblem(standardSettings);
       
       // Skip als dit antwoord OF deze vraag al gebruikt is
       if (usedAnswers.has(problem.answer) || usedQuestions.has(problem.question)) {

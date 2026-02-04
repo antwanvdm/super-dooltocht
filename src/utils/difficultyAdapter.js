@@ -63,7 +63,7 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
   if (mode === 'within') {
     // Binnen het tiental: resultaat blijft in hetzelfde tiental als eerste getal
     // Bijv: 45+4=49 (blijft in de 40), niet 45+8=53 (gaat naar 50)
-    
+
     // Prevent infinite loops voor kleine ranges
     if (attempts > 20) {
       // Fallback: kies gewoon een simpele som binnen max
@@ -75,7 +75,7 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
         type: 'addition',
       };
     }
-    
+
     const a = randBetween(Math.max(1, Math.floor(max * 0.2)), max - 1);
     const tensOfA = getTens(a);
     const maxB = Math.min(9 - (a % 10), max - a); // niet over tiental EN niet over max
@@ -94,7 +94,7 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
   // Buiten het tiental
   if (beyondDigits === 'units') {
     // Alleen eenheden: bijv. 78+3=81 (gaat over tiental maar b is eenheid)
-    
+
     // Prevent infinite loops
     if (attempts > 20) {
       const a = randBetween(1, Math.floor(max / 2));
@@ -105,7 +105,7 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
         type: 'addition',
       };
     }
-    
+
     const a = randBetween(Math.max(10, Math.floor(max * 0.3)), max - 9);
     const unitsOfA = a % 10;
     // We willen dat a+b over het tiental gaat, dus b > (10 - unitsOfA)
