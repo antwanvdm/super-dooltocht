@@ -21,18 +21,28 @@ This game aims to be:
 ## ✨ Features
 
 ### Math Operations
-- **Addition (Plussommen)** – Numbers up to 20, 50, 100, 200, 500, or 1000
-- **Subtraction (Minsommen)** – Same configurable ranges
-- **Multiplication (Keersommen)** – Tables 1-12 with difficulty groupings:
+- **Addition (Plussommen)** – Configurable ranges with modes:
+  - Within tens (within tiental)
+  - Beyond tens: units, tens, or hundreds
+- **Subtraction (Minsommen)** – Same configurable ranges and modes
+- **Multiplication (Keersommen)** – Multiple difficulty levels:
   - Easy: Tables 1, 2, 5, 10
   - Medium: Tables 3, 4, 6, 7, 8, 9
   - Hard: Tables 11, 12
-  - All tables combined
+  - Expert: Tables 13-20
+  - All Tables (1-20)
+- **Place Value (Begripsoefening)** – Understanding tens, hundreds, thousands
+- **Loving Hearts (Verliefde Harten)** – Number pairs that sum to 10
+- **Money (Rekenen met Geld)** – Multiple money-based challenges:
+  - Count Money (Geld Tellen)
+  - Make Amount (Bedrag Maken)
+  - Smart Pay (Slim Betalen)
+  - Change (Wisselgeld)
 
-### Game Modes
+### Challenge Types
 - 🎯 **Multiple Choice** – Pick the correct answer from 4 options
 - 🧠 **Memory Game** – Match math problems with their answers
-- 📝 **Math Puzzle** – Fill in answers for multiple problems
+- 📝 **Math Puzzle (Sommenblad)** – Fill in answers for multiple problems
 - 🎯 **Darts Game** – Throw darts to add up to the target number
 
 ### Adventure Settings
@@ -40,10 +50,20 @@ This game aims to be:
 - **Medium** – 4 friends to rescue + 7 challenges
 - **Long** – 6 friends to rescue + 10 challenges
 
-### Customization
-- 🌍 Multiple themed worlds (space, underwater, forest, and more!)
-- 🎭 Choose your own emoji character
-- 💾 Game progress automatically saved
+### Customization & Accessibility
+- 🌍 **12 Themed Worlds** – Each with unique visual style and story:
+  - Space, Underwater, Forest, Desert, City, Mountains, Jungle, Arctic, Beach, Volcano, Medieval, and more
+- 🎭 **Emoji Character Selection** – Choose your own avatar
+- 💾 **Auto-save** – Game progress automatically saved
+- ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
+- 📱 **Touch Controls** – D-pad overlay for touchscreen devices
+- ⌨️ **Keyboard Shortcuts**:
+  - Arrow keys: Move through maze
+  - **K**: Toggle minimap
+  - **S**: Toggle player settings
+  - **H**: Toggle help
+  - **B**: Toggle touch controls
+  - **ESC**: Close windows
 
 ## 🚀 Getting Started
 
