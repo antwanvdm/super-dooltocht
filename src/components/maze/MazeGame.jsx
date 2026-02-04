@@ -59,7 +59,7 @@ function MazeGame() {
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
     const savedState = getGameState();
-    
+
     // Check of er een saved state is voor dit thema
     if (savedState && savedState.themeId === themeId) {
       // Laad opgeslagen spel
@@ -94,7 +94,7 @@ function MazeGame() {
       setHasWon(false);
       setExitModal(null);
       setActiveFriendly(null);
-      
+
       // Toon story intro bij nieuw spel
       setShowStoryIntro(true);
     }
@@ -229,7 +229,7 @@ function MazeGame() {
       if (direction !== lastDirection) {
         lastDirection = direction;
         move(direction); // Direct eerste beweging
-        
+
         // Start interval voor snelle beweging bij ingedrukt houden
         if (moveInterval) clearInterval(moveInterval);
         moveInterval = setInterval(() => move(direction), 80); // 80ms = snel maar controleerbaar
@@ -265,7 +265,7 @@ function MazeGame() {
   // Check voor challenges/friendlies/exit na beweging
   useEffect(() => {
     if (!maze || hasWon) return;
-    
+
     const { x, y } = playerPos;
 
     // Check exit
@@ -275,7 +275,7 @@ function MazeGame() {
         // Check of er nog vriendjes achterblijven
         const uncollectedFriends = friendlies.filter(f => !f.collected);
         if (uncollectedFriends.length > 0) {
-          setFriendsWarningModal({ 
+          setFriendsWarningModal({
             uncollected: uncollectedFriends,
             canLeave: true // Alle challenges gedaan, mag vertrekken
           });
@@ -303,7 +303,7 @@ function MazeGame() {
       setActiveChallenge(challenge);
       return;
     }
-    
+
     // Reset lastCompletedPos als we weggelopen zijn
     if (lastCompletedPos && (lastCompletedPos.x !== x || lastCompletedPos.y !== y)) {
       setLastCompletedPos(null);
@@ -346,12 +346,12 @@ function MazeGame() {
   const handleChallengeComplete = (challengeId) => {
     // Onthoud waar we waren zodat de challenge niet direct opnieuw triggert
     setLastCompletedPos({ ...playerPos });
-    
+
     setChallenges(prev =>
       prev.map(c => c.id === challengeId ? { ...c, completed: true } : c)
     );
     setActiveChallenge(null);
-    
+
     const newCount = completedCount + 1;
     setCompletedCount(newCount);
     // Victory nu alleen bij uitgang; hier geen auto-win meer
@@ -462,47 +462,47 @@ function MazeGame() {
           <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-2">
             {/* Knoppen en instellingen naast elkaar */}
             <div className="flex flex-wrap items-center justify-center gap-3">
-                <button
-                  onClick={() => setShowMinimap(true)}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
-                >
-                  🗺️ Kaart (K)
-                </button>
-                <button
-                  onClick={() => {
-                    setShowHelp(true);
-                    setShowOnboarding(false);
-                  }}
-                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors"
-                >
-                  ❓ Help (H)
-                </button>
-                <button
-                  onClick={() => setShowSettings(true)}
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
-                >
-                  <span>{playerEmoji}</span>
-                  <span>Speler (S)</span>
-                </button>
-                <button
-                  onClick={() => setShowTouchControls(prev => !prev)}
-                  className={`px-4 py-2 ${showTouchControls ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-lg transition-colors`}
-                >
-                  🎮 Besturing (B)
-                </button>
-                {/* Onboarding hint naast help knop */}
-                {showOnboarding && (
-                  <div className="flex items-center gap-2 bg-purple-100 px-3 py-2 rounded-lg border-2 border-purple-300 animate-pulse">
-                    <span className="text-2xl">👈</span>
-                    <span className="text-sm font-semibold text-purple-800">Eerste keer? Lees hier de uitleg!</span>
-                    <button
-                      onClick={() => setShowOnboarding(false)}
-                      className="text-purple-400 hover:text-purple-600 text-lg ml-1"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
+              {/* Onboarding hint naast help knop */}
+              {showOnboarding && (
+                <div className="flex items-center gap-2 bg-purple-100 px-3 py-2 rounded-lg border-2 border-purple-300 animate-pulse">
+                  <button
+                    onClick={() => setShowOnboarding(false)}
+                    className="text-purple-400 hover:text-purple-600 text-lg ml-1"
+                  >
+                    ✕
+                  </button>
+                  <span className="text-sm font-semibold text-purple-800">Eerste keer? Lees de uitleg!</span>
+                  <span className="text-2xl">👉</span>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  setShowHelp(true);
+                  setShowOnboarding(false);
+                }}
+                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors"
+              >
+                ❓ Help (H)
+              </button>
+              <button
+                onClick={() => setShowMinimap(true)}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+              >
+                🗺️ Kaart (K)
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
+              >
+                <span>{playerEmoji}</span>
+                <span>Speler (S)</span>
+              </button>
+              <button
+                onClick={() => setShowTouchControls(prev => !prev)}
+                className={`px-4 py-2 ${showTouchControls ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-lg transition-colors`}
+              >
+                🎮 Besturing (B)
+              </button>
             </div>
           </div>
         </div>
@@ -782,9 +782,9 @@ function MazeGame() {
                 </p>
                 <div className="flex justify-center gap-3 flex-wrap">
                   {friendlies.map((f, i) => (
-                    <span 
-                      key={i} 
-                      className="text-4xl animate-bounce bg-white/20 rounded-full p-2" 
+                    <span
+                      key={i}
+                      className="text-4xl animate-bounce bg-white/20 rounded-full p-2"
                       style={{ animationDelay: `${i * 150}ms` }}
                     >
                       {f.emoji}
@@ -906,18 +906,18 @@ function MazeGame() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               {collectedFriends.length === friendlies.length ? '🎉 Geweldig!' : 'Goed gedaan!'}
             </h2>
-            
+
             {/* Story ending */}
             {theme.story && (
               <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <p className="text-lg text-gray-700 leading-relaxed">
-                  {collectedFriends.length === friendlies.length 
-                    ? theme.story.endingComplete 
+                  {collectedFriends.length === friendlies.length
+                    ? theme.story.endingComplete
                     : theme.story.endingIncomplete}
                 </p>
               </div>
             )}
-            
+
             {/* Collected friends display */}
             {collectedFriends.length > 0 && (
               <div className="bg-green-50 rounded-xl p-4 mb-4">
@@ -931,7 +931,7 @@ function MazeGame() {
                 </div>
               </div>
             )}
-            
+
             <button
               onClick={() => navigate('/')}
               className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xl font-bold rounded-xl shadow-lg transition-all hover:scale-105"
