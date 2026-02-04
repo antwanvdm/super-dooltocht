@@ -53,6 +53,8 @@ function MazeGame() {
   const [lastCompletedPos, setLastCompletedPos] = useState(null); // Voorkom direct opnieuw triggeren
   const [showOnboarding, setShowOnboarding] = useState(false); // Onboarding hint voor nieuwe spelers
   const [showStoryIntro, setShowStoryIntro] = useState(false); // Story intro bij start van nieuw spel
+  const [showSettings, setShowSettings] = useState(false); // Settings modal
+  const [showTouchControls, setShowTouchControls] = useState(false); // Touch controls voor touchscreen
 
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
@@ -122,36 +124,37 @@ function MazeGame() {
     }
   }, [playerPos, challenges, friendlies, collectedFriends, completedCount, saveCurrentState, maze, hasWon]);
 
+  // Move functie - herbruikbaar voor keyboard en touch
+  const move = useCallback((direction) => {
+    setPlayerPos(prev => {
+      const { x, y } = prev;
+      let newX = x;
+      let newY = y;
+
+      switch (direction) {
+        case 'up': newY = y - 1; break;
+        case 'down': newY = y + 1; break;
+        case 'left': newX = x - 1; break;
+        case 'right': newX = x + 1; break;
+        default: return prev;
+      }
+
+      if (
+        maze &&
+        newY >= 0 && newY < maze.length &&
+        newX >= 0 && newX < maze[0].length &&
+        !maze[newY][newX].wall
+      ) {
+        return { x: newX, y: newY };
+      }
+      return prev;
+    });
+  }, [maze]);
+
   // Keyboard controls met snellere beweging
   useEffect(() => {
     let moveInterval = null;
     let lastDirection = null;
-
-    const move = (direction) => {
-      setPlayerPos(prev => {
-        const { x, y } = prev;
-        let newX = x;
-        let newY = y;
-
-        switch (direction) {
-          case 'up': newY = y - 1; break;
-          case 'down': newY = y + 1; break;
-          case 'left': newX = x - 1; break;
-          case 'right': newX = x + 1; break;
-          default: return prev;
-        }
-
-        if (
-          maze &&
-          newY >= 0 && newY < maze.length &&
-          newX >= 0 && newX < maze[0].length &&
-          !maze[newY][newX].wall
-        ) {
-          return { x: newX, y: newY };
-        }
-        return prev;
-      });
-    };
 
     const handleKeyDown = (e) => {
       // ESC sluit alle modals
@@ -167,15 +170,31 @@ function MazeGame() {
         if (friendsWarningModal) setFriendsWarningModal(null);
         if (showOnboarding) setShowOnboarding(false);
         if (showStoryIntro) setShowStoryIntro(false);
+        if (showSettings) setShowSettings(false);
+        if (showTouchControls) setShowTouchControls(false);
         return;
       }
 
-      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal || showStoryIntro) return; // Geen beweging als popup open staat
+      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal || showStoryIntro || showSettings) return; // Geen beweging als popup open staat
 
-      // Toggle minimap met M
-      if (e.key === 'm' || e.key === 'M') {
+      // Toggle kaart met K
+      if (e.key === 'k' || e.key === 'K') {
         e.preventDefault();
         setShowMinimap(prev => !prev);
+        return;
+      }
+
+      // Toggle settings met S
+      if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setShowSettings(prev => !prev);
+        return;
+      }
+
+      // Toggle besturing (D-pad) met B
+      if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        setShowTouchControls(prev => !prev);
         return;
       }
 
@@ -189,23 +208,15 @@ function MazeGame() {
       let direction = null;
       switch (e.key) {
         case 'ArrowUp':
-        case 'w':
-        case 'W':
           direction = 'up';
           break;
         case 'ArrowDown':
-        case 's':
-        case 'S':
           direction = 'down';
           break;
         case 'ArrowLeft':
-        case 'a':
-        case 'A':
           direction = 'left';
           break;
         case 'ArrowRight':
-        case 'd':
-        case 'D':
           direction = 'right';
           break;
         default:
@@ -227,10 +238,10 @@ function MazeGame() {
 
     const handleKeyUp = (e) => {
       const releasedDirection = {
-        'ArrowUp': 'up', 'w': 'up', 'W': 'up',
-        'ArrowDown': 'down', 's': 'down', 'S': 'down',
-        'ArrowLeft': 'left', 'a': 'left', 'A': 'left',
-        'ArrowRight': 'right', 'd': 'right', 'D': 'right',
+        'ArrowUp': 'up',
+        'ArrowDown': 'down',
+        'ArrowLeft': 'left',
+        'ArrowRight': 'right',
       }[e.key];
 
       if (releasedDirection === lastDirection) {
@@ -249,7 +260,7 @@ function MazeGame() {
       window.removeEventListener('keyup', handleKeyUp);
       if (moveInterval) clearInterval(moveInterval);
     };
-  }, [maze, activeChallenge, activeFriendly, showMinimap, showHelp, exitModal, friendsWarningModal, showOnboarding, showStoryIntro]);
+  }, [maze, activeChallenge, activeFriendly, showMinimap, showHelp, exitModal, friendsWarningModal, showOnboarding, showStoryIntro, showSettings]);
 
   // Check voor challenges/friendlies/exit na beweging
   useEffect(() => {
@@ -450,14 +461,12 @@ function MazeGame() {
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
           <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-2">
             {/* Knoppen en instellingen naast elkaar */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              {/* Knoppen links */}
-              <div className="flex gap-3 items-center">
+            <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
                   onClick={() => setShowMinimap(true)}
                   className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
                 >
-                  🗺️ Kaart (M)
+                  🗺️ Kaart (K)
                 </button>
                 <button
                   onClick={() => {
@@ -467,6 +476,19 @@ function MazeGame() {
                   className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors"
                 >
                   ❓ Help (H)
+                </button>
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <span>{playerEmoji}</span>
+                  <span>Speler (S)</span>
+                </button>
+                <button
+                  onClick={() => setShowTouchControls(prev => !prev)}
+                  className={`px-4 py-2 ${showTouchControls ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-lg transition-colors`}
+                >
+                  🎮 Besturing (B)
                 </button>
                 {/* Onboarding hint naast help knop */}
                 {showOnboarding && (
@@ -481,47 +503,199 @@ function MazeGame() {
                     </button>
                   </div>
                 )}
-              </div>
-              {/* Settings display rechts */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-blue-800">Sommen:</span>
-                  <span className="text-blue-700">
-                    {mathSettings.enabledOperations.add && '➕ '}
-                    {mathSettings.enabledOperations.sub && '➖ '}
-                    {mathSettings.enabledOperations.mul && '✖️ '}
-                  </span>
-                </div>
-                {(mathSettings.enabledOperations.add || mathSettings.enabledOperations.sub) && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-blue-800">Niveau:</span>
-                    <span className="text-blue-700">tot {mathSettings.maxValue}</span>
-                  </div>
-                )}
-                {mathSettings.enabledOperations.mul && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-blue-800">Tafels:</span>
-                    <span className="text-blue-700">
-                      {mathSettings.mulTables === 'easy' && '1,2,5,10'}
-                      {mathSettings.mulTables === 'medium' && '3,4,6,7,8,9'}
-                      {mathSettings.mulTables === 'hard' && '11,12'}
-                      {mathSettings.mulTables === 'all' && 'alle (1-12)'}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-blue-800">Lengte:</span>
-                  <span className="text-blue-700">
-                    {adventureLength === 'short' && 'Kort'}
-                    {adventureLength === 'medium' && 'Medium'}
-                    {adventureLength === 'long' && 'Lang'}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Touch Controls D-Pad Overlay */}
+      {showTouchControls && (
+        <div className="fixed bottom-20 right-4 z-30 select-none touch-none">
+          <div className="relative w-40 h-40">
+            {/* Omhoog */}
+            <button
+              onTouchStart={() => {
+                move('up');
+                const interval = setInterval(() => move('up'), 120);
+                window._touchInterval = interval;
+              }}
+              onTouchEnd={() => {
+                clearInterval(window._touchInterval);
+              }}
+              onMouseDown={() => move('up')}
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+            >
+              ⬆️
+            </button>
+            {/* Links */}
+            <button
+              onTouchStart={() => {
+                move('left');
+                const interval = setInterval(() => move('left'), 120);
+                window._touchInterval = interval;
+              }}
+              onTouchEnd={() => {
+                clearInterval(window._touchInterval);
+              }}
+              onMouseDown={() => move('left')}
+              className="absolute top-1/2 left-0 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+            >
+              ⬅️
+            </button>
+            {/* Rechts */}
+            <button
+              onTouchStart={() => {
+                move('right');
+                const interval = setInterval(() => move('right'), 120);
+                window._touchInterval = interval;
+              }}
+              onTouchEnd={() => {
+                clearInterval(window._touchInterval);
+              }}
+              onMouseDown={() => move('right')}
+              className="absolute top-1/2 right-0 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+            >
+              ➡️
+            </button>
+            {/* Omlaag */}
+            <button
+              onTouchStart={() => {
+                move('down');
+                const interval = setInterval(() => move('down'), 120);
+                window._touchInterval = interval;
+              }}
+              onTouchEnd={() => {
+                clearInterval(window._touchInterval);
+              }}
+              onMouseDown={() => move('down')}
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+            >
+              ⬇️
+            </button>
+            {/* Midden (decoratief) */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
+              <span className="text-white/60 text-sm">🎮</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative">
+            <button
+              onClick={() => setShowSettings(false)}
+              className="absolute top-4 right-4 text-2xl hover:scale-110 transition-transform"
+            >
+              ❌
+            </button>
+            <div className="p-6 pt-4">
+              <div className="text-center text-2xl font-bold text-gray-800 mb-6">
+                <span className="text-3xl mr-2">{playerEmoji}</span> Speler Keuzes
+              </div>
+              <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                {mathSettings.enabledOperations.add && (
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <h4 className="font-bold text-blue-800 mb-2">➕ Optellen</h4>
+                    <div className="text-sm text-blue-700 space-y-1">
+                      <p>Niveau: tot <strong>{mathSettings.maxValue}</strong></p>
+                      {mathSettings.addSubMode && (
+                        <p>
+                          Modus: <strong>
+                            {mathSettings.addSubMode === 'within' && 'Binnen tiental'}
+                            {mathSettings.addSubMode === 'beyond' && 'Over tiental'}
+                          </strong>
+                        </p>
+                      )}
+                      {mathSettings.beyondDigits && mathSettings.addSubMode === 'beyond' && (
+                        <p>
+                          Cijfers: <strong>
+                            {mathSettings.beyondDigits === 'units' && 'Eenheden'}
+                            {mathSettings.beyondDigits === 'tens' && 'Met tiental'}
+                            {mathSettings.beyondDigits === 'hundreds' && 'Met honderdtal'}
+                          </strong>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.sub && (
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <h4 className="font-bold text-blue-800 mb-2">➖ Aftrekken</h4>
+                    <div className="text-sm text-blue-700 space-y-1">
+                      <p>Niveau: tot <strong>{mathSettings.maxValue}</strong></p>
+                      {mathSettings.addSubMode && (
+                        <p>
+                          Modus: <strong>
+                            {mathSettings.addSubMode === 'within' && 'Binnen tiental'}
+                            {mathSettings.addSubMode === 'beyond' && 'Over tiental'}
+                          </strong>
+                        </p>
+                      )}
+                      {mathSettings.beyondDigits && mathSettings.addSubMode === 'beyond' && (
+                        <p>
+                          Cijfers: <strong>
+                            {mathSettings.beyondDigits === 'units' && 'Eenheden'}
+                            {mathSettings.beyondDigits === 'tens' && 'Met tiental'}
+                            {mathSettings.beyondDigits === 'hundreds' && 'Met honderdtal'}
+                          </strong>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.mul && (
+                  <div className="bg-green-50 rounded-xl p-4">
+                    <h4 className="font-bold text-green-800 mb-2">✖️ Vermenigvuldigen</h4>
+                    <p className="text-sm text-green-700">
+                      {mathSettings.mulTables === 'easy' && 'Tafels: 1, 2, 5, 10'}
+                      {mathSettings.mulTables === 'medium' && 'Tafels: 3, 4, 6, 7, 8, 9'}
+                      {mathSettings.mulTables === 'hard' && 'Tafels: 11, 12'}
+                      {mathSettings.mulTables === 'expert' && 'Tafels: 13 t/m 20'}
+                      {mathSettings.mulTables === 'all' && 'Tafels: 1 t/m 12'}
+                      {mathSettings.mulTables === 'allplus' && 'Tafels: 1 t/m 20'}
+                    </p>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.placeValue && (
+                  <div className="bg-amber-50 rounded-xl p-4">
+                    <h4 className="font-bold text-amber-800 mb-2">🔢 Begripsoefening</h4>
+                    <p className="text-sm text-amber-700">
+                      Niveau: <strong>
+                        {mathSettings.placeValueLevel === 'tens' && 'Tientallen'}
+                        {mathSettings.placeValueLevel === 'hundreds' && 'Honderdtallen'}
+                        {mathSettings.placeValueLevel === 'thousands' && 'Duizendtallen'}
+                      </strong>
+                    </p>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.lovingHearts && (
+                  <div className="bg-pink-50 rounded-xl p-4">
+                    <h4 className="font-bold text-pink-800 mb-2">💕 Verliefde Harten</h4>
+                    <p className="text-sm text-pink-700">Hart-getallen tot 10</p>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.money && (
+                  <div className="bg-yellow-50 rounded-xl p-4">
+                    <h4 className="font-bold text-yellow-800 mb-2">💰 Rekenen met Geld</h4>
+                    <div className="text-sm text-yellow-700 space-y-1">
+                      <p>Bedrag: tot €{(mathSettings.moneyMaxAmount || 2000) / 100}</p>
+                      <p>Centen: <strong>{mathSettings.moneyIncludeCents ? 'Ja' : 'Nee'}</strong></p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="mt-6 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+              >
+                🚀 Terug naar het doolhof
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Help Modal */}
       {showHelp && (
@@ -538,7 +712,8 @@ function MazeGame() {
               <div className="space-y-4">
                 <div className="bg-blue-50 rounded-xl p-4">
                   <h4 className="font-bold text-blue-800 mb-2">⌨️ Bewegen</h4>
-                  <p className="text-blue-700 text-sm">Gebruik de <strong>pijltjestoetsen</strong> om door het doolhof te lopen. Houd ingedrukt om snel te bewegen!</p>
+                  <p className="text-blue-700 text-sm">Gebruik de <strong>pijltjestoetsen</strong> op je toetsenbord om door het doolhof te lopen. Houd een toets ingedrukt om snel te bewegen!</p>
+                  <p className="text-blue-700 text-sm mt-2">Op een tablet of mobiel klik je op de <strong>🎮 besturing</strong> knop om te kunnen spelen.</p>
                 </div>
                 <div className="bg-amber-50 rounded-xl p-4">
                   <h4 className="font-bold text-amber-800 mb-2">🔑 Sleutel & Uitdagingen</h4>
@@ -550,7 +725,7 @@ function MazeGame() {
                 </div>
                 <div className="bg-purple-50 rounded-xl p-4">
                   <h4 className="font-bold text-purple-800 mb-2">🗺️ Hulpmiddelen</h4>
-                  <p className="text-purple-700 text-sm">Druk op <strong>M</strong> voor de kaart, <strong>H</strong> voor help, en <strong>ESC</strong> om vensters te sluiten.</p>
+                  <p className="text-purple-700 text-sm">Druk op <strong>K</strong> voor kaart, <strong>H</strong> voor help, <strong>S</strong> voor speler-info, <strong>B</strong> voor besturing, en <strong>ESC</strong> om vensters te sluiten.</p>
                 </div>
               </div>
               <button
@@ -593,8 +768,7 @@ function MazeGame() {
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
           <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden`}>
             <div className="p-8 text-center">
-              <div className="text-6xl mb-4">{theme.emoji}</div>
-              <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
+              <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
                 {theme.name}
               </h2>
               <div className="bg-white/95 rounded-2xl p-6 shadow-inner mb-6">

@@ -32,15 +32,16 @@ export function Bill({ value, size = 'md', onClick, selected, disabled }) {
   };
   
   const s = sizes[size];
+  const Tag = onClick ? 'button' : 'div';
   
   return (
-    <button
+    <Tag
       onClick={onClick}
-      disabled={disabled}
+      disabled={onClick ? disabled : undefined}
       className={`relative rounded-lg shadow-md transition-all ${
         onClick ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : ''
       } ${selected ? 'ring-4 ring-yellow-400 scale-110' : ''} ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+        disabled && onClick ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       style={{
         width: s.width,
@@ -63,7 +64,7 @@ export function Bill({ value, size = 'md', onClick, selected, disabled }) {
           €{value}
         </span>
       </div>
-    </button>
+    </Tag>
   );
 }
 
@@ -80,15 +81,16 @@ export function Coin({ value, size = 'md', onClick, selected, disabled }) {
   };
   
   const s = sizes[size];
+  const Tag = onClick ? 'button' : 'div';
   
   return (
-    <button
+    <Tag
       onClick={onClick}
-      disabled={disabled}
+      disabled={onClick ? disabled : undefined}
       className={`relative rounded-full shadow-md transition-all ${
         onClick ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : ''
       } ${selected ? 'ring-4 ring-yellow-400 scale-110' : ''} ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+        disabled && onClick ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       style={{
         width: s.diameter,
@@ -114,7 +116,7 @@ export function Coin({ value, size = 'md', onClick, selected, disabled }) {
           {isCent ? `${displayValue}c` : `€${displayValue}`}
         </span>
       </div>
-    </button>
+    </Tag>
   );
 }
 
