@@ -119,28 +119,28 @@ function Home() {
 
       <div className="relative z-10 w-full max-w-6xl">
         {/* Hero Header */}
-        <header className="text-center mb-12">
-          <div className="mb-6">
-            <span className="text-6xl">🦸🧩🕹️</span>
+        <header className="text-center mb-8 sm:mb-12">
+          <div className="mb-4 sm:mb-6">
+            <span className="text-5xl sm:text-6xl">🦸🧩🕹️</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-5">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4 sm:mb-5 px-4">
             Super Dooltocht!
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 font-medium mb-8">
-            Ontdek werelden, los sommen op en vind de uitgang!
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-medium mb-6 sm:mb-8 px-4">
+            Ontdek werelden, los uitdagingen op, red je vriendjes en vind de uitgang!
           </p>
           
           {/* Stats badges */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-full px-6 py-3 border border-white/30">
-              <span className="text-3xl">🏆</span>
-              <span className="text-lg md:text-xl text-white font-bold">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-4">
+            <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
+              <span className="text-2xl sm:text-3xl">🏆</span>
+              <span className="text-base sm:text-lg md:text-xl text-white font-bold">
                 {completedMazes} doolhof{completedMazes !== 1 ? 'hoven' : ''} voltooid
               </span>
             </div>
-            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md rounded-full px-6 py-3 border border-white/30">
-              <span className="text-3xl">🤝</span>
-              <span className="text-lg md:text-xl text-white font-bold">
+            <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
+              <span className="text-2xl sm:text-3xl">🤝</span>
+              <span className="text-base sm:text-lg md:text-xl text-white font-bold">
                 {savedFriends} vriendje{savedFriends !== 1 ? 's' : ''} gered
               </span>
             </div>
@@ -148,19 +148,19 @@ function Home() {
         </header>
 
         {/* Settings Card */}
-        <section className="bg-white rounded-3xl shadow-2xl p-10 md:p-12 border-4 border-white/50">
-          <div className="flex items-center justify-center gap-4 mb-10">
-            <span className="text-5xl">⚙️</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Stel je avontuur in</h2>
+        <section className="bg-white rounded-3xl shadow-2xl p-5 sm:p-10 md:p-12 border-4 border-white/50">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-10">
+            <span className="text-4xl sm:text-5xl">⚙️</span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Stel je avontuur in</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 mb-8 sm:mb-12">
             {/* Operations */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-7 border-2 border-blue-100">
-              <h3 className="flex items-center gap-3 text-lg font-bold text-gray-700 mb-6">
-                <span className="text-2xl">➕</span> Soort oefening
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 sm:p-7 border-2 border-blue-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">➕</span> Soort oefening
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {[  
                   { key: 'add', label: 'Plussommen', icon: '➕' },
                   { key: 'sub', label: 'Minsommen', icon: '➖' },
@@ -557,7 +557,7 @@ function Home() {
           <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-full px-8 py-4 border border-white/20">
             <span className="text-3xl">💪</span>
             <p className="text-lg text-white font-medium">
-              Elke uitdaging maakt je slimmer in rekenen!
+              Elke uitdaging is een goede oefening!
             </p>
             <span className="text-3xl">🧠</span>
           </div>

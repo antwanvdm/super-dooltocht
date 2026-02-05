@@ -54,7 +54,13 @@ function MazeGame() {
   const [showOnboarding, setShowOnboarding] = useState(false); // Onboarding hint voor nieuwe spelers
   const [showStoryIntro, setShowStoryIntro] = useState(false); // Story intro bij start van nieuw spel
   const [showSettings, setShowSettings] = useState(false); // Settings modal
-  const [showTouchControls, setShowTouchControls] = useState(false); // Touch controls voor touchscreen
+  // Touch controls default aan op mobile (<640px), uit op desktop
+  const [showTouchControls, setShowTouchControls] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 640;
+    }
+    return false;
+  });
 
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
@@ -415,24 +421,24 @@ function MazeGame() {
   };
 
   return (
-    <div className={`min-h-screen ${theme.colors.primary} flex flex-col items-center`}>
+    <div className={`min-h-screen ${theme.colors.primary} flex flex-col items-center overflow-x-hidden`}>
       {/* Header met progress */}
-      <div className="w-full mb-4">
+      <div className="w-full mb-2 sm:mb-4">
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center gap-2 px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 text-sm sm:text-base"
               >
-                <span className="text-xl">⬅️</span>
+                <span className="text-base sm:text-xl">⬅️</span>
                 <span className="font-semibold">Terug</span>
               </button>
-              <h2 className="text-xl font-bold text-gray-800">
+              <h2 className="text-base sm:text-xl font-bold text-gray-800">
                 {theme.emoji} {theme.name}
               </h2>
             </div>
-            <div className="flex items-center gap-5 flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-5 flex-wrap">
               {renderCollectedFriends()}
               {renderKeyProgress()}
             </div>
@@ -441,7 +447,7 @@ function MazeGame() {
       </div>
 
       {/* Main maze view */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center w-full px-2">
         <MazeView
           maze={maze}
           playerPos={playerPos}
@@ -454,22 +460,22 @@ function MazeGame() {
       </div>
 
       {/* Controls hint + kaart knop */}
-      <div className="w-full mt-4">
+      <div className="w-full mt-2 sm:mt-4">
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-2">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3 flex flex-col gap-2">
             {/* Knoppen en instellingen naast elkaar */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               {/* Onboarding hint naast help knop */}
               {showOnboarding && (
-                <div className="flex items-center gap-2 bg-purple-100 px-3 py-2 rounded-lg border-2 border-purple-300 animate-pulse">
+                <div className="flex items-center gap-1 sm:gap-2 bg-purple-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 border-purple-300 animate-pulse">
                   <button
                     onClick={() => setShowOnboarding(false)}
-                    className="text-purple-400 hover:text-purple-600 text-lg ml-1"
+                    className="text-purple-400 hover:text-purple-600 text-base sm:text-lg ml-1"
                   >
                     ✕
                   </button>
-                  <span className="text-sm font-semibold text-purple-800">Eerste keer? Lees de uitleg!</span>
-                  <span className="text-2xl">👉</span>
+                  <span className="text-xs sm:text-sm font-semibold text-purple-800">Eerste keer? Lees de uitleg!</span>
+                  <span className="text-lg sm:text-2xl">👉</span>
                 </div>
               )}
               <button
@@ -477,28 +483,29 @@ function MazeGame() {
                   setShowHelp(true);
                   setShowOnboarding(false);
                 }}
-                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-2.5 sm:py-2 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors text-base sm:text-base"
               >
-                ❓ Help (H)
+                ❓ <span className="hidden sm:inline">Help (H)</span>
               </button>
               <button
                 onClick={() => setShowMinimap(true)}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-2.5 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors text-base sm:text-base"
               >
-                🗺️ Kaart (K)
+                🗺️ <span className="hidden sm:inline">Kaart (K)</span>
               </button>
               <button
                 onClick={() => setShowSettings(true)}
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
+                className="px-3 sm:px-4 py-2.5 sm:py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-colors flex items-center gap-1 sm:gap-2 text-base sm:text-base"
               >
                 <span>{playerEmoji}</span>
-                <span>Speler (S)</span>
+                <span className="hidden sm:inline">Speler (S)</span>
               </button>
+              {/* Besturing knop alleen op grotere schermen */}
               <button
                 onClick={() => setShowTouchControls(prev => !prev)}
-                className={`px-4 py-2 ${showTouchControls ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-lg transition-colors`}
+                className={`flex px-3 sm:px-4 py-2.5 sm:py-2 ${showTouchControls ? 'bg-orange-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-lg transition-colors text-base items-center gap-2`}
               >
-                🎮 Besturing (B)
+                🎮 <span className="hidden sm:inline">Besturing (B)</span>
               </button>
             </div>
           </div>
@@ -507,8 +514,8 @@ function MazeGame() {
 
       {/* Touch Controls D-Pad Overlay */}
       {showTouchControls && (
-        <div className="fixed bottom-20 right-4 z-30 select-none touch-none">
-          <div className="relative w-40 h-40">
+        <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-30 select-none touch-none scale-90 sm:scale-100">
+          <div className="relative w-36 sm:w-40 h-36 sm:h-40">
             {/* Omhoog */}
             <button
               onTouchStart={() => {
@@ -520,7 +527,7 @@ function MazeGame() {
                 clearInterval(window._touchInterval);
               }}
               onMouseDown={() => move('up')}
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬆️
             </button>
@@ -535,7 +542,7 @@ function MazeGame() {
                 clearInterval(window._touchInterval);
               }}
               onMouseDown={() => move('left')}
-              className="absolute top-1/2 left-0 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+              className="absolute top-1/2 left-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬅️
             </button>
@@ -550,7 +557,7 @@ function MazeGame() {
                 clearInterval(window._touchInterval);
               }}
               onMouseDown={() => move('right')}
-              className="absolute top-1/2 right-0 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+              className="absolute top-1/2 right-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ➡️
             </button>
@@ -565,13 +572,13 @@ function MazeGame() {
                 clearInterval(window._touchInterval);
               }}
               onMouseDown={() => move('down')}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-2xl rounded-xl flex items-center justify-center shadow-lg"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬇️
             </button>
             {/* Midden (decoratief) */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
-              <span className="text-white/60 text-sm">🎮</span>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
+              <span className="text-white/60 text-xs sm:text-sm">🎮</span>
             </div>
           </div>
         </div>
@@ -579,19 +586,19 @@ function MazeGame() {
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative">
+        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-2xl max-h-[90vh] flex flex-col relative">
             <button
               onClick={() => setShowSettings(false)}
-              className="absolute top-4 right-4 text-2xl hover:scale-110 transition-transform"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-xl sm:text-2xl hover:scale-110 transition-transform z-10"
             >
               ❌
             </button>
-            <div className="p-6 pt-4">
-              <div className="text-center text-2xl font-bold text-gray-800 mb-6">
-                <span className="text-3xl mr-2">{playerEmoji}</span> Speler Keuzes
+            <div className="p-4 sm:p-6 pt-3 sm:pt-4 overflow-y-auto">
+              <div className="text-center text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">
+                <span className="text-2xl sm:text-3xl mr-2">{playerEmoji}</span> Speler Keuzes
               </div>
-              <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {mathSettings.enabledOperations.add && (
                   <div className="bg-blue-50 rounded-xl p-4">
                     <h4 className="font-bold text-blue-800 mb-2">➕ Optellen</h4>
@@ -685,7 +692,7 @@ function MazeGame() {
               </div>
               <button
                 onClick={() => setShowSettings(false)}
-                className="mt-6 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"
+                className="mt-4 sm:mt-6 w-full px-4 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors text-sm sm:text-base"
               >
                 🚀 Terug naar het doolhof
               </button>
@@ -696,38 +703,38 @@ function MazeGame() {
 
       {/* Help Modal */}
       {showHelp && (
-        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative">
+        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-lg max-h-[90vh] flex flex-col relative">
             <button
               onClick={() => setShowHelp(false)}
-              className="absolute top-4 right-4 text-2xl hover:scale-110 transition-transform"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-xl sm:text-2xl hover:scale-110 transition-transform z-10"
             >
               ❌
             </button>
-            <div className="p-6 pt-4">
-              <div className="text-center text-2xl font-bold text-gray-800 mb-6">❓ Hoe werkt het?</div>
-              <div className="space-y-4">
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <h4 className="font-bold text-blue-800 mb-2">⌨️ Bewegen</h4>
-                  <p className="text-blue-700 text-sm">Gebruik de <strong>pijltjestoetsen</strong> op je toetsenbord om door het doolhof te lopen. Houd een toets ingedrukt om snel te bewegen!</p>
-                  <p className="text-blue-700 text-sm mt-2">Op een tablet of mobiel klik je op de <strong>🎮 besturing</strong> knop om te kunnen spelen.</p>
+            <div className="p-4 sm:p-6 pt-3 sm:pt-4 overflow-y-auto">
+              <div className="text-center text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">❓ Hoe werkt het?</div>
+              <div className="space-y-3 sm:space-y-3 sm:space-y-4">
+                <div className="bg-blue-50 rounded-xl p-3 sm:p-4">
+                  <h4 className="font-bold text-blue-800 mb-1 sm:mb-2 text-sm sm:text-base">⌨️ Bewegen</h4>
+                  <p className="text-blue-700 text-xs sm:text-sm">Gebruik de <strong>pijltjestoetsen</strong> op je toetsenbord om door het doolhof te lopen. Houd een toets ingedrukt om snel te bewegen!</p>
+                  <p className="text-blue-700 text-xs sm:text-sm mt-2">Op een <strong>touchscreen</strong> gebruik je de <strong>🎮 besturing</strong> rechtsonder in beeld.</p>
                 </div>
-                <div className="bg-amber-50 rounded-xl p-4">
-                  <h4 className="font-bold text-amber-800 mb-2">🔑 Sleutel & Uitdagingen</h4>
-                  <p className="text-amber-700 text-sm">Vind alle <strong>{mazeConfig.challenges} uitdagingen</strong> ({theme.colors.challenge}) en los de sommen op. Elke uitdaging geeft een stukje sleutel. Met een complete sleutel kun je door de deur!</p>
+                <div className="bg-amber-50 rounded-xl p-3 sm:p-4">
+                  <h4 className="font-bold text-amber-800 mb-1 sm:mb-2 text-sm sm:text-base">🔑 Sleutel & Uitdagingen</h4>
+                  <p className="text-amber-700 text-xs sm:text-sm">Vind alle <strong>{mazeConfig.challenges} uitdagingen</strong> ({theme.colors.challenge}) en los de uitdagingen op. Elke uitdaging geeft een stukje sleutel. Met een complete sleutel kun je door de deur!</p>
                 </div>
-                <div className="bg-green-50 rounded-xl p-4">
-                  <h4 className="font-bold text-green-800 mb-2">🤝 Vriendjes redden</h4>
-                  <p className="text-green-700 text-sm">Er zijn <strong>{mazeConfig.friendlies} verdwaalde vriendjes</strong> in het doolhof. Vind ze en neem ze mee naar de uitgang om ze te redden!</p>
+                <div className="bg-green-50 rounded-xl p-3 sm:p-4">
+                  <h4 className="font-bold text-green-800 mb-1 sm:mb-2 text-sm sm:text-base">🤝 Vriendjes redden</h4>
+                  <p className="text-green-700 text-xs sm:text-sm">Er zijn <strong>{mazeConfig.friendlies} verdwaalde vriendjes</strong> in het doolhof. Vind ze en neem ze mee naar de uitgang om ze te redden!</p>
                 </div>
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <h4 className="font-bold text-purple-800 mb-2">🗺️ Hulpmiddelen</h4>
-                  <p className="text-purple-700 text-sm">Druk op <strong>K</strong> voor kaart, <strong>H</strong> voor help, <strong>S</strong> voor speler-info, <strong>B</strong> voor besturing, en <strong>ESC</strong> om vensters te sluiten.</p>
+                <div className="bg-purple-50 rounded-xl p-3 sm:p-4">
+                  <h4 className="font-bold text-purple-800 mb-1 sm:mb-2 text-sm sm:text-base">🗺️ Hulpmiddelen</h4>
+                  <p className="text-purple-700 text-xs sm:text-sm">Druk op <strong>K</strong> voor kaart, <strong>H</strong> voor help, <strong>S</strong> voor speler-info, en <strong>ESC</strong> om vensters te sluiten.</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowHelp(false)}
-                className="w-full mt-6 px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors"
+                className="w-full mt-4 sm:mt-6 px-4 py-2 sm:py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg transition-colors text-sm sm:text-base"
               >
                 👍 Begrepen!
               </button>
@@ -738,11 +745,11 @@ function MazeGame() {
 
       {/* Minimap Modal */}
       {showMinimap && (
-        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl relative">
+        <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-3xl max-h-[90vh] flex flex-col relative">
             <button
               onClick={() => setShowMinimap(false)}
-              className="absolute top-4 right-4 text-2xl hover:scale-110 transition-transform"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-xl sm:text-2xl hover:scale-110 transition-transform z-10"
             >
               ❌
             </button>
@@ -762,26 +769,26 @@ function MazeGame() {
 
       {/* Story Intro Modal - bij start van nieuw spel */}
       {showStoryIntro && theme.story?.intro && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden`}>
-            <div className="p-8 text-center">
-              <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-full sm:max-w-lg w-full overflow-hidden`}>
+            <div className="p-4 sm:p-8 text-center">
+              <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4 drop-shadow-lg">
                 {theme.name}
               </h2>
-              <div className="bg-white/95 rounded-2xl p-6 shadow-inner mb-6">
-                <p className="text-lg text-gray-800 leading-relaxed">
+              <div className="bg-white/95 rounded-2xl p-4 sm:p-6 shadow-inner mb-4 sm:mb-6">
+                <p className="text-base sm:text-lg text-gray-800 leading-relaxed">
                   {theme.story.intro}
                 </p>
               </div>
-              <div className="mb-6">
-                <p className="text-white font-semibold mb-3 drop-shadow">
+              <div className="mb-4 sm:mb-6">
+                <p className="text-white font-semibold mb-2 sm:mb-3 drop-shadow text-sm sm:text-base">
                   Vind deze verdwaalde vriendjes:
                 </p>
-                <div className="flex justify-center gap-3 flex-wrap">
+                <div className="flex justify-center gap-2 sm:gap-3 flex-wrap">
                   {friendlies.map((f, i) => (
                     <span
                       key={i}
-                      className="text-4xl animate-bounce bg-white/20 rounded-full p-2"
+                      className="text-3xl sm:text-4xl animate-bounce bg-white/20 rounded-full p-1.5 sm:p-2"
                       style={{ animationDelay: `${i * 150}ms` }}
                     >
                       {f.emoji}
@@ -797,7 +804,7 @@ function MazeGame() {
                     setShowOnboarding(true);
                   }
                 }}
-                className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white text-xl font-bold rounded-xl shadow-lg transition-all hover:scale-105"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-green-500 hover:bg-green-600 text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg transition-all hover:scale-105"
               >
                 🚀 Ga aan de slag!
               </button>
@@ -808,16 +815,16 @@ function MazeGame() {
 
       {/* Exit warning modal */}
       {exitModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl text-center">
-            <h3 className="text-3xl font-bold text-gray-800 mb-3">Bijna bij de deur!</h3>
-            <p className="text-xl text-gray-700 mb-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-xl shadow-2xl text-center">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-3">Bijna bij de deur!</h3>
+            <p className="text-lg sm:text-xl text-gray-700 mb-3 sm:mb-4">
               Je mist nog {exitModal.remaining} {exitModal.remaining === 1 ? 'uitdaging' : 'uitdagingen'} om de sleutel compleet te maken.
             </p>
-            <div className="flex justify-center mb-6">{renderKeyProgress()}</div>
+            <div className="flex justify-center mb-4 sm:mb-6">{renderKeyProgress()}</div>
             <button
               onClick={() => setExitModal(null)}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg text-sm sm:text-base"
             >
               Verder zoeken
             </button>
@@ -827,20 +834,20 @@ function MazeGame() {
 
       {/* Friendly NPC Dialog */}
       {activeFriendly && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-md w-full overflow-hidden`}>
-            <div className="p-8 text-center">
-              <div className="text-8xl mb-4 animate-bounce">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-full sm:max-w-md w-full overflow-hidden`}>
+            <div className="p-4 sm:p-8 text-center">
+              <div className="text-6xl sm:text-8xl mb-3 sm:mb-4 animate-bounce">
                 {activeFriendly.emoji}
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-inner">
-                <p className="text-xl text-gray-800 font-medium leading-relaxed">
+              <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-inner">
+                <p className="text-base sm:text-xl text-gray-800 font-medium leading-relaxed">
                   "{activeFriendly.message}"
                 </p>
               </div>
               <button
                 onClick={handleFriendlyClose}
-                className="mt-6 px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105"
+                className="mt-4 sm:mt-6 px-6 sm:px-8 py-2.5 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105 text-sm sm:text-base"
               >
                 🤝 Neem mee!
               </button>
@@ -851,30 +858,30 @@ function MazeGame() {
 
       {/* Friends Warning Modal - wanneer je weggaat zonder alle vriendjes */}
       {friendsWarningModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 w-full max-w-lg shadow-2xl text-center">
-            <div className="text-6xl mb-4">😢</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-3">Wacht even!</h3>
-            <p className="text-lg text-gray-700 mb-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-lg shadow-2xl text-center">
+            <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">😢</div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">Wacht even!</h3>
+            <p className="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4">
               {theme.story?.warningLeave || `Er zijn nog ${friendsWarningModal.uncollected.length} verdwaalde vriendjes in het doolhof!`}
             </p>
-            <div className="flex justify-center gap-2 mb-6">
+            <div className="flex justify-center gap-2 mb-4 sm:mb-6">
               {friendsWarningModal.uncollected.map((f, i) => (
-                <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 100}ms` }}>
+                <span key={i} className="text-3xl sm:text-4xl animate-bounce" style={{ animationDelay: `${i * 100}ms` }}>
                   {f.emoji}
                 </span>
               ))}
             </div>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={handleSearchForFriends}
-                className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors text-sm sm:text-base"
               >
                 🔍 Vriendjes zoeken
               </button>
               <button
                 onClick={handleLeaveWithoutFriends}
-                className="px-6 py-3 bg-gray-400 hover:bg-gray-500 text-white font-bold rounded-lg transition-colors"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-400 hover:bg-gray-500 text-white font-bold rounded-lg transition-colors text-sm sm:text-base"
               >
                 🚪 Toch vertrekken
               </button>

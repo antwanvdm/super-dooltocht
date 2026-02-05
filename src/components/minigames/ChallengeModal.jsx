@@ -87,23 +87,23 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
   const gameName = GAME_NAMES[gameType] || 'Spel';
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className={`relative rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden`}>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className={`relative rounded-3xl shadow-2xl max-w-full sm:max-w-3xl w-full max-h-[95vh] overflow-hidden flex flex-col`}>
         {/* Thema-gekleurde header */}
-        <div className={`${theme.colors.primary} px-8 py-6`}>
+        <div className={`${theme.colors.primary} px-4 sm:px-8 py-4 sm:py-6 flex-shrink-0`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="text-5xl">{theme.emoji}</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="text-3xl sm:text-5xl">{theme.emoji}</span>
               <div>
-                <h2 className="text-3xl font-bold text-white drop-shadow">
+                <h2 className="text-xl sm:text-3xl font-bold text-white drop-shadow">
                   Uitdaging: {gameName}
                 </h2>
-                <p className="text-white/80 font-medium">Los de opgave op om verder te gaan</p>
+                <p className="text-white/80 font-medium text-xs sm:text-base">Los de opgave op om verder te gaan</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-3xl text-white/80 hover:text-white hover:scale-110 transition-all"
+              className="text-2xl sm:text-3xl text-white/80 hover:text-white hover:scale-110 transition-all flex-shrink-0"
             >
               ✕
             </button>
@@ -111,8 +111,8 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
         </div>
 
         {/* Content area */}
-        <div className="bg-white p-8 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="space-y-6">
+        <div className="bg-white p-4 sm:p-8 overflow-y-auto flex-1">
+          <div className="space-y-4 sm:space-y-6">
             {gameType === 'multiple-choice' && (
               <MultipleChoice
                 mathSettings={mathSettings}

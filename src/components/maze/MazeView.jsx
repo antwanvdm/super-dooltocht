@@ -1,4 +1,5 @@
 // MazeView - ingezoomde view van het doolhof
+import { useState, useEffect } from 'react';
 
 function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFriends = [], theme, playerEmoji }) {
   // Toon 13x13 grid rondom de speler voor betere zichtbaarheid
@@ -6,6 +7,48 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
   const halfView = Math.floor(viewSize / 2);
 
   const startPos = { x: 1, y: 1 };
+
+  // Bereken cellSize functie
+  const calculateCellSize = () => {
+    if (typeof window === 'undefined') return 44;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    
+    // Mobile-first: kleinere marges op mobile, grotere op desktop
+    const isMobile = vw < 640; // Tailwind sm breakpoint
+    const horizontalMargin = isMobile ? 16 : 60;
+    const verticalReserve = isMobile ? 280 : 220;
+    
+    const availableWidth = vw - horizontalMargin;
+    const availableHeight = vh - verticalReserve;
+    const available = Math.min(availableWidth, availableHeight);
+    
+    const minSize = isMobile ? 20 : 32;
+    return Math.max(minSize, Math.min(52, Math.floor(available / viewSize)));
+  };
+
+  // State voor cellSize zodat we kunnen re-renderen op resize
+  const [cellSize, setCellSize] = useState(calculateCellSize);
+
+  // Luister naar window resize en update cellSize
+  useEffect(() => {
+    let resizeTimeout;
+    
+    const handleResize = () => {
+      // Debounce: wacht 150ms na laatste resize event
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        setCellSize(calculateCellSize());
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Thema-specifieke kleuren
   const themeColors = {
@@ -113,36 +156,23 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
     }
   }
 
-  // Bereken celgrootte op basis van viewport
-  // 13 cellen, met een beetje padding, moet passen in beschikbare ruimte
-  const getCellSize = () => {
-    if (typeof window === 'undefined') return 44;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    // Beschikbare ruimte: viewport minus header/footer (~200px) en padding (~60px)
-    const availableWidth = vw - 60;
-    const availableHeight = vh - 220;
-    const available = Math.min(availableWidth, availableHeight);
-    // Cel = beschikbare ruimte / 13 cellen, maar minimaal 32px en max 52px
-    return Math.max(32, Math.min(52, Math.floor(available / viewSize)));
-  };
-
-  const cellSize = getCellSize();
   const gridSize = cellSize * viewSize;
 
   return (
-    <div className={`${theme.colors.secondary || theme.colors.primary} p-2 sm:p-3 rounded-2xl shadow-2xl`}>
-      <div className="bg-black/20 p-1.5 sm:p-2 rounded-xl">
-        <div
-          className="grid gap-0 rounded-lg overflow-hidden shadow-inner"
-          style={{
-            gridTemplateColumns: `repeat(${viewSize}, ${cellSize}px)`,
-            gridAutoRows: `${cellSize}px`,
-            width: `${gridSize}px`,
-            height: `${gridSize}px`,
-          }}
-        >
-          {cells}
+    <div className="flex justify-center items-center w-full overflow-x-hidden">
+      <div className={`${theme.colors.secondary || theme.colors.primary} p-2 sm:p-3 rounded-2xl shadow-2xl`}>
+        <div className="bg-black/20 p-1.5 sm:p-2 rounded-xl">
+          <div
+            className="grid gap-0 rounded-lg overflow-hidden shadow-inner mx-auto"
+            style={{
+              gridTemplateColumns: `repeat(${viewSize}, ${cellSize}px)`,
+              gridAutoRows: `${cellSize}px`,
+              width: `${gridSize}px`,
+              height: `${gridSize}px`,
+            }}
+          >
+            {cells}
+          </div>
         </div>
       </div>
     </div>
