@@ -13,6 +13,17 @@ html {
   /* Extra protection against horizontal scroll */
 }
 
+/* Fix voor 100vh op mobiel devices met adresbalk
+   dvh = dynamic viewport height (beste moderne oplossing)
+   Fallback naar svh (small) + lvh (large) voor oudere browsers */
+.min-h-dvh {
+  min-height: 100dvh;
+}
+
+.h-dvh {
+  height: 100dvh;
+}
+
 /* Alle clickable elementen krijgen pointer cursor */
 button,
 [role="button"],

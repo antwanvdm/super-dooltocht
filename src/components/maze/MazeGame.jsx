@@ -421,7 +421,7 @@ function MazeGame() {
   };
 
   return (
-    <div className={`min-h-screen ${theme.colors.primary} flex flex-col items-center overflow-x-hidden`}>
+    <div className={`min-h-dvh ${theme.colors.primary} flex flex-col items-center overflow-x-hidden`}>
       {/* Header met progress */}
       <div className="w-full mb-2 sm:mb-4">
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
@@ -474,7 +474,7 @@ function MazeGame() {
                   >
                     ✕
                   </button>
-                  <span className="text-xs sm:text-sm font-semibold text-purple-800">Lees de uitleg!</span>
+                  <span className="text-xs sm:text-sm font-semibold text-purple-800">Eerste keer?</span>
                   <span className="text-lg sm:text-2xl">👉</span>
                 </div>
               )}
