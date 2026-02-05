@@ -474,7 +474,7 @@ function MazeGame() {
                   >
                     ✕
                   </button>
-                  <span className="text-xs sm:text-sm font-semibold text-purple-800">Eerste keer? Lees de uitleg!</span>
+                  <span className="text-xs sm:text-sm font-semibold text-purple-800">Lees de uitleg!</span>
                   <span className="text-lg sm:text-2xl">👉</span>
                 </div>
               )}
