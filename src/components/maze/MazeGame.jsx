@@ -421,7 +421,7 @@ function MazeGame() {
   };
 
   return (
-    <div className={`min-h-dvh ${theme.colors.primary} flex flex-col items-center overflow-x-hidden`}>
+    <div className={`h-dvh ${theme.colors.primary} flex flex-col items-center overflow-hidden`}>
       {/* Header met progress */}
       <div className="w-full mb-2 sm:mb-4">
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
