@@ -88,18 +88,18 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
 
   return (
     <div className="text-center max-h-[70vh] overflow-y-auto">
-      <div className="mb-3">
-        <p className="text-gray-600 text-base mb-2">Gooi pijltjes tot je precies op het antwoord uitkomt!</p>
-        <p className="text-3xl font-bold text-gray-800 mb-2">
+      <div className="mb-2 sm:mb-3">
+        <p className="text-gray-600 text-sm sm:text-base mb-1 sm:mb-2">Gooi pijltjes tot je precies op het antwoord uitkomt!</p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">
           {problem.question} = ?
         </p>
-        <div className="flex items-center justify-center gap-4 text-xl font-bold">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 text-base sm:text-xl font-bold flex-wrap">
           <span className="text-gray-500">Jij hebt: {currentScore}</span>
           <span className="text-blue-600">Doel: {won ? targetScore : '???'}</span>
         </div>
       </div>
 
-      <div className="relative w-64 h-64 mx-auto mb-3">
+      <div className="relative w-48 h-48 sm:w-64 sm:h-64 mx-auto mb-2 sm:mb-3">
         {/* Dartboard cirkels */}
         <svg viewBox="0 0 400 400" className="w-full h-full">
           {/* Achtergrond */}
@@ -159,10 +159,10 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
         </svg>
       </div>
 
-      <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
-        <span className="text-sm text-gray-600">Gegooid:</span>
+      <div className="flex items-center justify-center gap-1 sm:gap-2 mb-2 flex-wrap">
+        <span className="text-xs sm:text-sm text-gray-600">Gegooid:</span>
         {dartPositions.map((value, index) => (
-          <span key={index} className="text-lg font-bold text-blue-600">
+          <span key={index} className="text-base sm:text-lg font-bold text-blue-600">
             {value}{index < dartPositions.length - 1 && ' +'}
           </span>
         ))}
@@ -170,13 +170,13 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
 
       <button
         onClick={handleReset}
-        className="px-4 py-1 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors mb-2"
+        className="px-3 sm:px-4 py-1 text-xs sm:text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors mb-2"
       >
         🔄 Opnieuw beginnen
       </button>
 
       {showFeedback && (
-        <div className="mt-2 text-lg font-bold">
+        <div className="mt-2 text-base sm:text-lg font-bold">
           {currentScore === targetScore ? (
             <p className="text-green-600">🎯 Raak! Perfecte worp!</p>
           ) : (

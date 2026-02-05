@@ -74,12 +74,12 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
 
   return (
     <div className="text-center">
-      <div className="mb-6">
-        <p className="text-gray-600 text-lg mb-4">Hoeveel geld zie je hier?</p>
+      <div className="mb-4 sm:mb-6">
+        <p className="text-gray-600 text-base sm:text-lg mb-2 sm:mb-4">Hoeveel geld zie je hier?</p>
         
         {/* Geld weergave */}
-        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-6 border-2 border-amber-200 mb-6">
-          <div className="flex flex-wrap gap-3 justify-center items-center">
+        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-3 sm:p-6 border-2 border-amber-200 mb-4 sm:mb-6">
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center items-center">
             {problem.money.map((value, i) => (
               value >= 500 ? (
                 <Bill key={i} value={value / 100} size="md" />
@@ -92,19 +92,19 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
-        <div className="mb-4">
-          <label className="block text-gray-600 text-sm mb-2">
+        <div className="mb-3 sm:mb-4">
+          <label className="block text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">
             Typ het totaalbedrag:
           </label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-gray-400">€</span>
+            <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-xl sm:text-2xl text-gray-400">€</span>
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={hasCents ? "bijv. 12,50" : "bijv. 12"}
               disabled={showFeedback}
-              className={`w-full text-2xl font-bold py-4 pl-12 pr-4 rounded-xl border-2 text-center ${
+              className={`w-full text-xl sm:text-2xl font-bold py-3 sm:py-4 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border-2 text-center ${
                 showFeedback
                   ? isCorrect
                     ? 'border-green-500 bg-green-50'
@@ -115,7 +115,7 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
             />
           </div>
           {hasCents && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
               💡 Tip: Gebruik een komma (,) om euro's en centen te scheiden
             </p>
           )}
@@ -124,14 +124,14 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
         <button
           type="submit"
           disabled={showFeedback || !inputValue.trim()}
-          className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 sm:py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-base sm:text-xl rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ✓ Controleer
         </button>
       </form>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {isCorrect ? (
             <p className="text-green-600">🎉 Goed geteld! Het is {problem.amountFormatted}!</p>
           ) : (

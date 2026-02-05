@@ -81,18 +81,18 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
 
   return (
     <div className="text-center">
-      <div className="mb-4">
-        <p className="text-gray-600 text-lg mb-2">Betaal precies dit bedrag!</p>
-        <p className="text-5xl font-bold text-emerald-600 mb-2">
+      <div className="mb-3 sm:mb-4">
+        <p className="text-gray-600 text-base sm:text-lg mb-1 sm:mb-2">Betaal precies dit bedrag!</p>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-emerald-600 mb-1 sm:mb-2">
           {problem.amountFormatted}
         </p>
-        <p className="text-sm text-gray-500">Klik op het geld dat je wilt gebruiken</p>
+        <p className="text-xs sm:text-sm text-gray-500">Klik op het geld dat je wilt gebruiken</p>
       </div>
 
       {/* Portemonnee */}
-      <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl p-4 border-2 border-amber-300 mb-4">
-        <p className="text-sm font-medium text-amber-800 mb-3">💼 Jouw portemonnee:</p>
-        <div className="flex flex-wrap gap-2 justify-center items-center">
+      <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl p-2 sm:p-4 border-2 border-amber-300 mb-3 sm:mb-4">
+        <p className="text-xs sm:text-sm font-medium text-amber-800 mb-2 sm:mb-3">💼 Jouw portemonnee:</p>
+        <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
           {problem.wallet.map((value, index) => (
             <div 
               key={index}
@@ -114,11 +114,11 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
       </div>
 
       {/* Geselecteerd geld */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 border-2 border-green-200 mb-4 min-h-[100px]">
-        <p className="text-sm font-medium text-green-800 mb-3">🛒 Jouw betaling:</p>
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-2 sm:p-4 border-2 border-green-200 mb-3 sm:mb-4 min-h-[80px] sm:min-h-[100px]">
+        <p className="text-xs sm:text-sm font-medium text-green-800 mb-2 sm:mb-3">🛒 Jouw betaling:</p>
         {selectedMoney.length > 0 ? (
           <>
-            <div className="flex flex-wrap gap-2 justify-center items-center mb-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center mb-1 sm:mb-2">
               {selectedMoney.map((index) => {
                 const value = problem.wallet[index];
                 return value >= 500 ? (
@@ -128,7 +128,7 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
                 );
               })}
             </div>
-            <p className={`text-lg font-bold ${
+            <p className={`text-base sm:text-lg font-bold ${
               total === problem.amount ? 'text-green-600' :
               total < problem.amount ? 'text-orange-600' : 'text-red-600'
             }`}>
@@ -138,30 +138,30 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
             </p>
           </>
         ) : (
-          <p className="text-gray-400 italic">Klik op geld om te selecteren</p>
+          <p className="text-gray-400 italic text-sm sm:text-base">Klik op geld om te selecteren</p>
         )}
       </div>
 
       {/* Knoppen */}
-      <div className="flex gap-3 justify-center">
+      <div className="flex gap-2 sm:gap-3 justify-center flex-wrap">
         <button
           onClick={handleReset}
           disabled={showFeedback || selectedMoney.length === 0}
-          className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           🔄 Opnieuw
         </button>
         <button
           onClick={handleCheck}
           disabled={showFeedback || selectedMoney.length === 0}
-          className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 sm:px-6 py-2 sm:py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           ✓ Controleer
         </button>
       </div>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {feedbackType === 'correct' && (
             <p className="text-green-600">🎉 Perfect betaald!</p>
           )}

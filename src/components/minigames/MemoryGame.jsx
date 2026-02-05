@@ -148,7 +148,7 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
 
   return (
     <div>
-      <p className="text-xl text-gray-600 text-center mb-6">
+      <p className="text-base sm:text-xl text-gray-600 text-center mb-4 sm:mb-6">
         Zoek de som bij het goede antwoord!
       </p>
       
@@ -162,7 +162,7 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
             <button
               key={card.id}
               onClick={() => handleCardClick(index)}
-              className={`aspect-square rounded-lg text-lg sm:text-2xl font-bold transition-all transform ${
+              className={`aspect-square rounded-lg text-base sm:text-lg md:text-2xl font-bold transition-all transform ${
                 isFlipped
                   ? isMatched
                     ? 'bg-green-500 text-white'
@@ -174,11 +174,11 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
               disabled={!canFlip && !isFlipped}
             >
               {isFlipped ? (
-                <div className="flex items-center justify-center h-full p-1">
+                <div className="flex items-center justify-center h-full p-0.5 sm:p-1">
                   {card.content}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-2xl sm:text-4xl">
+                <div className="flex items-center justify-center h-full text-xl sm:text-2xl md:text-4xl">
                   {theme.emoji}
                 </div>
               )}
@@ -187,8 +187,8 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
         })}
       </div>
       
-      <div className="mt-6 text-center">
-        <p className="text-lg text-gray-600">
+      <div className="mt-4 sm:mt-6 text-center">
+        <p className="text-base sm:text-lg text-gray-600">
           Gevonden: {matched.length / 2} / {cards.length / 2}
         </p>
       </div>

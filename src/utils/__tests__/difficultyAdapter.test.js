@@ -651,6 +651,79 @@ describe('Money - Smart Pay', () => {
       }
     }
   });
+
+  it('should ALWAYS have a solvable optimalCombination that exactly matches the amount', () => {
+    // This test catches the bug where wallet didn't contain a valid combination
+    // Example: amount €14, wallet [€20, €10, €5, €2, €1] - impossible to make €14 exactly
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 5000,
+      moneyIncludeCents: false,
+    };
+
+    for (let i = 0; i < 100; i++) {
+      const problem = generateMathProblem(settings);
+
+      if (problem.moneyType === 'smartPay') {
+        // optimalCombination MUST exist and be non-empty
+        expect(problem.optimalCombination).toBeDefined();
+        expect(problem.optimalCombination.length).toBeGreaterThan(0);
+
+        // The combination MUST sum to exactly the amount
+        const optimalTotal = problem.optimalCombination.reduce(
+          (sum, v) => sum + v,
+          0,
+        );
+        expect(optimalTotal).toBe(problem.amount);
+
+        // Every item in optimalCombination must actually be in the wallet
+        // (accounting for duplicates - each used item must be available)
+        const walletCopy = [...problem.wallet];
+        for (const value of problem.optimalCombination) {
+          const index = walletCopy.indexOf(value);
+          expect(index).toBeGreaterThanOrEqual(0); // Item must exist in wallet
+          walletCopy.splice(index, 1); // Remove it so duplicates are properly counted
+        }
+      }
+    }
+  });
+
+  it('should handle tricky amounts like €14 that caused the original bug', () => {
+    // The original bug: €14 with wallet [€20, €10, €5, €2, €1] was unsolvable
+    // because greedy would take €10, leaving €4, but €5 is too big and only 1x €2, 1x €1
+    const settings = {
+      enabledOperations: { money: true },
+      moneyMaxAmount: 2000, // Keep amounts small to hit edge cases more often
+      moneyIncludeCents: false,
+    };
+
+    // Run many iterations to catch probabilistic bugs
+    for (let i = 0; i < 200; i++) {
+      const problem = generateMathProblem(settings);
+
+      if (problem.moneyType === 'smartPay') {
+        // Verify the solution actually works
+        const optimalSum = problem.optimalCombination.reduce(
+          (s, v) => s + v,
+          0,
+        );
+        expect(optimalSum).toBe(problem.amount);
+
+        // Verify all items are actually in the wallet
+        const walletCopy = [...problem.wallet];
+        let allItemsFound = true;
+        for (const value of problem.optimalCombination) {
+          const idx = walletCopy.indexOf(value);
+          if (idx === -1) {
+            allItemsFound = false;
+            break;
+          }
+          walletCopy.splice(idx, 1);
+        }
+        expect(allItemsFound).toBe(true);
+      }
+    }
+  });
 });
 
 // ============================================

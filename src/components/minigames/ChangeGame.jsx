@@ -76,15 +76,15 @@ function ChangeGame({ mathSettings, onSuccess, onFailure }) {
 
   return (
     <div className="text-center">
-      <div className="mb-6">
-        <p className="text-gray-600 text-lg mb-4">Hoeveel wisselgeld krijg je terug?</p>
+      <div className="mb-4 sm:mb-6">
+        <p className="text-gray-600 text-base sm:text-lg mb-2 sm:mb-4">Hoeveel wisselgeld krijg je terug?</p>
         
         {/* Scenario */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border-2 border-blue-200 mb-4">
-          <div className="flex items-center justify-center gap-4 flex-wrap">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-3 sm:p-5 border-2 border-blue-200 mb-3 sm:mb-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
             {/* Betaald */}
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Je betaalt met:</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">Je betaalt met:</p>
               {paidValue >= 500 ? (
                 <Bill value={paidValue / 100} size="lg" />
               ) : (
@@ -92,29 +92,29 @@ function ChangeGame({ mathSettings, onSuccess, onFailure }) {
               )}
             </div>
             
-            <div className="text-4xl">➡️</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl">➡️</div>
             
             {/* Prijs */}
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Voor iets van:</p>
-              <div className="bg-white rounded-xl p-4 border-2 border-gray-200 shadow-sm">
-                <span className="text-3xl">🏷️</span>
-                <p className="text-2xl font-bold text-gray-800">{problem.priceFormatted}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">Voor iets van:</p>
+              <div className="bg-white rounded-xl p-2 sm:p-4 border-2 border-gray-200 shadow-sm">
+                <span className="text-xl sm:text-2xl md:text-3xl">🏷️</span>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">{problem.priceFormatted}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <p className="text-gray-600 mb-3">Hoeveel krijg je terug?</p>
+      <p className="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base">Hoeveel krijg je terug?</p>
       
-      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 max-w-md mx-auto">
         {options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleSelect(option)}
             disabled={showFeedback}
-            className={`text-2xl font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 ${
+            className={`text-lg sm:text-xl md:text-2xl font-bold py-3 sm:py-4 px-3 sm:px-6 rounded-xl transition-all transform hover:scale-105 ${
               selected === option
                 ? option === problem.change
                   ? 'bg-green-500 text-white scale-110'
@@ -128,7 +128,7 @@ function ChangeGame({ mathSettings, onSuccess, onFailure }) {
       </div>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {selected === problem.change ? (
             <p className="text-green-600">🎉 Klopt! Je krijgt {problem.changeFormatted} terug!</p>
           ) : (

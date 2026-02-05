@@ -424,7 +424,7 @@ const generateValidAmount = (maxAmount, includeCents, minAmount = 100) => {
   }
 };
 
-// Helper: vind optimale combinatie (greedy)
+// Helper: vind optimale combinatie (greedy) - voor onbeperkte currency
 const findOptimalCombination = (targetCents, availableCurrency) => {
   const sorted = [...availableCurrency].sort((a, b) => b - a);
   const combination = [];
@@ -438,6 +438,32 @@ const findOptimalCombination = (targetCents, availableCurrency) => {
   }
 
   return remaining === 0 ? combination : null;
+};
+
+// Helper: vind een subset van de wallet die exact het bedrag maakt (subset sum)
+const findExactCombinationFromWallet = (targetCents, wallet) => {
+  // Gebruik dynamische programmering om een exacte combinatie te vinden
+  // We houden bij welke combinatie elk bedrag kan maken
+  const dp = new Map();
+  dp.set(0, []);
+
+  for (let i = 0; i < wallet.length; i++) {
+    const value = wallet[i];
+    // Loop van hoog naar laag om elk item maar 1x te gebruiken
+    const entries = Array.from(dp.entries()).sort((a, b) => b[0] - a[0]);
+
+    for (const [currentSum, combination] of entries) {
+      const newSum = currentSum + value;
+      if (newSum <= targetCents && !dp.has(newSum)) {
+        dp.set(newSum, [...combination, value]);
+      }
+      if (newSum === targetCents) {
+        return dp.get(targetCents);
+      }
+    }
+  }
+
+  return dp.get(targetCents) || null;
 };
 
 // Helper: formatteer bedrag
@@ -526,37 +552,52 @@ const generateCountMoney = (maxAmount, currency) => {
 
 // Type 3: Slim betalen - betaal met zo min mogelijk
 const generateSmartPay = (amount, currency) => {
-  // Simuleer een portemonnee met wat geld
-  const wallet = [];
-  let walletTotal = 0;
+  // Stap 1: Bouw eerst een combinatie die exact het bedrag maakt
+  // Dit garandeert dat er altijd een oplossing is
+  const optimalCombination = findOptimalCombination(amount, currency);
 
-  // Voeg genoeg geld toe om te kunnen betalen
+  if (!optimalCombination) {
+    // Fallback: zou niet moeten gebeuren met normale currency
+    return {
+      type: 'smartPay',
+      moneyType: 'smartPay',
+      amount: amount,
+      amountFormatted: formatMoney(amount),
+      wallet: currency.sort((a, b) => b - a),
+      optimalCombination: [],
+      currency: currency,
+    };
+  }
+
+  // Start de wallet met de exacte combinatie
+  const wallet = [...optimalCombination];
+
+  // Stap 2: Voeg extra geld toe als afleiding (maar niet teveel)
   const sorted = [...currency].sort((a, b) => b - a);
-  for (const value of sorted) {
-    // Voeg 1-2 van elk toe
-    const count = randBetween(1, 2);
-    for (let i = 0; i < count; i++) {
-      wallet.push(value);
-      walletTotal += value;
-    }
-  }
+  const extraCount = randBetween(3, 6); // Voeg 3-6 extra items toe
 
-  // Zorg dat we genoeg hebben
-  while (walletTotal < amount) {
-    const value = currency[Math.floor(Math.random() * currency.length)];
+  for (let i = 0; i < extraCount; i++) {
+    // Kies een random waarde uit de currency
+    const value = sorted[Math.floor(Math.random() * sorted.length)];
     wallet.push(value);
-    walletTotal += value;
   }
 
-  const optimalCombination = findOptimalCombination(amount, wallet);
+  // Shuffle en sorteer de wallet
+  const shuffledWallet = wallet.sort((a, b) => b - a);
+
+  // Dubbelcheck: zoek de optimale combinatie in de daadwerkelijke wallet
+  const verifiedCombination = findExactCombinationFromWallet(
+    amount,
+    shuffledWallet,
+  );
 
   return {
     type: 'smartPay',
     moneyType: 'smartPay',
     amount: amount,
     amountFormatted: formatMoney(amount),
-    wallet: wallet.sort((a, b) => b - a),
-    optimalCombination: optimalCombination || [],
+    wallet: shuffledWallet,
+    optimalCombination: verifiedCombination || optimalCombination,
     currency: currency,
   };
 };

@@ -746,23 +746,20 @@ function MazeGame() {
       {/* Minimap Modal */}
       {showMinimap && (
         <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-3xl max-h-[90vh] flex flex-col relative">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-[90vw] max-h-[90vh] relative">
             <button
               onClick={() => setShowMinimap(false)}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-xl sm:text-2xl hover:scale-110 transition-transform z-10"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 text-xl sm:text-2xl hover:scale-110 transition-transform z-10 bg-white/80 rounded-full p-1"
             >
               ❌
             </button>
-            <div className="p-6 pt-12">
-              <div className="flex justify-center">
-                <Minimap
-                  maze={maze}
-                  playerPos={playerPos}
-                  challenges={challenges}
-                  theme={theme}
-                />
-              </div>
-            </div>
+            <Minimap
+              maze={maze}
+              playerPos={playerPos}
+              challenges={challenges}
+              theme={theme}
+              maxHeight="70vh"
+            />
           </div>
         </div>
       )}

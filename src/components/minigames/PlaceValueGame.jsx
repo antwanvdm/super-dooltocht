@@ -45,15 +45,15 @@ function PlaceValueGame({ mathSettings, onSuccess, onFailure, theme }) {
 
   return (
     <div className="text-center">
-      <div className="mb-8">
-        <p className="text-gray-600 text-xl mb-4">
+      <div className="mb-4 sm:mb-8">
+        <p className="text-gray-600 text-base sm:text-xl mb-2 sm:mb-4">
           Wat is het <span className="font-bold text-purple-600">{problem.positionName}</span> van dit getal?
         </p>
-        <div className="text-7xl font-bold text-gray-800 mb-6 tracking-wider">
+        <div className="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-800 mb-4 sm:mb-6 tracking-wider">
           {problem.number.toString().split('').map((digit, index) => (
             <span 
               key={index} 
-              className="inline-block mx-1 bg-gradient-to-b from-blue-100 to-blue-200 px-4 py-2 rounded-xl shadow-md"
+              className="inline-block mx-0.5 sm:mx-1 bg-gradient-to-b from-blue-100 to-blue-200 px-2 sm:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl shadow-md text-2xl sm:text-4xl md:text-6xl"
             >
               {digit}
             </span>
@@ -61,13 +61,13 @@ function PlaceValueGame({ mathSettings, onSuccess, onFailure, theme }) {
         </div>
       </div>
 
-      <div className={`grid ${gridCols} gap-4 max-w-lg mx-auto`}>
+      <div className={`grid ${gridCols} gap-2 sm:gap-4 max-w-lg mx-auto`}>
         {options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleSelect(option)}
             disabled={showFeedback}
-            className={`text-4xl font-bold py-6 px-6 rounded-xl transition-all transform hover:scale-105 ${
+            className={`text-2xl sm:text-3xl md:text-4xl font-bold py-4 sm:py-6 px-3 sm:px-6 rounded-xl transition-all transform hover:scale-105 ${
               selected === option
                 ? option === problem.answer
                   ? 'bg-green-500 text-white scale-110'
@@ -81,7 +81,7 @@ function PlaceValueGame({ mathSettings, onSuccess, onFailure, theme }) {
       </div>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {selected === problem.answer ? (
             <p className="text-green-600">🎉 Helemaal goed! {problem.positionName === 'eenheid' ? 'De' : 'Het'} {problem.positionName} is {problem.answer}!</p>
           ) : (

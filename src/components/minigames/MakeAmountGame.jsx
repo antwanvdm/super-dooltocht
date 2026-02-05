@@ -89,20 +89,20 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
 
   return (
     <div className="text-center">
-      <div className="mb-6">
-        <p className="text-gray-600 text-lg mb-2">Welke combinatie maakt precies dit bedrag?</p>
-        <p className="text-5xl font-bold text-emerald-600 mb-4">
+      <div className="mb-4 sm:mb-6">
+        <p className="text-gray-600 text-base sm:text-lg mb-1 sm:mb-2">Welke combinatie maakt precies dit bedrag?</p>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-emerald-600 mb-2 sm:mb-4">
           {problem.amountFormatted}
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2 sm:space-y-4">
         {options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleSelect(option)}
             disabled={showFeedback}
-            className={`w-full p-4 rounded-xl transition-all ${
+            className={`w-full p-2 sm:p-4 rounded-xl transition-all ${
               selected === option
                 ? option.isCorrect
                   ? 'bg-green-100 ring-4 ring-green-500'
@@ -110,7 +110,7 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
                 : 'bg-gray-50 hover:bg-gray-100 border-2 border-gray-200'
             } disabled:cursor-not-allowed`}
           >
-            <div className="flex flex-wrap gap-2 justify-center items-center">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
               {option.combination.map((value, i) => (
                 value >= 500 ? (
                   <Bill key={i} value={value / 100} size="sm" />
@@ -124,7 +124,7 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
       </div>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {selected?.isCorrect ? (
             <p className="text-green-600">🎉 Super! Dat is precies {problem.amountFormatted}!</p>
           ) : (

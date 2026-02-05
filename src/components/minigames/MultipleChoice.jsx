@@ -59,20 +59,20 @@ function MultipleChoice({ mathSettings, onSuccess, onFailure, theme }) {
 
   return (
     <div className="text-center">
-      <div className="mb-8">
-        <p className="text-gray-600 text-xl mb-2">Klik op het goede antwoord!</p>
-        <p className="text-6xl font-bold text-gray-800 mb-6">
+      <div className="mb-4 sm:mb-8">
+        <p className="text-gray-600 text-base sm:text-xl mb-2">Klik op het goede antwoord!</p>
+        <p className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-4 sm:mb-6">
           {problem.question}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
         {options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleSelect(option)}
             disabled={showFeedback}
-            className={`text-4xl font-bold py-8 px-6 rounded-xl transition-all transform hover:scale-105 ${
+            className={`text-2xl sm:text-3xl md:text-4xl font-bold py-4 sm:py-6 md:py-8 px-3 sm:px-6 rounded-xl transition-all transform hover:scale-105 ${
               selected === option
                 ? option === problem.answer
                   ? 'bg-green-500 text-white scale-110'
@@ -86,7 +86,7 @@ function MultipleChoice({ mathSettings, onSuccess, onFailure, theme }) {
       </div>
 
       {showFeedback && (
-        <div className="mt-6 text-2xl font-bold">
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {selected === problem.answer ? (
             <p className="text-green-600">🎉 Super goed! Je hebt het goed!</p>
           ) : (

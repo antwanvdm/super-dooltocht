@@ -12,6 +12,7 @@ An educational math game for elementary school children, built with React and Ta
 **Super Dooltocht** is a hobby project born out of frustration with the current state of educational games used in Dutch elementary schools. Many of these apps and websites are riddled with advertisements, dark patterns, and tracking – even those recommended by teachers!
 
 This game aims to be:
+
 - 🚫 **Ad-free** – No advertisements, ever
 - 🔒 **Privacy-respecting** – No tracking, no data collection
 - 🎮 **Fun** – Engaging gameplay that keeps kids motivated
@@ -21,6 +22,7 @@ This game aims to be:
 ## ✨ Features
 
 ### Math Operations
+
 - **Addition (Plussommen)** – Configurable ranges with modes:
   - Within tens (within tiental)
   - Beyond tens: units, tens, or hundreds
@@ -40,17 +42,20 @@ This game aims to be:
   - Change (Wisselgeld)
 
 ### Challenge Types
+
 - 🎯 **Multiple Choice** – Pick the correct answer from 4 options
 - 🧠 **Memory Game** – Match math problems with their answers
 - 📝 **Math Puzzle (Sommenblad)** – Fill in answers for multiple problems
 - 🎯 **Darts Game** – Throw darts to add up to the target number
 
 ### Adventure Settings
+
 - **Short** – 2 friends to rescue + 4 challenges
 - **Medium** – 4 friends to rescue + 7 challenges
 - **Long** – 6 friends to rescue + 10 challenges
 
 ### Customization & Accessibility
+
 - 🌍 **12 Themed Worlds** – Each with unique visual style and story:
   - Space, Underwater, Forest, Desert, City, Mountains, Jungle, Arctic, Beach, Volcano, Medieval, and more
 - 🎭 **Emoji Character Selection** – Choose your own avatar
@@ -68,7 +73,8 @@ This game aims to be:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 
 ### Installation
@@ -96,12 +102,12 @@ npm run preview
 
 ## 🛠️ Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19 | UI Framework |
-| Vite | 7 | Build tool & dev server |
-| Tailwind CSS | 4 | Styling |
-| React Router | 7 | Navigation |
+| Technology   | Version | Purpose                 |
+| ------------ | ------- | ----------------------- |
+| React        | 19      | UI Framework            |
+| Vite         | 7       | Build tool & dev server |
+| Tailwind CSS | 4       | Styling                 |
+| React Router | 7       | Navigation              |
 
 ## 📁 Project Structure
 
@@ -125,6 +131,7 @@ src/
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to:
+
 - 🐛 Report bugs
 - 💡 Suggest new features
 - 🔧 Submit pull requests

@@ -4,11 +4,13 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+  /* Prevent horizontal scroll on mobile */
 }
 
 html {
-  overflow-x: hidden; /* Extra protection against horizontal scroll */
+  overflow-x: hidden;
+  /* Extra protection against horizontal scroll */
 }
 
 /* Alle clickable elementen krijgen pointer cursor */
