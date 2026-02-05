@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { THEMES, getTheme } from '../utils/themes';
 import { getCompletedMazes, getSavedFriends, getGameState, clearGameState, getUserSettings, saveUserSettings } from '../utils/localStorage';
+import { useSyncToServer } from '../hooks/useSyncToServer';
 
 const PLAYER_EMOJIS = [
   '🤖','🧙','🧚','🧜','🧛','🧞','🧟','🧝','🧞‍♂️','🧚‍♀️','🧜‍♂️','🧙‍♂️',
   '🤠','🏴‍☠️','🦸','🦹','🧑‍🚀','🧑‍✈️','🧑‍🚒','🤹','🏊','🤿','🚴','🏇'
 ];
 
-function Home() {
+function Home({ disabled = false }) {
   const navigate = useNavigate();
+  const { syncProgress } = useSyncToServer();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
   
@@ -77,6 +79,8 @@ function Home() {
   const startNewGame = () => {
     clearGameState();
     setContinueModal(null);
+    // Sync de gewiste game state naar server
+    setTimeout(() => syncProgress(), 100);
   };
 
   const startMaze = () => {

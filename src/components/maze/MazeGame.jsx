@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTheme } from '../../utils/themes';
 import { generateMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
 import { incrementCompletedMazes, saveGameState, getGameState, clearGameState, addSavedFriends, getCompletedMazes } from '../../utils/localStorage';
+import { useSyncToServer } from '../../hooks/useSyncToServer';
 import MazeView from './MazeView';
 import Minimap from './Minimap';
 import ChallengeModal from '../minigames/ChallengeModal';
@@ -13,6 +14,7 @@ function MazeGame() {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = getTheme(themeId);
+  const { syncProgress } = useSyncToServer();
 
   const { mathSettings, playerEmoji, adventureLength } = useMemo(() => {
     const defaults = { enabledOperations: { add: true, sub: true, mul: true }, maxValue: 50 };
@@ -61,6 +63,7 @@ function MazeGame() {
     }
     return false;
   });
+  const [pendingSync, setPendingSync] = useState(false);
 
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
@@ -103,6 +106,9 @@ function MazeGame() {
 
       // Toon story intro bij nieuw spel
       setShowStoryIntro(true);
+      
+      // Trigger sync naar server voor nieuw spel (zodat instellingen worden opgeslagen)
+      setPendingSync(true);
     }
   }, [themeId, theme.friendlies]);
 
@@ -127,8 +133,14 @@ function MazeGame() {
   useEffect(() => {
     if (maze && !hasWon) {
       saveCurrentState();
+      
+      // Sync naar server als pending
+      if (pendingSync) {
+        syncProgress();
+        setPendingSync(false);
+      }
     }
-  }, [playerPos, challenges, friendlies, collectedFriends, completedCount, saveCurrentState, maze, hasWon]);
+  }, [playerPos, challenges, friendlies, collectedFriends, completedCount, saveCurrentState, maze, hasWon, pendingSync, syncProgress]);
 
   // Move functie - herbruikbaar voor keyboard en touch
   const move = useCallback((direction) => {
@@ -291,6 +303,8 @@ function MazeGame() {
           addSavedFriends(collectedFriends.length);
           clearGameState();
           incrementCompletedMazes();
+          // Final sync naar server: adventure afgerond (localStorage is al bijgewerkt)
+          setTimeout(() => syncProgress(), 100);
           // Niet automatisch sluiten - laat de speler klikken
         }
       } else {
@@ -332,6 +346,9 @@ function MazeGame() {
       prev.map(f => f.id === friend.id ? { ...f, collected: true, spoken: true } : f)
     );
     setActiveFriendly(null);
+    
+    // Mark for sync (happens after state + localStorage update)
+    setPendingSync(true);
   };
 
   // Functie voor vertrekken met achtergelaten vriendjes
@@ -341,6 +358,9 @@ function MazeGame() {
     addSavedFriends(collectedFriends.length);
     clearGameState();
     incrementCompletedMazes();
+    
+    // Final sync naar server: adventure afgerond (localStorage is al bijgewerkt)
+    setTimeout(() => syncProgress(), 100);
     // Niet automatisch navigeren - laat speler zelf klikken in win scherm
   };
 
@@ -361,6 +381,9 @@ function MazeGame() {
     const newCount = completedCount + 1;
     setCompletedCount(newCount);
     // Victory nu alleen bij uitgang; hier geen auto-win meer
+    
+    // Mark for sync (happens after state + localStorage update)
+    setPendingSync(true);
   };
 
   const handleChallengeClose = () => {

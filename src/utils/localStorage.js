@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   SAVED_FRIENDS: 'super-dooltocht-saved-friends',
   GAME_STATE: 'super-dooltocht-game-state',
   USER_SETTINGS: 'super-dooltocht-user-settings',
+  PLAYER_CODE: 'super-dooltocht-player-code',
 };
 
 export const getCompletedMazes = () => {
@@ -86,4 +87,72 @@ export const getUserSettings = () => {
 
 export const clearAllData = () => {
   Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+};
+
+// Code-based sync functions
+export const getPlayerCode = () => {
+  const data = localStorage.getItem(STORAGE_KEYS.PLAYER_CODE);
+  return data ? JSON.parse(data) : null;
+};
+
+export const setPlayerCode = (code) => {
+  localStorage.setItem(STORAGE_KEYS.PLAYER_CODE, JSON.stringify(code));
+};
+
+export const clearPlayerCode = () => {
+  localStorage.removeItem(STORAGE_KEYS.PLAYER_CODE);
+};
+
+// Verzamel alle game data voor server sync
+export const getAllGameData = () => {
+  return {
+    completedMazes: getCompletedMazes(),
+    savedFriends: getSavedFriends(),
+    difficultyLevel: getDifficultyLevel(),
+    performanceHistory: getPerformanceHistory(),
+    userSettings: getUserSettings(),
+    gameState: getGameState(),
+  };
+};
+
+// Herstel alle game data vanaf server
+export const restoreAllGameData = (data) => {
+  if (!data || typeof data !== 'object') return;
+
+  if (data.completedMazes !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.COMPLETED_MAZES,
+      JSON.stringify(data.completedMazes),
+    );
+  }
+  if (data.savedFriends !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.SAVED_FRIENDS,
+      JSON.stringify(data.savedFriends),
+    );
+  }
+  if (data.difficultyLevel !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.DIFFICULTY_LEVEL,
+      JSON.stringify(data.difficultyLevel),
+    );
+  }
+  if (data.performanceHistory !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.PERFORMANCE_HISTORY,
+      JSON.stringify(data.performanceHistory),
+    );
+  }
+  if (data.userSettings !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.USER_SETTINGS,
+      JSON.stringify(data.userSettings),
+    );
+  }
+  if (data.gameState !== undefined) {
+    localStorage.setItem(
+      STORAGE_KEYS.GAME_STATE,
+      JSON.stringify(data.gameState),
+    );
+  }
 };
