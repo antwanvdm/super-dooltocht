@@ -1319,7 +1319,7 @@ describe('generateUniqueMathProblems', () => {
     // Run 50 times to catch non-deterministic failures
     for (let run = 0; run < 50; run++) {
       const problems = generateUniqueMathProblems(settings, 4);
-      const questions = problems.map(p => p.question);
+      const questions = problems.map((p) => p.question);
       const uniqueQuestions = new Set(questions);
       expect(uniqueQuestions.size).toBe(4);
     }
@@ -1335,7 +1335,7 @@ describe('generateUniqueMathProblems', () => {
 
     for (let run = 0; run < 50; run++) {
       const problems = generateUniqueMathProblems(settings, 4);
-      const questions = problems.map(p => p.question);
+      const questions = problems.map((p) => p.question);
       const uniqueQuestions = new Set(questions);
       expect(uniqueQuestions.size).toBe(4);
     }
@@ -1349,7 +1349,7 @@ describe('generateUniqueMathProblems', () => {
 
     for (let run = 0; run < 50; run++) {
       const problems = generateUniqueMathProblems(settings, 4);
-      const questions = problems.map(p => p.question);
+      const questions = problems.map((p) => p.question);
       const uniqueQuestions = new Set(questions);
       expect(uniqueQuestions.size).toBe(4);
     }
@@ -1365,7 +1365,7 @@ describe('generateUniqueMathProblems', () => {
     const problems = generateUniqueMathProblems(settings, 4);
     expect(problems).toHaveLength(4);
     // With very small ranges there's still enough variance for 4 unique problems
-    const questions = problems.map(p => p.question);
+    const questions = problems.map((p) => p.question);
     const uniqueQuestions = new Set(questions);
     expect(uniqueQuestions.size).toBe(4);
   });

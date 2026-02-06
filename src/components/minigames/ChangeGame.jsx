@@ -29,19 +29,14 @@ function ChangeGame({ mathSettings, onSuccess, onFailure }) {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    // Genereer een change probleem
+    // Genereer een change probleem met forceMoneyType
     const moneySettings = {
       ...mathSettings,
       enabledOperations: { money: true },
+      forceMoneyType: 'change',
     };
     
-    let attempts = 0;
-    let mathProblem;
-    do {
-      mathProblem = generateMathProblem(moneySettings);
-      attempts++;
-    } while (mathProblem.moneyType !== 'change' && attempts < 20);
-    
+    const mathProblem = generateMathProblem(moneySettings);
     setProblem(mathProblem);
     
     // Genereer antwoordopties

@@ -10,19 +10,14 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
   const [feedbackType, setFeedbackType] = useState(null);
 
   useEffect(() => {
-    // Genereer een smartPay probleem
+    // Genereer een smartPay probleem met forceMoneyType
     const moneySettings = {
       ...mathSettings,
       enabledOperations: { money: true },
+      forceMoneyType: 'smartPay',
     };
     
-    let attempts = 0;
-    let mathProblem;
-    do {
-      mathProblem = generateMathProblem(moneySettings);
-      attempts++;
-    } while (mathProblem.moneyType !== 'smartPay' && attempts < 20);
-    
+    const mathProblem = generateMathProblem(moneySettings);
     setProblem(mathProblem);
     setSelectedMoney([]);
   }, [mathSettings]);
@@ -93,7 +88,7 @@ function SmartPayGame({ mathSettings, onSuccess, onFailure }) {
       <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl p-2 sm:p-4 border-2 border-amber-300 mb-3 sm:mb-4">
         <p className="text-xs sm:text-sm font-medium text-amber-800 mb-2 sm:mb-3">💼 Jouw portemonnee:</p>
         <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
-          {problem.wallet.map((value, index) => (
+          {(problem.wallet || []).map((value, index) => (
             <div 
               key={index}
               onClick={() => toggleMoney(index)}

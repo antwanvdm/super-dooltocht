@@ -34,7 +34,9 @@ const Player = mongoose.model('Player', playerSchema);
 const cutoff = new Date();
 cutoff.setMonth(cutoff.getMonth() - MONTHS);
 
-console.log(`🔍 Looking for players not updated since ${cutoff.toISOString()} (${MONTHS} months ago)…\n`);
+console.log(
+  `🔍 Looking for players not updated since ${cutoff.toISOString()} (${MONTHS} months ago)…\n`,
+);
 
 const stalePlayers = await Player.find({ updatedAt: { $lt: cutoff } })
   .select('codeKey updatedAt')
@@ -45,7 +47,9 @@ if (stalePlayers.length === 0) {
 } else {
   console.log(`Found ${stalePlayers.length} stale player(s):\n`);
   for (const p of stalePlayers) {
-    console.log(`  • ${p.codeKey}  (last update: ${p.updatedAt.toISOString()})`);
+    console.log(
+      `  • ${p.codeKey}  (last update: ${p.updatedAt.toISOString()})`,
+    );
   }
 
   if (dryRun) {

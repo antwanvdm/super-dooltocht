@@ -102,15 +102,15 @@ npm run preview
 
 ## 🛠️ Tech Stack
 
-| Technology   | Version | Purpose                    |
-| ------------ | ------- | -------------------------- |
-| React        | 19      | UI Framework               |
-| Vite         | 7       | Build tool & dev server    |
-| Tailwind CSS | 4       | Styling                    |
-| React Router | 7       | Navigation                 |
-| Express      | 5       | Backend API server         |
-| Mongoose     | 9       | MongoDB ODM                |
-| Vitest       | 4       | Testing                    |
+| Technology   | Version | Purpose                 |
+| ------------ | ------- | ----------------------- |
+| React        | 19      | UI Framework            |
+| Vite         | 7       | Build tool & dev server |
+| Tailwind CSS | 4       | Styling                 |
+| React Router | 7       | Navigation              |
+| Express      | 5       | Backend API server      |
+| Mongoose     | 9       | MongoDB ODM             |
+| Vitest       | 4       | Testing                 |
 
 ## 📁 Project Structure
 

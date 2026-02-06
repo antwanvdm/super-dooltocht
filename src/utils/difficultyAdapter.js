@@ -17,6 +17,7 @@ export const generateMathProblem = (settings) => {
   const placeValueLevel = settings?.placeValueLevel || 'tens';
   const moneyMaxAmount = settings?.moneyMaxAmount || 2000;
   const moneyIncludeCents = settings?.moneyIncludeCents || false;
+  const forceMoneyType = settings?.forceMoneyType || null;
   const enabled = settings?.enabledOperations || {
     add: true,
     sub: true,
@@ -47,7 +48,11 @@ export const generateMathProblem = (settings) => {
     case 'lovingHearts':
       return generateLovingHearts();
     case 'money':
-      return generateMoneyProblem(moneyMaxAmount, moneyIncludeCents);
+      return generateMoneyProblem(
+        moneyMaxAmount,
+        moneyIncludeCents,
+        forceMoneyType,
+      );
     default:
       return generateAddition(maxValue, addSubMode, beyondDigits);
   }
@@ -477,10 +482,13 @@ const formatMoney = (cents) => {
   return `€${euros},${remainingCents.toString().padStart(2, '0')}`;
 };
 
-// Genereer een geld probleem (kiest random uit de 4 types)
-const generateMoneyProblem = (maxAmount, includeCents) => {
+// Genereer een geld probleem (kiest random uit de 4 types, of een specifiek type)
+const generateMoneyProblem = (maxAmount, includeCents, forceType = null) => {
   const types = ['makeAmount', 'countMoney', 'smartPay', 'change'];
-  const type = types[Math.floor(Math.random() * types.length)];
+  const type =
+    forceType && types.includes(forceType)
+      ? forceType
+      : types[Math.floor(Math.random() * types.length)];
 
   const currency = getCurrencyForLevel(maxAmount, includeCents);
   const amount = generateValidAmount(maxAmount, includeCents, 100);

@@ -41,18 +41,29 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    // Genereer een makeAmount probleem
+    // Genereer een makeAmount probleem met forceMoneyType
     const moneySettings = {
       ...mathSettings,
       enabledOperations: { money: true },
+      forceMoneyType: 'makeAmount',
     };
     
-    let attempts = 0;
-    let mathProblem;
-    do {
-      mathProblem = generateMathProblem(moneySettings);
-      attempts++;
-    } while (mathProblem.moneyType !== 'makeAmount' && attempts < 20);
+    const mathProblem = generateMathProblem(moneySettings);
+    
+    // Defensieve check: als het probleem niet het juiste type heeft, skip
+    if (!mathProblem.correctCombination || !mathProblem.currency) {
+      // Fallback: probeer opnieuw
+      const retry = generateMathProblem(moneySettings);
+      setProblem(retry);
+      const correct = retry.correctCombination || [];
+      const wrongOptions = generateWrongCombinations(retry.amount, retry.currency || [], correct);
+      const allOptions = [
+        { combination: correct, isCorrect: true },
+        ...wrongOptions.filter(c => c).map(c => ({ combination: c, isCorrect: false }))
+      ].sort(() => Math.random() - 0.5);
+      setOptions(allOptions);
+      return;
+    }
     
     setProblem(mathProblem);
     
@@ -62,7 +73,7 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
     
     const allOptions = [
       { combination: correct, isCorrect: true },
-      ...wrongOptions.map(c => ({ combination: c, isCorrect: false }))
+      ...wrongOptions.filter(c => c).map(c => ({ combination: c, isCorrect: false }))
     ].sort(() => Math.random() - 0.5);
     
     setOptions(allOptions);
@@ -111,7 +122,7 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
             } disabled:cursor-not-allowed`}
           >
             <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
-              {option.combination.map((value, i) => (
+              {(option.combination || []).map((value, i) => (
                 value >= 500 ? (
                   <Bill key={i} value={value / 100} size="sm" />
                 ) : (

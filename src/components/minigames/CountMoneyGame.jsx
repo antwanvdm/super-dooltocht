@@ -10,19 +10,14 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
   const [isCorrect, setIsCorrect] = useState(false);
 
   useEffect(() => {
-    // Genereer een countMoney probleem
+    // Genereer een countMoney probleem met forceMoneyType
     const moneySettings = {
       ...mathSettings,
       enabledOperations: { money: true },
+      forceMoneyType: 'countMoney',
     };
     
-    let attempts = 0;
-    let mathProblem;
-    do {
-      mathProblem = generateMathProblem(moneySettings);
-      attempts++;
-    } while (mathProblem.moneyType !== 'countMoney' && attempts < 20);
-    
+    const mathProblem = generateMathProblem(moneySettings);
     setProblem(mathProblem);
     setInputValue('');
   }, [mathSettings]);
@@ -80,7 +75,7 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
         {/* Geld weergave */}
         <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-3 sm:p-6 border-2 border-amber-200 mb-4 sm:mb-6">
           <div className="flex flex-wrap gap-2 sm:gap-3 justify-center items-center">
-            {problem.money.map((value, i) => (
+            {(problem.money || []).map((value, i) => (
               value >= 500 ? (
                 <Bill key={i} value={value / 100} size="md" />
               ) : (
