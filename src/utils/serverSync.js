@@ -4,8 +4,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
  * Valideer code bij de server en laad voortgang
  */
 export async function validateCodeWithServer(code) {
-  if (!Array.isArray(code) || code.length !== 3) {
-    throw new Error('Code moet een array van 3 elementen zijn');
+  if (!Array.isArray(code) || code.length < 3) {
+    throw new Error('Code moet een array van minimaal 3 elementen zijn');
   }
 
   const response = await fetch(`${API_URL}/api/players/validate`, {
@@ -56,7 +56,7 @@ export async function syncProgressToServer(codeKey, progress) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ progress }),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -67,10 +67,10 @@ export async function syncProgressToServer(codeKey, progress) {
 }
 
 /**
- * Helper: maak codeKey van code array
+ * Helper: maak codeKey van code array (4 slugs: dier-hart-symbool-nummer)
  */
 export function makeCodeKey(codeArray) {
-  if (!Array.isArray(codeArray) || codeArray.length !== 3) {
+  if (!Array.isArray(codeArray) || codeArray.length < 3) {
     return null;
   }
   return codeArray.join('-');
