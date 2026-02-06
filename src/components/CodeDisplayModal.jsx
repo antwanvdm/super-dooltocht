@@ -40,7 +40,7 @@ export default function CodeDisplayModal({
         </p>
 
         {/* Emojis groot display */}
-        <div className="flex justify-center gap-4 text-6xl sm:text-7xl mb-6 py-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl">
+        <div className="flex justify-center gap-2 sm:gap-4 text-5xl sm:text-7xl mb-6 py-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl">
           {loading ? (
             <span className="text-2xl text-gray-400">Laden...</span>
           ) : (

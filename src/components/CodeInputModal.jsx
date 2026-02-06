@@ -171,14 +171,14 @@ export default function CodeInputModal({
                     <p className="text-sm text-gray-500 text-center">
                       {categoryLabels[categoryIndex] || `Categorie ${categoryIndex + 1}:`}
                     </p>
-                    <div className="flex flex-wrap justify-center gap-2">
+                    <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                       {category.map((item) => (
                         <button
                           key={item.slug}
                           type="button"
                           onClick={() => handleEmojiSelect(categoryIndex, item.emoji)}
                           disabled={loading}
-                          className={`text-3xl p-2 rounded-lg transition-all ${
+                          className={`text-2xl sm:text-3xl p-1.5 sm:p-2 rounded-lg transition-all ${
                             selectedEmojis[categoryIndex] === item.emoji
                               ? 'bg-blue-500 scale-110 shadow-lg'
                               : 'bg-gray-100 hover:bg-gray-200'
