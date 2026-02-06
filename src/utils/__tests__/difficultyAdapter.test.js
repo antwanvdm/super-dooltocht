@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   generateMathProblem,
+  generateUniqueMathProblems,
   generateWrongAnswers,
   formatMoney,
   findOptimalCombination,
@@ -1289,5 +1290,93 @@ describe('Edge Cases - Potential Crash Scenarios', () => {
 
     // Should generate variety of types
     expect(types.size).toBeGreaterThan(3);
+  });
+});
+
+// ============================================
+// UNIQUE MATH PROBLEMS TESTS
+// ============================================
+
+describe('generateUniqueMathProblems', () => {
+  it('should generate the requested number of problems', () => {
+    const settings = {
+      enabledOperations: { add: true, sub: true, mul: true },
+      maxValue: 100,
+      mulTables: 'all',
+    };
+
+    const problems = generateUniqueMathProblems(settings, 4);
+    expect(problems).toHaveLength(4);
+  });
+
+  it('should generate problems with unique question strings', () => {
+    const settings = {
+      enabledOperations: { add: true, sub: true, mul: true },
+      maxValue: 100,
+      mulTables: 'all',
+    };
+
+    // Run 50 times to catch non-deterministic failures
+    for (let run = 0; run < 50; run++) {
+      const problems = generateUniqueMathProblems(settings, 4);
+      const questions = problems.map(p => p.question);
+      const uniqueQuestions = new Set(questions);
+      expect(uniqueQuestions.size).toBe(4);
+    }
+  });
+
+  it('should generate unique problems even with a single operation type', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 100,
+      addSubMode: 'beyond',
+      beyondDigits: 'units',
+    };
+
+    for (let run = 0; run < 50; run++) {
+      const problems = generateUniqueMathProblems(settings, 4);
+      const questions = problems.map(p => p.question);
+      const uniqueQuestions = new Set(questions);
+      expect(uniqueQuestions.size).toBe(4);
+    }
+  });
+
+  it('should generate unique multiplication problems', () => {
+    const settings = {
+      enabledOperations: { mul: true },
+      mulTables: 'easy',
+    };
+
+    for (let run = 0; run < 50; run++) {
+      const problems = generateUniqueMathProblems(settings, 4);
+      const questions = problems.map(p => p.question);
+      const uniqueQuestions = new Set(questions);
+      expect(uniqueQuestions.size).toBe(4);
+    }
+  });
+
+  it('should handle small ranges where uniqueness is harder', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 20,
+      addSubMode: 'within',
+    };
+
+    const problems = generateUniqueMathProblems(settings, 4);
+    expect(problems).toHaveLength(4);
+    // With very small ranges there's still enough variance for 4 unique problems
+    const questions = problems.map(p => p.question);
+    const uniqueQuestions = new Set(questions);
+    expect(uniqueQuestions.size).toBe(4);
+  });
+
+  it('should still return correct number even if unable to find all unique', () => {
+    // This tests the fallback — lovingHearts only has 9 possible questions (1+?=10 through 9+?=10)
+    const settings = {
+      enabledOperations: { lovingHearts: true },
+    };
+
+    const problems = generateUniqueMathProblems(settings, 4);
+    expect(problems).toHaveLength(4);
   });
 });

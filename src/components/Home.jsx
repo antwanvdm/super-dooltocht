@@ -64,6 +64,13 @@ function Home({ disabled = false }) {
     }
   }, []);
 
+  // Lock body scroll when continue modal is open
+  useEffect(() => {
+    if (!continueModal) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [continueModal]);
+
   const continueGame = () => {
     if (continueModal) {
       navigate(`/maze/${continueModal.themeId}`, {
@@ -571,7 +578,7 @@ function Home({ disabled = false }) {
       {/* Continue Modal - opgeslagen spel gevonden */}
       {continueModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl text-center max-h-[90vh] overflow-y-auto overscroll-contain">
             <div className="text-7xl mb-4">{continueModal.themeEmoji}</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">
               Welkom terug! 👋

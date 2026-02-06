@@ -102,12 +102,15 @@ npm run preview
 
 ## 🛠️ Tech Stack
 
-| Technology   | Version | Purpose                 |
-| ------------ | ------- | ----------------------- |
-| React        | 19      | UI Framework            |
-| Vite         | 7       | Build tool & dev server |
-| Tailwind CSS | 4       | Styling                 |
-| React Router | 7       | Navigation              |
+| Technology   | Version | Purpose                    |
+| ------------ | ------- | -------------------------- |
+| React        | 19      | UI Framework               |
+| Vite         | 7       | Build tool & dev server    |
+| Tailwind CSS | 4       | Styling                    |
+| React Router | 7       | Navigation                 |
+| Express      | 5       | Backend API server         |
+| Mongoose     | 9       | MongoDB ODM                |
+| Vitest       | 4       | Testing                    |
 
 ## 📁 Project Structure
 
@@ -116,16 +119,53 @@ src/
 ├── components/
 │   ├── maze/           # Core maze game components
 │   ├── minigames/      # Educational challenges
-│   ├── ui/             # Reusable UI components
+│   ├── CodeFlowManager.jsx   # Player code auth flow
+│   ├── CodeInputModal.jsx    # Emoji code entry
+│   ├── CodeDisplayModal.jsx  # New code display
 │   ├── Home.jsx        # Home screen with settings
 │   └── Confetti.jsx    # Victory celebration
 ├── hooks/              # Custom React hooks
 ├── utils/
 │   ├── difficultyAdapter.js  # Math problem generation
+│   ├── emojiCode.js          # Emoji ↔ slug conversion
 │   ├── localStorage.js       # Game state persistence
 │   ├── mazeGenerator.js      # Procedural maze generation
-│   └── themes.js             # Visual themes
+│   ├── serverSync.js         # Server sync utilities
+│   ├── themes.js             # Visual themes
+│   └── __tests__/            # Unit tests
 └── assets/             # Static assets
+server/
+├── index.js            # Express API server
+├── cleanup.js          # Stale player cleanup script
+└── package.json
+```
+
+## 🖥️ Server
+
+The game uses a lightweight Express/MongoDB backend for player code management and progress sync.
+
+### Running the server
+
+```bash
+cd server
+npm install
+node --env-file=.env --watch index.js
+```
+
+Requires a `MONGODB_URI` in `server/.env`.
+
+### Player cleanup
+
+Remove players that haven't been active in the last 3 months:
+
+```bash
+cd server
+
+# Dry-run (shows what would be deleted)
+node --env-file=.env cleanup.js
+
+# Actually delete
+node --env-file=.env cleanup.js --confirm
 ```
 
 ## 🤝 Contributing

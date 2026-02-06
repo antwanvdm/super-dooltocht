@@ -635,6 +635,31 @@ const generateChange = (maxAmount, includeCents, currency) => {
   };
 };
 
+// Genereer meerdere unieke sommen (geen dubbele question strings)
+export const generateUniqueMathProblems = (settings, count = 4) => {
+  const problems = [];
+  const seenQuestions = new Set();
+  const maxAttempts = count * 20;
+  let attempts = 0;
+
+  while (problems.length < count && attempts < maxAttempts) {
+    attempts++;
+    const problem = generateMathProblem(settings);
+    if (!seenQuestions.has(problem.question)) {
+      seenQuestions.add(problem.question);
+      problems.push(problem);
+    }
+  }
+
+  // Fallback: als we na maxAttempts nog niet genoeg hebben, vul aan met wat we
+  // krijgen (beter dan niets tonen)
+  while (problems.length < count) {
+    problems.push(generateMathProblem(settings));
+  }
+
+  return problems;
+};
+
 // Exporteer ook helpers voor de minigames
 export {
   formatMoney,

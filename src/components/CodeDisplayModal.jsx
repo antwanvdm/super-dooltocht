@@ -21,11 +21,17 @@ export default function CodeDisplayModal({
     loadAndConvert();
   }, [code]);
 
+  useEffect(() => {
+    if (!isOpen || !code) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen, code]);
+
   if (!isOpen || !code) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-xl text-center">
+      <div className="bg-white rounded-lg p-6 sm:p-8 max-w-md w-full shadow-xl text-center max-h-[90vh] overflow-y-auto overscroll-contain">
         <h2 className="text-2xl font-bold mb-2 text-green-600">
           Je nieuwe code! 🎉
         </h2>

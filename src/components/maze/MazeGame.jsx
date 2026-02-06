@@ -69,6 +69,12 @@ function MazeGame() {
   useEffect(() => {
     const savedState = getGameState();
 
+    // Geen location.state (direct URL) én geen saved game voor dit thema → terug naar Home
+    if (!location.state && (!savedState || savedState.themeId !== themeId)) {
+      navigate('/', { replace: true });
+      return;
+    }
+
     // Check of er een saved state is voor dit thema
     if (savedState && savedState.themeId === themeId) {
       // Laad opgeslagen spel

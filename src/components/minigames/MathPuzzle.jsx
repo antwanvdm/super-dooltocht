@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { generateMathProblem } from '../../utils/difficultyAdapter';
+import { generateUniqueMathProblems } from '../../utils/difficultyAdapter';
 
 function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
   const [problems, setProblems] = useState([]);
@@ -28,7 +28,7 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
       standardSettings.enabledOperations.add = true;
     }
     
-    const newProblems = Array(4).fill(null).map(() => generateMathProblem(standardSettings));
+    const newProblems = generateUniqueMathProblems(standardSettings, 4);
     setProblems(newProblems);
     setAnswers({});
     setFeedback({});

@@ -15,7 +15,8 @@ export default function CodeInputModal({
   const [selectedEmojis, setSelectedEmojis] = useState(['', '', '', '']);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showNewAdventure, setShowNewAdventure] = useState(false);
+  // 'welcome' | 'enterCode' | 'newAdventure'
+  const [screen, setScreen] = useState(prefillCode ? 'enterCode' : 'welcome');
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Laad emoji categorieën van server
@@ -87,6 +88,13 @@ export default function CodeInputModal({
     }
   };
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   if (categoriesLoading) {
@@ -101,85 +109,119 @@ export default function CodeInputModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-6 max-w-2xl w-full shadow-xl">
-        {!showNewAdventure ? (
-          <>
-            <h2 className="text-2xl font-bold text-center mb-2 text-blue-600">
-              Welkom! 👋
+      <div className={`bg-white rounded-lg max-w-2xl w-full shadow-xl flex flex-col ${
+        screen === 'enterCode' ? 'h-[90vh]' : 'max-h-[90vh]'
+      }`}>
+
+        {/* ========== WELCOME SCREEN ========== */}
+        {screen === 'welcome' && (
+          <div className="p-6 sm:p-8 text-center">
+            <div className="text-6xl mb-4">🦸🧩🕹️</div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-purple-600 mb-3">
+              Welkom bij Super Dooltocht!
             </h2>
-            <p className="text-center text-gray-600 mb-6">
-              Kies je 4 emoji's om verder te spelen
+            <p className="text-gray-600 mb-8">
+              Om aan de slag te gaan heb je een eigen code nodig.
             </p>
 
-            <form onSubmit={handleSubmitCode} className="space-y-4">
-              {/* Huidige selectie */}
-              <div className="flex justify-center gap-4 text-5xl mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className="space-y-3">
+              <button
+                onClick={() => setScreen('enterCode')}
+                className="w-full bg-blue-500 text-white font-bold py-4 rounded-xl hover:bg-blue-600 transition-colors text-lg"
+              >
+                🔑 Ik heb al een code
+              </button>
+              <button
+                onClick={() => setScreen('newAdventure')}
+                className="w-full bg-green-500 text-white font-bold py-4 rounded-xl hover:bg-green-600 transition-colors text-lg"
+              >
+                🎮 Start nieuw avontuur
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========== ENTER CODE SCREEN ========== */}
+        {screen === 'enterCode' && (
+          <>
+            {/* Sticky header + code preview */}
+            <div className="flex-shrink-0 p-6 pb-2">
+              <h2 className="text-2xl font-bold text-center mb-2 text-blue-600">
+                Voer je code in 🔑
+              </h2>
+              <p className="text-center text-gray-600 mb-4">
+                Kies je 4 emoji's om verder te spelen
+              </p>
+              {/* Huidige selectie - always visible */}
+              <div className="flex justify-center gap-4 text-5xl p-4 bg-gray-50 rounded-lg">
                 {selectedEmojis.map((emoji, i) => (
                   <span key={i} className={emoji ? '' : 'opacity-30'}>
                     {emoji || '❓'}
                   </span>
                 ))}
               </div>
-
-              {/* Emoji keuze per categorie */}
-              {categories.map((category, categoryIndex) => (
-                <div key={categoryIndex} className="space-y-2">
-                  <p className="text-sm text-gray-500 text-center">
-                    {categoryLabels[categoryIndex] || `Categorie ${categoryIndex + 1}:`}
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {category.map((item) => (
-                      <button
-                        key={item.slug}
-                        type="button"
-                        onClick={() => handleEmojiSelect(categoryIndex, item.emoji)}
-                        disabled={loading}
-                        className={`text-3xl p-2 rounded-lg transition-all ${
-                          selectedEmojis[categoryIndex] === item.emoji
-                            ? 'bg-blue-500 scale-110 shadow-lg'
-                            : 'bg-gray-100 hover:bg-gray-200'
-                        }`}
-                      >
-                        {item.emoji}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              {error && (
-                <p className="text-red-500 text-center text-sm font-medium">
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading || selectedEmojis.some(emoji => !emoji)}
-                className="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
-              >
-                {loading ? 'Even geduld...' : 'Dit is mijn code! ✓'}
-              </button>
-            </form>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">of</span>
-              </div>
             </div>
 
-            <button
-              onClick={() => setShowNewAdventure(true)}
-              className="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-colors"
-            >
-              Start nieuw avontuur 🎮
-            </button>
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6">
+              <form onSubmit={handleSubmitCode} className="space-y-4">
+                {/* Emoji keuze per categorie */}
+                {categories.map((category, categoryIndex) => (
+                  <div key={categoryIndex} className="space-y-2">
+                    <p className="text-sm text-gray-500 text-center">
+                      {categoryLabels[categoryIndex] || `Categorie ${categoryIndex + 1}:`}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {category.map((item) => (
+                        <button
+                          key={item.slug}
+                          type="button"
+                          onClick={() => handleEmojiSelect(categoryIndex, item.emoji)}
+                          disabled={loading}
+                          className={`text-3xl p-2 rounded-lg transition-all ${
+                            selectedEmojis[categoryIndex] === item.emoji
+                              ? 'bg-blue-500 scale-110 shadow-lg'
+                              : 'bg-gray-100 hover:bg-gray-200'
+                          }`}
+                        >
+                          {item.emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {error && (
+                  <p className="text-red-500 text-center text-sm font-medium">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || selectedEmojis.some(emoji => !emoji)}
+                  className="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
+                >
+                  {loading ? 'Even geduld...' : 'Dit is mijn code! ✓'}
+                </button>
+              </form>
+
+              <button
+                onClick={() => {
+                  setScreen('welcome');
+                  setError('');
+                }}
+                className="w-full mt-4 bg-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                ← Terug
+              </button>
+            </div>
           </>
-        ) : (
-          <>
+        )}
+
+        {/* ========== NEW ADVENTURE SCREEN ========== */}
+        {screen === 'newAdventure' && (
+          <div className="p-6">
             <h2 className="text-2xl font-bold text-center mb-6 text-green-600">
               Nieuw avontuur? 🚀
             </h2>
@@ -204,16 +246,17 @@ export default function CodeInputModal({
             </button>
             <button
               onClick={() => {
-                setShowNewAdventure(false);
+                setScreen('welcome');
                 setError('');
               }}
               disabled={loading}
               className="w-full mt-3 bg-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-400 disabled:bg-gray-200 transition-colors"
             >
-              Terug
+              ← Terug
             </button>
-          </>
+          </div>
         )}
+
       </div>
     </div>
   );
