@@ -39,12 +39,12 @@ export default function CodeFlowManager({ onReady }) {
       // Genereer nieuwe code
       const { code } = await createNewAdventure();
       
-      // Sla code op
-      setPlayerCode(code);
-      
-      // Clear alle andere game data (schone start)
+      // Clear alle andere game data EERST (schone start)
       clearAllData();
       clearGameState();
+      
+      // Sla code op NA het wissen (clearAllData wist ook de code!)
+      setPlayerCode(code);
       
       // Toon code display modal
       setCodeModalOpen(false);
