@@ -193,7 +193,7 @@ function Home({ disabled = false }) {
                 key={key}
                 onClick={() => !disabled && setExerciseCategory(key)}
                 disabled={disabled}
-                className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-lg transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-lg transition-all min-w-0 ${
                   disabled
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                     : exerciseCategory === key
@@ -203,7 +203,7 @@ function Home({ disabled = false }) {
               >
                 <span className="text-xl sm:text-2xl">{icon}</span>
                 <span>{label}</span>
-                {disabled && <span className="text-xs ml-1">(binnenkort)</span>}
+                {disabled && <span className="text-[10px] sm:text-xs">(binnenkort)</span>}
               </button>
             ))}
           </div>
