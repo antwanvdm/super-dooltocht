@@ -5,7 +5,7 @@
 //   mulTables: string,
 //   addSubMode: 'within' | 'beyond',  // binnen of buiten het tiental
 //   beyondDigits: 'units' | 'tens' | 'hundreds',  // bij buiten tiental: enkel eenheid, met tiental, met honderdtal
-//   placeValueLevel: 'tens' | 'hundreds' | 'thousands',  // niveau voor begripsoefening
+//   placeValueLevel: 'tens' | 'hundreds' | 'thousands',  // niveau voor getallen begrijpen
 //   moneyMaxAmount: 2000 | 10000 | 50000 | 100000,  // max bedrag in centen
 //   moneyIncludeCents: boolean  // wel of niet met centen
 // }
@@ -33,6 +33,7 @@ export const generateMathProblem = (settings) => {
   if (enabled.placeValue) pool.push('placeValue');
   if (enabled.lovingHearts) pool.push('lovingHearts');
   if (enabled.money) pool.push('money');
+  if (enabled.clock) pool.push('clock');
 
   const type = pool.length
     ? pool[Math.floor(Math.random() * pool.length)]
@@ -53,6 +54,8 @@ export const generateMathProblem = (settings) => {
         moneyIncludeCents,
         forceMoneyType,
       );
+    case 'clock':
+      return _generateClockProblem(settings);
     default:
       return generateAddition(maxValue, addSubMode, beyondDigits);
   }
@@ -244,7 +247,7 @@ const generateMultiplication = (mulTables) => {
   };
 };
 
-// Begripsoefening: wat is het tiental/eenheid/honderdtal/duizendtal van een getal
+// Getallen begrijpen: wat is het tiental/eenheid/honderdtal/duizendtal van een getal
 // Antwoorden zijn de werkelijke plaatswaarden: 44 -> eenheid=4, tiental=40
 const generatePlaceValue = (level) => {
   let number, position, answer, positionName, allPlaceValues;
@@ -668,10 +671,277 @@ export const generateUniqueMathProblems = (settings, count = 4) => {
   return problems;
 };
 
+// ============================================
+// KLOKKIJKEN OEFENINGEN
+// ============================================
+
+// Genereer een random kloktijd op basis van niveau
+const generateClockTime = (level) => {
+  const hours = randBetween(1, 12);
+
+  let minutes;
+  switch (level) {
+    case 'hours':
+      minutes = 0;
+      break;
+    case 'halfHours':
+      minutes = [0, 30][Math.floor(Math.random() * 2)];
+      break;
+    case 'quarters':
+      minutes = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+      break;
+    case 'fiveMinutes':
+      minutes = Math.floor(Math.random() * 12) * 5;
+      break;
+    case 'minutes':
+    default:
+      minutes = randBetween(0, 59);
+      break;
+  }
+
+  return { hours, minutes };
+};
+
+// Converteer tijd naar Nederlands woordformaat
+const timeToWords = (hours, minutes) => {
+  if (minutes === 0) {
+    return `${numberToWord(hours)} uur`;
+  }
+  if (minutes === 30) {
+    // "half" + volgend uur
+    const nextHour = hours === 12 ? 1 : hours + 1;
+    return `half ${numberToWord(nextHour)}`;
+  }
+  if (minutes === 15) {
+    // "kwart over" + huidig uur
+    return `kwart over ${numberToWord(hours)}`;
+  }
+  if (minutes === 45) {
+    // "kwart voor" + volgend uur
+    const nextHour = hours === 12 ? 1 : hours + 1;
+    return `kwart voor ${numberToWord(nextHour)}`;
+  }
+  if (minutes < 30) {
+    if (minutes === 5) return `vijf over ${numberToWord(hours)}`;
+    if (minutes === 10) return `tien over ${numberToWord(hours)}`;
+    if (minutes === 20)
+      return `tien voor half ${numberToWord(hours === 12 ? 1 : hours + 1)}`;
+    if (minutes === 25)
+      return `vijf voor half ${numberToWord(hours === 12 ? 1 : hours + 1)}`;
+    // Overige minuten: "X over Y"
+    return `${minutes} over ${numberToWord(hours)}`;
+  }
+  // minutes > 30
+  const nextHour = hours === 12 ? 1 : hours + 1;
+  if (minutes === 35) return `vijf over half ${numberToWord(nextHour)}`;
+  if (minutes === 40) return `tien over half ${numberToWord(nextHour)}`;
+  if (minutes === 50) return `tien voor ${numberToWord(nextHour)}`;
+  if (minutes === 55) return `vijf voor ${numberToWord(nextHour)}`;
+  // Overige minuten > 30
+  const remaining = 60 - minutes;
+  return `${remaining} voor ${numberToWord(nextHour)}`;
+};
+
+// Helper: getal naar Nederlands woord (1-12)
+const numberToWord = (n) => {
+  const words = [
+    '',
+    'één',
+    'twee',
+    'drie',
+    'vier',
+    'vijf',
+    'zes',
+    'zeven',
+    'acht',
+    'negen',
+    'tien',
+    'elf',
+    'twaalf',
+  ];
+  return words[n] || String(n);
+};
+
+// Formatteer digitale tijd (12-uurs notatie, altijd met zero-padding)
+const formatDigital = (hours, minutes) => {
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
+// Formatteer digitale tijd in 24-uurs notatie
+const formatDigital24 = (hours24, minutes) => {
+  return `${hours24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
+// Converteer 12-uurs naar random 24-uurs variant (ochtend of middag)
+const to24h = (hours12) => {
+  // Geeft een random keuze: ochtend (=zelfde) of middag (+12)
+  // Speciale gevallen: 12 → 00:xx of 12:xx
+  if (hours12 === 12) {
+    return Math.random() < 0.5 ? 0 : 12;
+  }
+  return Math.random() < 0.5 ? hours12 : hours12 + 12;
+};
+
+// Dagdeel tekst op basis van 24-uurs uur
+const dagdeel = (hours24) => {
+  if (hours24 >= 0 && hours24 < 6) return "'s nachts";
+  if (hours24 >= 6 && hours24 < 12) return "'s ochtends";
+  if (hours24 >= 12 && hours24 < 18) return "'s middags";
+  return "'s avonds";
+};
+
+// Genereer foute kloktijden die plausibel zijn
+const generateWrongClockTimes = (
+  correctHours,
+  correctMinutes,
+  level,
+  count = 3,
+) => {
+  const wrongTimes = new Set();
+  const correctKey = `${correctHours}:${correctMinutes}`;
+  let attempts = 0;
+
+  while (wrongTimes.size < count && attempts < 100) {
+    attempts++;
+    let h = correctHours;
+    let m = correctMinutes;
+    const variation = Math.floor(Math.random() * 5);
+
+    switch (variation) {
+      case 0: // Verkeerd uur
+        h = randBetween(1, 12);
+        break;
+      case 1: // Verwisselde wijzers (klassieke fout)
+        if (correctMinutes <= 12 && correctMinutes > 0) {
+          h = correctMinutes;
+          m = correctHours * 5;
+          if (m >= 60) m = m % 60;
+        } else {
+          h = randBetween(1, 12);
+        }
+        break;
+      case 2: // ±1 uur
+        h = correctHours + (Math.random() < 0.5 ? 1 : -1);
+        if (h > 12) h = 1;
+        if (h < 1) h = 12;
+        break;
+      case 3: // ±kwartier/half uur
+        m = correctMinutes + (Math.random() < 0.5 ? 15 : -15);
+        if (m < 0) m += 60;
+        if (m >= 60) {
+          m -= 60;
+          h = h === 12 ? 1 : h + 1;
+        }
+        break;
+      case 4: // ±5 minuten
+        m = correctMinutes + (Math.random() < 0.5 ? 5 : -5);
+        if (m < 0) m += 60;
+        if (m >= 60) {
+          m -= 60;
+          h = h === 12 ? 1 : h + 1;
+        }
+        break;
+    }
+
+    // Snap naar het juiste niveau
+    m = snapMinutesToLevel(m, level);
+
+    const key = `${h}:${m}`;
+    if (key !== correctKey && h >= 1 && h <= 12 && m >= 0 && m < 60) {
+      wrongTimes.add(key);
+    }
+  }
+
+  // Fallback als we niet genoeg hebben
+  let fallbackH = 1;
+  while (wrongTimes.size < count) {
+    const key = `${fallbackH}:${correctMinutes}`;
+    if (key !== correctKey) wrongTimes.add(key);
+    fallbackH++;
+  }
+
+  return Array.from(wrongTimes)
+    .slice(0, count)
+    .map((key) => {
+      const [h, m] = key.split(':').map(Number);
+      return { hours: h, minutes: m };
+    });
+};
+
+// Snap minuten naar het dichtstbijzijnde geldige punt voor het niveau
+const snapMinutesToLevel = (minutes, level) => {
+  switch (level) {
+    case 'hours':
+      return 0;
+    case 'halfHours':
+      return minutes >= 45 || minutes < 15 ? 0 : 30;
+    case 'quarters':
+      return (Math.round(minutes / 15) * 15) % 60;
+    case 'fiveMinutes':
+      return (Math.round(minutes / 5) * 5) % 60;
+    default:
+      return minutes;
+  }
+};
+
+// Genereer een klokprobleem
+const _generateClockProblem = (settings) => {
+  const clockLevel = settings?.clockLevel || 'hours';
+  const clock24h = settings?.clock24h || false;
+  const { hours, minutes } = generateClockTime(clockLevel);
+  const hours24 = to24h(hours);
+
+  return {
+    hours, // 1-12
+    hours24, // 0-23 (random ochtend/middag variant)
+    minutes,
+    digital: formatDigital(hours, minutes),
+    digital24: formatDigital24(hours24, minutes),
+    words: timeToWords(hours, minutes),
+    dagdeel: dagdeel(hours24),
+    use24h: clock24h,
+    level: clockLevel,
+    type: 'clock',
+  };
+};
+
+export const generateClockProblem = _generateClockProblem;
+
+// Genereer meerdere unieke kloktijden
+export const generateUniqueClockProblems = (settings, count = 4) => {
+  const problems = [];
+  const seen = new Set();
+  let attempts = 0;
+
+  while (problems.length < count && attempts < count * 20) {
+    attempts++;
+    const problem = _generateClockProblem(settings);
+    const key = `${problem.hours}:${problem.minutes}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      problems.push(problem);
+    }
+  }
+
+  // Fallback
+  while (problems.length < count) {
+    problems.push(generateClockProblem(settings));
+  }
+
+  return problems;
+};
+
 // Exporteer ook helpers voor de minigames
 export {
   formatMoney,
   findOptimalCombination,
   getCurrencyForLevel,
   generateValidAmount,
+  generateWrongClockTimes,
+  generateClockTime,
+  timeToWords,
+  formatDigital,
+  formatDigital24,
+  to24h,
+  dagdeel,
 };

@@ -88,7 +88,7 @@ function MultipleChoice({ mathSettings, onSuccess, onFailure, theme }) {
       {showFeedback && (
         <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
           {selected === problem.answer ? (
-            <p className="text-green-600">🎉 Super goed! Je hebt het goed!</p>
+            <p className="text-green-600">🎉 Super! Je hebt het goed!</p>
           ) : (
             <p className="text-orange-600">💪 Bijna! Probeer nog eens!</p>
           )}

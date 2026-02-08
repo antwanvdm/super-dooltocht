@@ -9,6 +9,12 @@ import MakeAmountGame from './MakeAmountGame';
 import CountMoneyGame from './CountMoneyGame';
 import SmartPayGame from './SmartPayGame';
 import ChangeGame from './ChangeGame';
+import ClockMultipleChoice from './ClockMultipleChoice';
+import ClockMemory from './ClockMemory';
+import ClockInput from './ClockInput';
+import ClockMatchAnalog from './ClockMatchAnalog';
+import Clock24hGame from './Clock24hGame';
+import ClockWordsGame from './ClockWordsGame';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
@@ -17,17 +23,26 @@ const STANDARD_GAMES = ['multiple-choice', 'memory', 'puzzle', 'darts'];
 // Money minigames
 const MONEY_GAMES = ['makeAmount', 'countMoney', 'smartPay', 'change'];
 
+// Clock minigames
+const CLOCK_GAMES = ['clockMultipleChoice', 'clockMemory', 'clockInput', 'clockMatchAnalog'];
+
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
   'memory': 'Memory',
   'puzzle': 'Sommenblad',
   'darts': 'Darts',
-  'placeValue': 'Begripsoefening',
+  'placeValue': 'Getallen begrijpen',
   'lovingHearts': 'Verliefde harten',
   'makeAmount': 'Maak het bedrag',
   'countMoney': 'Tel het geld',
   'smartPay': 'Slim betalen',
   'change': 'Wisselgeld',
+  'clockMultipleChoice': 'Hoe laat is het?',
+  'clockMemory': 'Klok Memory',
+  'clockInput': 'Typ de tijd',
+  'clockMatchAnalog': 'Welke klok?',
+  'clock24h': '24-uursklok',
+  'clockWords': 'Schrijf de tijd',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -41,6 +56,7 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     const hasPlaceValue = enabled.placeValue;
     const hasLovingHearts = enabled.lovingHearts;
     const hasMoney = enabled.money;
+    const hasClock = enabled.clock;
 
     // Bouw pool van beschikbare game types
     const availableTypes = [];
@@ -56,6 +72,15 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     }
     if (hasMoney) {
       availableTypes.push(...MONEY_GAMES);
+    }
+    if (hasClock) {
+      availableTypes.push(...CLOCK_GAMES);
+      if (mathSettings?.clock24h) {
+        availableTypes.push('clock24h');
+      }
+      if (mathSettings?.clockWords) {
+        availableTypes.push('clockWords');
+      }
     }
 
     // Fallback naar multiple-choice als niets beschikbaar
@@ -195,6 +220,59 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
 
             {gameType === 'change' && (
               <ChangeGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clockMultipleChoice' && (
+              <ClockMultipleChoice
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clockMemory' && (
+              <ClockMemory
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clockInput' && (
+              <ClockInput
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clockMatchAnalog' && (
+              <ClockMatchAnalog
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clock24h' && (
+              <Clock24hGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'clockWords' && (
+              <ClockWordsGame
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}

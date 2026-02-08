@@ -19,8 +19,15 @@ function MazeGame() {
   const { mathSettings, playerEmoji, adventureLength } = useMemo(() => {
     const defaults = { enabledOperations: { add: true, sub: true, mul: true }, maxValue: 50 };
     const state = location.state || {};
+    const settings = state.mathSettings || defaults;
+    // Zorg dat clock-gerelateerde settings doorgegeven worden
+    if (settings.enabledOperations?.clock) {
+      settings.clockLevel = settings.clockLevel || 'hours';
+      settings.clock24h = settings.clock24h || false;
+      settings.clockWords = settings.clockWords || false;
+    }
     return {
-      mathSettings: state.mathSettings || defaults,
+      mathSettings: settings,
       playerEmoji: state.playerEmoji || '🙂',
       adventureLength: state.adventureLength || 'medium',
     };
@@ -693,7 +700,7 @@ function MazeGame() {
                 )}
                 {mathSettings.enabledOperations.placeValue && (
                   <div className="bg-amber-50 rounded-xl p-4">
-                    <h4 className="font-bold text-amber-800 mb-2">🔢 Begripsoefening</h4>
+                    <h4 className="font-bold text-amber-800 mb-2">🔢 Getallen begrijpen</h4>
                     <p className="text-sm text-amber-700">
                       Niveau: <strong>
                         {mathSettings.placeValueLevel === 'tens' && 'Tientallen'}

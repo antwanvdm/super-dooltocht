@@ -16,7 +16,7 @@ This game aims to be:
 - 🚫 **Ad-free** – No advertisements, ever
 - 🔒 **Privacy-respecting** – No tracking, no data collection
 - 🎮 **Fun** – Engaging gameplay that keeps kids motivated
-- 📚 **Educational** – Real math practice with configurable difficulty
+- 📚 **Educational** – Real math and clock reading practice with configurable difficulty
 - 🆓 **Free** – Open source and available to everyone
 
 ## ✨ Features
@@ -33,7 +33,7 @@ This game aims to be:
   - Hard: Tables 11, 12
   - Expert: Tables 13-20
   - All Tables (1-20)
-- **Place Value (Begripsoefening)** – Understanding tens, hundreds, thousands
+- **Place Value (Getallen begrijpen)** – Understanding tens, hundreds, thousands
 - **Loving Hearts (Verliefde Harten)** – Number pairs that sum to 10
 - **Money (Rekenen met Geld)** – Multiple money-based challenges:
   - Count Money (Geld Tellen)
@@ -41,7 +41,30 @@ This game aims to be:
   - Smart Pay (Slim Betalen)
   - Change (Wisselgeld)
 
-### Challenge Types
+### Clock Reading (Klokkijken)
+
+A separate exercise category with its own settings tab.
+
+- **Difficulty levels:**
+  - Whole hours (Hele uren) – 03:00, 07:00
+  - Half hours (Halve uren) – 03:00, 03:30
+  - Quarters (Kwartieren) – 03:00, 03:15, 03:30, 03:45
+  - 5 minutes – 03:05, 03:10, 03:25...
+  - 1 minute – 03:07, 03:42...
+- **Extra options:**
+  - 💬 Words mode – Practice reading/writing times in Dutch words ("kwart over drie", "half vijf")
+  - 🔄 24-hour notation – Practice converting between 12h and 24h (AM/PM understanding)
+
+### Clock Challenge Types
+
+- 🕐 **Hoe laat is het?** – See analog clock, choose the correct time from 4 options
+- 🃏 **Klok Memory** – Match analog clocks with digital/word representations
+- ⌨️ **Typ de tijd** – See analog clock, type the digital time (HH:MM)
+- 🔍 **Welke klok?** – Read a digital/word time, pick the correct analog clock
+- 📝 **Schrijf de tijd** – See a clock, type the time in Dutch words (words mode)
+- 🔄 **24-uursklok** – Convert between 12h+dagdeel and 24h notation (24h mode)
+
+### Math Challenge Types
 
 - 🎯 **Multiple Choice** – Pick the correct answer from 4 options
 - 🧠 **Memory Game** – Match math problems with their answers
@@ -61,7 +84,8 @@ This game aims to be:
 - 🎭 **Emoji Character Selection** – Choose your own avatar
 - 💾 **Auto-save** – Game progress automatically saved
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
-- 📱 **Touch Controls** – D-pad overlay for touchscreen devices
+- � **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), and Taal (language, coming soon)
+- �📱 **Touch Controls** – D-pad overlay for touchscreen devices
 - ⌨️ **Keyboard Shortcuts**:
   - Arrow keys: Move through maze
   - **K**: Toggle minimap
@@ -119,6 +143,9 @@ src/
 ├── components/
 │   ├── maze/           # Core maze game components
 │   ├── minigames/      # Educational challenges
+│   │   ├── AnalogClock.jsx       # Reusable SVG analog clock
+│   │   ├── Clock*.jsx            # Clock reading minigames
+│   │   └── ...                   # Math & money minigames
 │   ├── CodeFlowManager.jsx   # Player code auth flow
 │   ├── CodeInputModal.jsx    # Emoji code entry
 │   ├── CodeDisplayModal.jsx  # New code display

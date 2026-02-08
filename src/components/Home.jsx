@@ -17,6 +17,7 @@ function Home({ disabled = false }) {
   
   // Load saved settings or use defaults
   const savedSettings = getUserSettings();
+  const [exerciseCategory, setExerciseCategory] = useState(savedSettings?.exerciseCategory || 'rekenen');
   const [ops, setOps] = useState(savedSettings?.ops || { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false });
   const [maxValue, setMaxValue] = useState(savedSettings?.maxValue || 100);
   const [mulTables, setMulTables] = useState(savedSettings?.mulTables || 'easy');
@@ -25,6 +26,9 @@ function Home({ disabled = false }) {
   const [placeValueLevel, setPlaceValueLevel] = useState(savedSettings?.placeValueLevel || 'tens');
   const [moneyMaxAmount, setMoneyMaxAmount] = useState(savedSettings?.moneyMaxAmount || 2000);
   const [moneyIncludeCents, setMoneyIncludeCents] = useState(savedSettings?.moneyIncludeCents || false);
+  const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
+  const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
+  const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
   const [adventureLength, setAdventureLength] = useState(savedSettings?.adventureLength || 'medium');
   const [playerEmoji, setPlayerEmoji] = useState(savedSettings?.playerEmoji || PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
@@ -33,6 +37,7 @@ function Home({ disabled = false }) {
   // Save settings whenever they change
   useEffect(() => {
     saveUserSettings({
+      exerciseCategory,
       ops,
       maxValue,
       mulTables,
@@ -41,10 +46,13 @@ function Home({ disabled = false }) {
       placeValueLevel,
       moneyMaxAmount,
       moneyIncludeCents,
+      clockLevel,
+      clock24h,
+      clockWords,
       adventureLength,
       playerEmoji,
     });
-  }, [ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, adventureLength, playerEmoji]);
+  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -97,9 +105,14 @@ function Home({ disabled = false }) {
     if (savedGame && savedGame.themeId !== selectedTheme) {
       clearGameState();
     }
-    navigate(`/maze/${selectedTheme}`, {
-      state: {
-        mathSettings: {
+    const mathSettings = exerciseCategory === 'klokkijken'
+      ? {
+          enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: true },
+          clockLevel,
+          clock24h,
+          clockWords,
+        }
+      : {
           enabledOperations: ops,
           maxValue: Number(maxValue),
           mulTables: mulTables,
@@ -108,14 +121,18 @@ function Home({ disabled = false }) {
           placeValueLevel: placeValueLevel,
           moneyMaxAmount: moneyMaxAmount,
           moneyIncludeCents: moneyIncludeCents,
-        },
+        };
+
+    navigate(`/maze/${selectedTheme}`, {
+      state: {
+        mathSettings,
         playerEmoji,
         adventureLength,
       },
     });
   };
 
-  const canStart = ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money;
+  const canStart = exerciseCategory === 'klokkijken' || ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money;
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -165,18 +182,45 @@ function Home({ disabled = false }) {
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Stel je avontuur in</h2>
           </div>
 
+          {/* Category Tabs */}
+          <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+            {[
+              { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
+              { key: 'klokkijken', label: 'Klokkijken', icon: '🕐', disabled: false },
+              { key: 'taal', label: 'Taal', icon: '📝', disabled: true },
+            ].map(({ key, label, icon, disabled }) => (
+              <button
+                key={key}
+                onClick={() => !disabled && setExerciseCategory(key)}
+                disabled={disabled}
+                className={`flex items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-lg transition-all ${
+                  disabled
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                    : exerciseCategory === key
+                      ? 'bg-indigo-600 text-white shadow-lg scale-105'
+                      : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300'
+                }`}
+              >
+                <span className="text-xl sm:text-2xl">{icon}</span>
+                <span>{label}</span>
+                {disabled && <span className="text-xs ml-1">(binnenkort)</span>}
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 mb-8 sm:mb-12">
-            {/* Operations */}
+            {/* Operations - Rekenen */}
+            {exerciseCategory === 'rekenen' && (
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 sm:p-7 border-2 border-blue-100">
               <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">➕</span> Soort oefening
+                <span className="text-xl sm:text-2xl">🔢</span> Soort oefening
               </h3>
               <div className="space-y-3 sm:space-y-4">
                 {[  
                   { key: 'add', label: 'Plussommen', icon: '➕' },
                   { key: 'sub', label: 'Minsommen', icon: '➖' },
                   { key: 'mul', label: 'Keersommen', icon: '✖️' },
-                  { key: 'placeValue', label: 'Begripsoefening', icon: '🔢' },
+                  { key: 'placeValue', label: 'Getallen begrijpen', icon: '🧮' },
                   { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
                   { key: 'money', label: 'Rekenen met geld', icon: '💶' },
                 ].map(({ key, label, icon }) => (
@@ -206,8 +250,63 @@ function Home({ disabled = false }) {
                 </p>
               )}
             </div>
+            )}
 
-            {/* Level */}
+            {/* Extra opties - Klokkijken */}
+            {exerciseCategory === 'klokkijken' && (
+            <div className="bg-gradient-to-br from-sky-50 to-cyan-50 rounded-2xl p-4 sm:p-7 border-2 border-sky-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">🕐</span> Extra opties
+              </h3>
+
+              <div className="space-y-3 sm:space-y-4">
+                <label
+                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                    clockWords
+                      ? 'bg-sky-500 text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={clockWords}
+                    onChange={() => setClockWords(!clockWords)}
+                    className="sr-only"
+                  />
+                  <span className="text-xl">💬</span>
+                  <div>
+                    <span className="font-semibold">Woorden</span>
+                    <span className={`block text-xs mt-0.5 ${clockWords ? 'text-white/80' : 'text-gray-500'}`}>Oefen met tijden in woorden (kwart over drie, half vijf)</span>
+                  </div>
+                  {clockWords && <span className="ml-auto text-xl">✓</span>}
+                </label>
+
+                <label
+                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                    clock24h
+                      ? 'bg-sky-500 text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={clock24h}
+                    onChange={() => setClock24h(!clock24h)}
+                    className="sr-only"
+                  />
+                  <span className="text-xl">🔄</span>
+                  <div>
+                    <span className="font-semibold">24-uurs notatie</span>
+                    <span className={`block text-xs mt-0.5 ${clock24h ? 'text-white/80' : 'text-gray-500'}`}>Oefen het verschil tussen nacht/ochtend en middag/avond (bijvoorbeeld 05:45 → 17:45)</span>
+                  </div>
+                  {clock24h && <span className="ml-auto text-xl">✓</span>}
+                </label>
+              </div>
+            </div>
+            )}
+
+            {/* Level - only for rekenen */}
+            {exerciseCategory === 'rekenen' && (
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-7 border-2 border-green-100">
               <h3 className="flex items-center gap-3 text-lg font-bold text-gray-700 mb-6">
                 <span className="text-2xl">📊</span> Niveau
@@ -345,10 +444,10 @@ function Home({ disabled = false }) {
                 </>
               )}
               
-              {/* Begripsoefening niveau */}
+              {/* Getallen begrijpen niveau */}
               {ops.placeValue && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🔢 Begripsoefening niveau:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🧮 Getallen begrijpen niveau:</p>
                   <div className="space-y-2">
                     {[
                       { key: 'tens', label: 'Tientallen', desc: 'Getallen 10-99' },
@@ -445,6 +544,48 @@ function Home({ disabled = false }) {
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
               )}
             </div>
+            )}
+
+            {/* Niveau - Klokkijken */}
+            {exerciseCategory === 'klokkijken' && (
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-7 border-2 border-green-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">📊</span> Niveau
+              </h3>
+              <div className="space-y-2">
+                {[
+                  { key: 'hours', label: 'Hele uren', desc: '03:00, 07:00' },
+                  { key: 'halfHours', label: 'Halve uren', desc: '03:00, 03:30' },
+                  { key: 'quarters', label: 'Kwartieren', desc: '03:00, 03:15, 03:30, 03:45' },
+                  { key: 'fiveMinutes', label: '5 minuten', desc: '03:05, 03:10, 03:25...' },
+                  { key: 'minutes', label: '1 minuut', desc: '03:07, 03:42...' },
+                ].map(({ key, label, desc }) => (
+                  <label
+                    key={key}
+                    className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                      clockLevel === key
+                        ? 'bg-green-500 text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="clockLevel"
+                      value={key}
+                      checked={clockLevel === key}
+                      onChange={(e) => setClockLevel(e.target.value)}
+                      className="sr-only"
+                    />
+                    <div>
+                      <span className="font-semibold">{label}</span>
+                      <span className={`ml-2 text-xs ${clockLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                    </div>
+                    {clockLevel === key && <span className="text-xl">✓</span>}
+                  </label>
+                ))}
+              </div>
+            </div>
+            )}
 
             {/* Adventure Length */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-7 border-2 border-amber-100">
