@@ -94,9 +94,7 @@ function ClockMultipleChoice({ mathSettings, onSuccess, onFailure, theme: _theme
                 ? option.correct
                   ? 'bg-green-500 text-white scale-110'
                   : 'bg-red-500 text-white shake'
-                : showFeedback && option.correct
-                  ? 'bg-green-500 text-white'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
             {option.label}

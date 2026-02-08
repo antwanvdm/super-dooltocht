@@ -92,6 +92,7 @@ function ClockInput({ mathSettings, onSuccess, onFailure, theme: _theme }) {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+        <p className="text-gray-400 text-sm sm:text-base mb-1">bijvoorbeeld: 11:45</p>
         <div className="flex items-center gap-2">
           <input
             ref={hoursRef}

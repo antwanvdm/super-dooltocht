@@ -725,6 +725,22 @@ function MazeGame() {
                     </div>
                   </div>
                 )}
+                {mathSettings.enabledOperations.clock && (
+                  <div className="bg-indigo-50 rounded-xl p-4">
+                    <h4 className="font-bold text-indigo-800 mb-2">🕐 Klokkijken</h4>
+                    <div className="text-sm text-indigo-700 space-y-1">
+                      <p>Niveau: <strong>
+                        {mathSettings.clockLevel === 'hours' && 'Hele uren'}
+                        {mathSettings.clockLevel === 'halfHours' && 'Halve uren'}
+                        {mathSettings.clockLevel === 'quarters' && 'Kwartieren'}
+                        {mathSettings.clockLevel === 'fiveMinutes' && '5 minuten'}
+                        {mathSettings.clockLevel === 'minutes' && '1 minuut'}
+                      </strong></p>
+                      {mathSettings.clock24h && <p>24-uursklok: <strong>Aan</strong></p>}
+                      {mathSettings.clockWords && <p>Tijd in woorden: <strong>Aan</strong></p>}
+                    </div>
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => setShowSettings(false)}
@@ -753,7 +769,7 @@ function MazeGame() {
                 <div className="bg-blue-50 rounded-xl p-3 sm:p-4">
                   <h4 className="font-bold text-blue-800 mb-1 sm:mb-2 text-sm sm:text-base">⌨️ Bewegen</h4>
                   <p className="text-blue-700 text-xs sm:text-sm">Gebruik de <strong>pijltjestoetsen</strong> op je toetsenbord om door het doolhof te lopen. Houd een toets ingedrukt om snel te bewegen!</p>
-                  <p className="text-blue-700 text-xs sm:text-sm mt-2">Op een <strong>touchscreen</strong> gebruik je de <strong>🎮 besturing</strong> rechtsonder in beeld.</p>
+                  <p className="text-blue-700 text-xs sm:text-sm mt-2">Op een <strong>mobiel of tablet</strong> gebruik je de <strong>🎮 besturing</strong> rechtsonder in beeld.</p>
                 </div>
                 <div className="bg-amber-50 rounded-xl p-3 sm:p-4">
                   <h4 className="font-bold text-amber-800 mb-1 sm:mb-2 text-sm sm:text-base">🔑 Sleutel & Uitdagingen</h4>

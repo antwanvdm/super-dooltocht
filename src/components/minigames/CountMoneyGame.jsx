@@ -97,7 +97,7 @@ function CountMoneyGame({ mathSettings, onSuccess, onFailure }) {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder={hasCents ? "bijv. 12,50" : "bijv. 12"}
+              placeholder={hasCents ? "bv: 12,50" : "bv: 12"}
               disabled={showFeedback}
               className={`w-full text-xl sm:text-2xl font-bold py-3 sm:py-4 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-xl border-2 text-center ${
                 showFeedback

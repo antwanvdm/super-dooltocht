@@ -56,7 +56,7 @@ export default function CodeDisplayModal({
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <p className="text-gray-700 font-medium">
               📝 Teken of schrijf deze emoji's op een papiertje!<br/>
-              <span className="text-sm text-gray-500">Vraag je juf of ouders om te helpen.</span>
+              <span className="text-sm text-gray-500">Vraag je juf/meester of iemand thuis om te helpen.</span>
             </p>
           </div>
 

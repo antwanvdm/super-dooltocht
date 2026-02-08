@@ -180,6 +180,7 @@ function Clock24hGame({ mathSettings, onSuccess, onFailure, theme: _theme }) {
         </div>
 
         <form onSubmit={handleSubmitTo24h} className="flex flex-col items-center gap-4">
+          <p className="text-gray-400 text-sm sm:text-base mb-1">bijvoorbeeld: 15:45</p>
           <div className="flex items-center gap-2">
             <input
               ref={hoursRef}
@@ -274,9 +275,7 @@ function Clock24hGame({ mathSettings, onSuccess, onFailure, theme: _theme }) {
                 ? option.correct
                   ? 'bg-green-500 text-white scale-110'
                   : 'bg-red-500 text-white shake'
-                : showFeedback && option.correct
-                  ? 'bg-green-500 text-white'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
             {option.label}

@@ -96,12 +96,13 @@ function ClockWordsGame({ mathSettings, onSuccess, onFailure, theme: _theme }) {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+        <p className="text-gray-400 text-sm sm:text-base mb-1">bijvoorbeeld: kwart over drie</p>
         <input
           ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="bijv. kwart over drie"
+          placeholder="bv: kwart over drie"
           disabled={showFeedback}
           autoComplete="off"
           autoCapitalize="off"

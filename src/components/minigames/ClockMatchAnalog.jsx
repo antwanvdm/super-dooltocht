@@ -90,9 +90,7 @@ function ClockMatchAnalog({ mathSettings, onSuccess, onFailure, theme: _theme })
                 ? option.correct
                   ? 'bg-green-100 ring-4 ring-green-500 scale-110'
                   : 'bg-red-100 ring-4 ring-red-500 shake'
-                : showFeedback && option.correct
-                  ? 'bg-green-100 ring-4 ring-green-500'
-                  : 'bg-white border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50'
+                : 'bg-white border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50'
             }`}
           >
             <AnalogClock
