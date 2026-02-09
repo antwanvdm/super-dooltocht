@@ -1545,13 +1545,33 @@ describe('Clock - timeToWords', () => {
     expect(timeToWords(12, 35)).toBe('vijf over half één');
   });
 
-  it('should handle non-standard minutes with "X over/voor" pattern', () => {
-    // e.g., 03:07 → "7 over drie", 03:52 → "8 voor vier"
-    const result7 = timeToWords(3, 7);
-    expect(result7).toBe('7 over drie');
+  it('should handle all minutes with proper Dutch convention relative to half hour', () => {
+    // 1-14: "X over Y" (over huidig uur)
+    expect(timeToWords(8, 1)).toBe('één over acht');
+    expect(timeToWords(3, 7)).toBe('zeven over drie');
+    expect(timeToWords(8, 14)).toBe('veertien over acht');
 
-    const result52 = timeToWords(3, 52);
-    expect(result52).toBe('8 voor vier');
+    // 16-29: "X voor half Z" (voor half volgend uur)
+    expect(timeToWords(8, 16)).toBe('veertien voor half negen');
+    expect(timeToWords(8, 22)).toBe('acht voor half negen');
+    expect(timeToWords(8, 28)).toBe('twee voor half negen');
+
+    // 31-44: "X over half Z" (over half volgend uur)
+    expect(timeToWords(7, 31)).toBe('één over half acht');
+    expect(timeToWords(7, 41)).toBe('elf over half acht');
+    expect(timeToWords(8, 43)).toBe('dertien over half negen');
+
+    // 46-59: "X voor Z" (voor volgend uur)
+    expect(timeToWords(9, 48)).toBe('twaalf voor tien');
+    expect(timeToWords(3, 52)).toBe('acht voor vier');
+    expect(timeToWords(3, 57)).toBe('drie voor vier');
+  });
+
+  it('should handle hour 12 wrapping for non-standard minutes', () => {
+    expect(timeToWords(12, 7)).toBe('zeven over twaalf');
+    expect(timeToWords(12, 22)).toBe('acht voor half één');
+    expect(timeToWords(12, 41)).toBe('elf over half één');
+    expect(timeToWords(12, 52)).toBe('acht voor één');
   });
 });
 

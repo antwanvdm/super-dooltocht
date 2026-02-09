@@ -703,46 +703,37 @@ const generateClockTime = (level) => {
 };
 
 // Converteer tijd naar Nederlands woordformaat
+// Nederlandse conventie:
+//   :00 → "X uur"
+//   :01-:14 → "X over Y" (minuten over huidig uur)
+//   :15 → "kwart over Y"
+//   :16-:29 → "X voor half Z" (minuten tot half, Z = volgend uur)
+//   :30 → "half Z"
+//   :31-:44 → "X over half Z"
+//   :45 → "kwart voor Z"
+//   :46-:59 → "X voor Z" (minuten tot volgend uur)
 const timeToWords = (hours, minutes) => {
-  if (minutes === 0) {
-    return `${numberToWord(hours)} uur`;
-  }
-  if (minutes === 30) {
-    // "half" + volgend uur
-    const nextHour = hours === 12 ? 1 : hours + 1;
-    return `half ${numberToWord(nextHour)}`;
-  }
-  if (minutes === 15) {
-    // "kwart over" + huidig uur
-    return `kwart over ${numberToWord(hours)}`;
-  }
-  if (minutes === 45) {
-    // "kwart voor" + volgend uur
-    const nextHour = hours === 12 ? 1 : hours + 1;
-    return `kwart voor ${numberToWord(nextHour)}`;
+  const nextHour = hours === 12 ? 1 : hours + 1;
+
+  if (minutes === 0) return `${numberToWord(hours)} uur`;
+  if (minutes === 15) return `kwart over ${numberToWord(hours)}`;
+  if (minutes === 30) return `half ${numberToWord(nextHour)}`;
+  if (minutes === 45) return `kwart voor ${numberToWord(nextHour)}`;
+
+  if (minutes < 15) {
+    return `${numberToWord(minutes)} over ${numberToWord(hours)}`;
   }
   if (minutes < 30) {
-    if (minutes === 5) return `vijf over ${numberToWord(hours)}`;
-    if (minutes === 10) return `tien over ${numberToWord(hours)}`;
-    if (minutes === 20)
-      return `tien voor half ${numberToWord(hours === 12 ? 1 : hours + 1)}`;
-    if (minutes === 25)
-      return `vijf voor half ${numberToWord(hours === 12 ? 1 : hours + 1)}`;
-    // Overige minuten: "X over Y"
-    return `${minutes} over ${numberToWord(hours)}`;
+    return `${numberToWord(30 - minutes)} voor half ${numberToWord(nextHour)}`;
   }
-  // minutes > 30
-  const nextHour = hours === 12 ? 1 : hours + 1;
-  if (minutes === 35) return `vijf over half ${numberToWord(nextHour)}`;
-  if (minutes === 40) return `tien over half ${numberToWord(nextHour)}`;
-  if (minutes === 50) return `tien voor ${numberToWord(nextHour)}`;
-  if (minutes === 55) return `vijf voor ${numberToWord(nextHour)}`;
-  // Overige minuten > 30
-  const remaining = 60 - minutes;
-  return `${remaining} voor ${numberToWord(nextHour)}`;
+  if (minutes < 45) {
+    return `${numberToWord(minutes - 30)} over half ${numberToWord(nextHour)}`;
+  }
+  // minutes > 45
+  return `${numberToWord(60 - minutes)} voor ${numberToWord(nextHour)}`;
 };
 
-// Helper: getal naar Nederlands woord (1-12)
+// Helper: getal naar Nederlands woord (1-14)
 const numberToWord = (n) => {
   const words = [
     '',
@@ -758,6 +749,8 @@ const numberToWord = (n) => {
     'tien',
     'elf',
     'twaalf',
+    'dertien',
+    'veertien',
   ];
   return words[n] || String(n);
 };
