@@ -457,7 +457,7 @@ function MazeGame() {
   };
 
   return (
-    <div className={`h-dvh ${theme.colors.primary} flex flex-col items-center overflow-hidden`}>
+    <div className={`h-dvh ${theme.colors.primary} flex flex-col items-center overflow-hidden select-none`}>
       {/* Header met progress */}
       <div className="w-full mb-2 sm:mb-4">
         <div className="w-full bg-white/95 backdrop-blur-sm shadow-lg">
@@ -554,60 +554,84 @@ function MazeGame() {
           <div className="relative w-36 sm:w-40 h-36 sm:h-40">
             {/* Omhoog */}
             <button
-              onTouchStart={() => {
+              onTouchStart={(e) => {
+                e.preventDefault();
+                clearInterval(window._touchIntervalUp);
+                clearInterval(window._touchIntervalDown);
+                clearInterval(window._touchIntervalLeft);
+                clearInterval(window._touchIntervalRight);
                 move('up');
-                const interval = setInterval(() => move('up'), 120);
-                window._touchInterval = interval;
+                window._touchIntervalUp = setInterval(() => move('up'), 120);
               }}
               onTouchEnd={() => {
-                clearInterval(window._touchInterval);
+                clearInterval(window._touchIntervalUp);
               }}
-              onMouseDown={() => move('up')}
+              onTouchCancel={() => {
+                clearInterval(window._touchIntervalUp);
+              }}
               className="absolute top-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬆️
             </button>
             {/* Links */}
             <button
-              onTouchStart={() => {
+              onTouchStart={(e) => {
+                e.preventDefault();
+                clearInterval(window._touchIntervalUp);
+                clearInterval(window._touchIntervalDown);
+                clearInterval(window._touchIntervalLeft);
+                clearInterval(window._touchIntervalRight);
                 move('left');
-                const interval = setInterval(() => move('left'), 120);
-                window._touchInterval = interval;
+                window._touchIntervalLeft = setInterval(() => move('left'), 120);
               }}
               onTouchEnd={() => {
-                clearInterval(window._touchInterval);
+                clearInterval(window._touchIntervalLeft);
               }}
-              onMouseDown={() => move('left')}
+              onTouchCancel={() => {
+                clearInterval(window._touchIntervalLeft);
+              }}
               className="absolute top-1/2 left-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬅️
             </button>
             {/* Rechts */}
             <button
-              onTouchStart={() => {
+              onTouchStart={(e) => {
+                e.preventDefault();
+                clearInterval(window._touchIntervalUp);
+                clearInterval(window._touchIntervalDown);
+                clearInterval(window._touchIntervalLeft);
+                clearInterval(window._touchIntervalRight);
                 move('right');
-                const interval = setInterval(() => move('right'), 120);
-                window._touchInterval = interval;
+                window._touchIntervalRight = setInterval(() => move('right'), 120);
               }}
               onTouchEnd={() => {
-                clearInterval(window._touchInterval);
+                clearInterval(window._touchIntervalRight);
               }}
-              onMouseDown={() => move('right')}
+              onTouchCancel={() => {
+                clearInterval(window._touchIntervalRight);
+              }}
               className="absolute top-1/2 right-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ➡️
             </button>
             {/* Omlaag */}
             <button
-              onTouchStart={() => {
+              onTouchStart={(e) => {
+                e.preventDefault();
+                clearInterval(window._touchIntervalUp);
+                clearInterval(window._touchIntervalDown);
+                clearInterval(window._touchIntervalLeft);
+                clearInterval(window._touchIntervalRight);
                 move('down');
-                const interval = setInterval(() => move('down'), 120);
-                window._touchInterval = interval;
+                window._touchIntervalDown = setInterval(() => move('down'), 120);
               }}
               onTouchEnd={() => {
-                clearInterval(window._touchInterval);
+                clearInterval(window._touchIntervalDown);
               }}
-              onMouseDown={() => move('down')}
+              onTouchCancel={() => {
+                clearInterval(window._touchIntervalDown);
+              }}
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
             >
               ⬇️
