@@ -1,10 +1,14 @@
-# 🦸🧩 Super Dooltocht (Super Maze Adventure)
+# 🦸🧩🕹 Super Dooltocht (Super Maze Adventure)
 
 An educational math and language game for elementary school children, built with React and Tailwind CSS.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![React Router](https://img.shields.io/badge/React%20Router-7-CA4245?logo=reactrouter&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?logo=tailwindcss&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-9-880000?logo=mongoose&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## 🎯 About This Project
