@@ -1,6 +1,6 @@
 # 🦸🧩 Super Dooltocht (Super Maze Adventure)
 
-An educational math game for elementary school children, built with React and Tailwind CSS.
+An educational math and language game for elementary school children, built with React and Tailwind CSS.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
@@ -16,7 +16,7 @@ This game aims to be:
 - 🚫 **Ad-free** – No advertisements, ever
 - 🔒 **Privacy-respecting** – No tracking, no data collection
 - 🎮 **Fun** – Engaging gameplay that keeps kids motivated
-- 📚 **Educational** – Real math and clock reading practice with configurable difficulty
+- 📚 **Educational** – Real math, clock reading, and language practice with configurable difficulty
 - 🆓 **Free** – Open source and available to everyone
 
 ## ✨ Features
@@ -64,6 +64,51 @@ A separate exercise category with its own settings tab.
 - 📝 **Schrijf de tijd** – See a clock, type the time in Dutch words (words mode)
 - 🔄 **24-uursklok** – Convert between 12h+dagdeel and 24h notation (24h mode)
 
+### Language Exercises (Taal)
+
+A separate exercise category with its own settings tab.
+
+#### Spelling
+
+Practice Dutch spelling rules with 8 word categories:
+
+- ✂️ **Hakwoord** – Words spelled as they sound (e.g. _kat_)
+- 🎵 **Zingwoord** – Words ending in -ng (e.g. _zing_)
+- 💨 **Luchtwoord** – Words with -cht (e.g. _lucht_)
+- 🪵 **Plankwoord** – Words with -nk (e.g. _plank_)
+- 🔤 **Eer/oor/eur/eel-woord** – With subcategories (e.g. _beer, hoor, geur, geel_)
+- 🌈 **Aai/ooi/oei-woord** – (e.g. _mooi, haai_)
+- ✨ **Eeuw/ieuw-woord** – (e.g. _leeuw, nieuw_)
+- 📏 **Langermaakwoord** – Words where you need to extend to hear d/t (e.g. _hond, hart_)
+
+#### Vocabulary (Woordenschat)
+
+- General vocabulary words with definitions and example sentences
+- Optional theme-specific vocabulary tied to the active game world
+
+#### Reading Comprehension (Begrijpend Lezen)
+
+- **Short texts** – 1-2 sentence passages with a comprehension question
+- **Long texts** – 3-4 sentence passages with more complex questions
+- Optional theme-specific reading passages
+
+### Spelling Challenge Types
+
+- 🏷️ **Spellingcategorie** – See a word, pick the correct spelling rule category
+- 🔗 **Spelling Verbinden** – Connect words to their matching spelling categories
+- ⌨️ **Woord Typen** – Type the word correctly and select its category
+
+### Vocabulary Challenge Types
+
+- 🎯 **Woordbetekenis** – See a word, pick the correct definition from 4 options
+- 🧠 **Woorden Memory** – Match words with their definitions in a memory game
+- ✏️ **Woord Invullen** – Fill in the missing word in a sentence
+
+### Reading Challenge Types
+
+- 📖 **Begrijpend Lezen** – Read a text and answer a multiple choice question
+- ✅ **Waar of Niet Waar** – Read a text and judge statements as true or false
+
 ### Math Challenge Types
 
 - 🎯 **Multiple Choice** – Pick the correct answer from 4 options
@@ -84,7 +129,7 @@ A separate exercise category with its own settings tab.
 - 🎭 **Emoji Character Selection** – Choose your own avatar
 - 💾 **Auto-save** – Game progress automatically saved
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
-- � **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), and Taal (language, coming soon)
+- 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), and Taal (language)
 - �📱 **Touch Controls** – D-pad overlay for touchscreen devices
 - ⌨️ **Keyboard Shortcuts**:
   - Arrow keys: Move through maze
@@ -145,6 +190,9 @@ src/
 │   ├── minigames/      # Educational challenges
 │   │   ├── AnalogClock.jsx       # Reusable SVG analog clock
 │   │   ├── Clock*.jsx            # Clock reading minigames
+│   │   ├── Spelling*.jsx         # Spelling minigames
+│   │   ├── Vocabulary*.jsx       # Vocabulary minigames
+│   │   ├── Reading*.jsx          # Reading comprehension minigames
 │   │   └── ...                   # Math & money minigames
 │   ├── CodeFlowManager.jsx   # Player code auth flow
 │   ├── CodeInputModal.jsx    # Emoji code entry
@@ -154,6 +202,8 @@ src/
 ├── hooks/              # Custom React hooks
 ├── utils/
 │   ├── difficultyAdapter.js  # Math problem generation
+│   ├── languageAdapter.js    # Language problem generation
+│   ├── languageData.js       # Spelling, vocabulary & reading data
 │   ├── emojiCode.js          # Emoji ↔ slug conversion
 │   ├── localStorage.js       # Game state persistence
 │   ├── mazeGenerator.js      # Procedural maze generation
@@ -179,7 +229,7 @@ npm install
 node --env-file=.env --watch index.js
 ```
 
-Requires a `MONGODB_URI` in `server/.env`.
+Requires a `MONGODB_URI` and `PORT` in `server/.env`.
 
 ### Player cleanup
 
