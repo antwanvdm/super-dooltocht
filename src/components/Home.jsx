@@ -207,7 +207,7 @@ function Home({ disabled = false }) {
           </div>
 
           {/* Category Tabs */}
-          <div className="flex justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:justify-center sm:gap-3 mb-6 sm:mb-8">
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'klokkijken', label: 'Klokkijken', icon: '🕐', disabled: false },

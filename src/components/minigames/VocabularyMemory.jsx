@@ -108,7 +108,7 @@ function VocabularyMemory({ mathSettings, onSuccess, theme }) {
               aria-label={isFlipped ? card.content : 'Kaart omdraaien'}
             >
               {isFlipped ? (
-                <div className="flex items-center justify-center h-full p-1 sm:p-2 text-center leading-tight">
+                <div className="flex items-center justify-center h-full p-1 sm:p-2 text-center leading-tight text-[10px] sm:text-sm md:text-base">
                   {card.content}
                 </div>
               ) : (

@@ -257,11 +257,18 @@ export const THEMES = {
         text: 'De kameleon zit op een groen blad. Hij verandert van kleur zodat hij niet gezien wordt. Zo kan hij insecten vangen zonder dat ze hem zien. De kameleon is een slim dier.',
         question: 'Waarom verandert de kameleon van kleur?',
         answer: 'Zodat hij niet gezien wordt',
-        wrongAnswers: ['Omdat hij het koud heeft', 'Omdat hij boos is', 'Omdat hij honger heeft'],
+        wrongAnswers: [
+          'Omdat hij het koud heeft',
+          'Omdat hij boos is',
+          'Omdat hij honger heeft',
+        ],
         statements: [
           { text: 'De kameleon zit op een groen blad.', isTrue: true },
           { text: 'De kameleon vangt insecten.', isTrue: true },
-          { text: 'De kameleon verandert van kleur omdat hij boos is.', isTrue: false },
+          {
+            text: 'De kameleon verandert van kleur omdat hij boos is.',
+            isTrue: false,
+          },
           { text: 'De kameleon eet planten.', isTrue: false },
         ],
       },
@@ -395,7 +402,10 @@ export const THEMES = {
         wrongAnswers: ['Tien jaar', 'Vijf jaar', 'Honderd jaar'],
         statements: [
           { text: 'De duiker zwemt met een zeeschildpad.', isTrue: true },
-          { text: 'Er zijn gele, blauwe en oranje vissen te zien.', isTrue: true },
+          {
+            text: 'Er zijn gele, blauwe en oranje vissen te zien.',
+            isTrue: true,
+          },
           { text: 'De zeeschildpad is tien jaar oud.', isTrue: false },
           { text: 'De duiker zwemt alleen.', isTrue: false },
         ],
@@ -408,7 +418,10 @@ export const THEMES = {
         wrongAnswers: ['Grote vissen', 'Zeewier', 'Koraal'],
         statements: [
           { text: 'De walvis is het grootste dier ter wereld.', isTrue: true },
-          { text: 'Baby walvissen zwemmen dicht bij hun moeder.', isTrue: true },
+          {
+            text: 'Baby walvissen zwemmen dicht bij hun moeder.',
+            isTrue: true,
+          },
           { text: 'De walvis eet grote vissen.', isTrue: false },
           { text: 'De walvis leeft in een rivier.', isTrue: false },
         ],
@@ -517,7 +530,11 @@ export const THEMES = {
         text: 'De ridder draagt een glimmend harnas. Hij rijdt op zijn witte paard.',
         question: 'Wat draagt de ridder?',
         answer: 'Een glimmend harnas',
-        wrongAnswers: ['Een gouden kroon', 'Een rode mantel', 'Een zilveren helm'],
+        wrongAnswers: [
+          'Een gouden kroon',
+          'Een rode mantel',
+          'Een zilveren helm',
+        ],
         statements: [
           { text: 'De ridder draagt een glimmend harnas.', isTrue: true },
           { text: 'Hij rijdt op een wit paard.', isTrue: true },
@@ -558,7 +575,10 @@ export const THEMES = {
         answer: 'De koning',
         wrongAnswers: ['De prinses', 'De ridder', 'De kok'],
         statements: [
-          { text: 'De koning heeft een groot banket laten klaarmaken.', isTrue: true },
+          {
+            text: 'De koning heeft een groot banket laten klaarmaken.',
+            isTrue: true,
+          },
           { text: 'Er is soep, vlees en taart.', isTrue: true },
           { text: 'Alleen de ridders zijn uitgenodigd.', isTrue: false },
           { text: 'Het feest is in de tuin.', isTrue: false },
@@ -695,10 +715,17 @@ export const THEMES = {
         text: 'Sommige dinosaurussen waren heel groot, zoals de Brachiosaurus. Andere waren juist heel klein, net zo groot als een kip. Dinosaurussen leefden miljoenen jaren geleden. Er waren vleeseters en planteneters.',
         question: 'Hoe groot was de kleinste dinosaurus?',
         answer: 'Net zo groot als een kip',
-        wrongAnswers: ['Net zo groot als een hond', 'Net zo groot als een muis', 'Net zo groot als een paard'],
+        wrongAnswers: [
+          'Net zo groot als een hond',
+          'Net zo groot als een muis',
+          'Net zo groot als een paard',
+        ],
         statements: [
           { text: 'De Brachiosaurus was heel groot.', isTrue: true },
-          { text: 'Dinosaurussen leefden miljoenen jaren geleden.', isTrue: true },
+          {
+            text: 'Dinosaurussen leefden miljoenen jaren geleden.',
+            isTrue: true,
+          },
           { text: 'Alle dinosaurussen waren heel groot.', isTrue: false },
           { text: 'Dinosaurussen waren allemaal planteneters.', isTrue: false },
         ],
@@ -710,7 +737,10 @@ export const THEMES = {
         answer: 'Drie',
         wrongAnswers: ['Twee', 'Eén', 'Vier'],
         statements: [
-          { text: 'In het museum staat een skelet van een Triceratops.', isTrue: true },
+          {
+            text: 'In het museum staat een skelet van een Triceratops.',
+            isTrue: true,
+          },
           { text: 'De Triceratops was een planteneter.', isTrue: true },
           { text: 'De Triceratops had twee hoorns.', isTrue: false },
           { text: 'De Triceratops was een vleeseater.', isTrue: false },
@@ -857,9 +887,15 @@ export const THEMES = {
         answer: 'In vormpjes',
         wrongAnswers: ['In doosjes', 'In kopjes', 'In bakjes'],
         statements: [
-          { text: 'Er worden duizenden snoepjes per dag gemaakt.', isTrue: true },
+          {
+            text: 'Er worden duizenden snoepjes per dag gemaakt.',
+            isTrue: true,
+          },
           { text: 'De snoepjes gaan in mooie zakjes verpakt.', isTrue: true },
-          { text: 'Er worden maar tien snoepjes per dag gemaakt.', isTrue: false },
+          {
+            text: 'Er worden maar tien snoepjes per dag gemaakt.',
+            isTrue: false,
+          },
           { text: 'De snoepjes worden in doosjes gedrukt.', isTrue: false },
         ],
       },
@@ -965,7 +1001,10 @@ export const THEMES = {
         answer: 'De spits',
         wrongAnswers: ['De keeper', 'De verdediger', 'De scheidsrechter'],
         statements: [
-          { text: 'Het voetbalteam speelt een belangrijke wedstrijd.', isTrue: true },
+          {
+            text: 'Het voetbalteam speelt een belangrijke wedstrijd.',
+            isTrue: true,
+          },
           { text: 'De spits scoort het winnende doelpunt.', isTrue: true },
           { text: 'De keeper scoort het doelpunt.', isTrue: false },
           { text: 'Het team verliest de wedstrijd.', isTrue: false },
@@ -1004,8 +1043,14 @@ export const THEMES = {
         answer: 'Je handen',
         wrongAnswers: ['Je hoofd', 'Je voeten', 'Je knieën'],
         statements: [
-          { text: 'De turnleraar legt uit hoe je een koprol moet maken.', isTrue: true },
-          { text: 'Na een paar keer oefenen kan bijna iedereen het.', isTrue: true },
+          {
+            text: 'De turnleraar legt uit hoe je een koprol moet maken.',
+            isTrue: true,
+          },
+          {
+            text: 'Na een paar keer oefenen kan bijna iedereen het.',
+            isTrue: true,
+          },
           { text: 'Je zet eerst je hoofd op de mat.', isTrue: false },
           { text: 'Niemand kan de koprol na het oefenen.', isTrue: false },
         ],
@@ -1126,7 +1171,10 @@ export const THEMES = {
         wrongAnswers: ['Eén', 'Vijf', 'Tien'],
         statements: [
           { text: 'Groenten en fruit zijn gezond.', isTrue: true },
-          { text: 'Je moet elke dag minstens twee stuks fruit eten.', isTrue: true },
+          {
+            text: 'Je moet elke dag minstens twee stuks fruit eten.',
+            isTrue: true,
+          },
           { text: 'Fruit is ongezond.', isTrue: false },
           { text: 'Je hoeft maar één stuk fruit te eten.', isTrue: false },
         ],
@@ -1139,7 +1187,10 @@ export const THEMES = {
         wrongAnswers: ['Een uur', 'Tien minuten', 'Twee uur'],
         statements: [
           { text: 'Mama en Sanne bakken samen een taart.', isTrue: true },
-          { text: 'Ze versieren de taart met slagroom en aardbeien.', isTrue: true },
+          {
+            text: 'Ze versieren de taart met slagroom en aardbeien.',
+            isTrue: true,
+          },
           { text: 'De taart gaat een uur in de oven.', isTrue: false },
           { text: 'Ze versieren de taart met chocolade.', isTrue: false },
         ],
@@ -1290,7 +1341,10 @@ export const THEMES = {
         wrongAnswers: ['Een regenjas', 'Een sjaal', 'Handschoenen'],
         statements: [
           { text: 'Noor fietst elke dag naar school.', isTrue: true },
-          { text: 'De school is vijf minuten fietsen van haar huis.', isTrue: true },
+          {
+            text: 'De school is vijf minuten fietsen van haar huis.',
+            isTrue: true,
+          },
           { text: 'Noor loopt elke dag naar school.', isTrue: false },
           { text: 'De school is twintig minuten fietsen.', isTrue: false },
         ],
@@ -1302,7 +1356,10 @@ export const THEMES = {
         answer: 'Fietsers',
         wrongAnswers: ['Auto\u2019s', 'Vrachtwagens', 'Bussen'],
         statements: [
-          { text: 'In de stad zijn er brede straten met stoplichten.', isTrue: true },
+          {
+            text: 'In de stad zijn er brede straten met stoplichten.',
+            isTrue: true,
+          },
           { text: 'Op de snelweg mogen geen fietsers rijden.', isTrue: true },
           { text: 'In het dorp zijn er brede straten.', isTrue: false },
           { text: 'Fietsers mogen ook op de snelweg.', isTrue: false },
@@ -1437,9 +1494,15 @@ export const THEMES = {
         answer: 'De hond',
         wrongAnswers: ['De kat', 'Het varken', 'De koe'],
         statements: [
-          { text: 'Er wonen koeien, varkens, kippen en schapen.', isTrue: true },
+          {
+            text: 'Er wonen koeien, varkens, kippen en schapen.',
+            isTrue: true,
+          },
           { text: 'De kat vangt muizen in de schuur.', isTrue: true },
-          { text: 'De kat helpt met het hoeden van de schapen.', isTrue: false },
+          {
+            text: 'De kat helpt met het hoeden van de schapen.',
+            isTrue: false,
+          },
           { text: 'Er zijn geen varkens op de boerderij.', isTrue: false },
         ],
       },
@@ -1562,9 +1625,15 @@ export const THEMES = {
         wrongAnswers: ['Vier', 'Acht', 'Tien'],
         statements: [
           { text: 'De gitaar heeft zes snaren.', isTrue: true },
-          { text: 'Je kunt muziek maken door aan de snaren te tokkelen.', isTrue: true },
+          {
+            text: 'Je kunt muziek maken door aan de snaren te tokkelen.',
+            isTrue: true,
+          },
           { text: 'De gitaar heeft acht snaren.', isTrue: false },
-          { text: 'Je moet op de gitaar blazen om muziek te maken.', isTrue: false },
+          {
+            text: 'Je moet op de gitaar blazen om muziek te maken.',
+            isTrue: false,
+          },
         ],
       },
       {
@@ -1572,7 +1641,11 @@ export const THEMES = {
         text: 'Het schoolkoor oefent een liedje voor het kerstfeest. Ze zingen heel mooi samen.',
         question: 'Waarvoor oefent het koor?',
         answer: 'Voor het kerstfeest',
-        wrongAnswers: ['Voor een verjaardag', 'Voor de meester', 'Voor een wedstrijd'],
+        wrongAnswers: [
+          'Voor een verjaardag',
+          'Voor de meester',
+          'Voor een wedstrijd',
+        ],
         statements: [
           { text: 'Het schoolkoor oefent een liedje.', isTrue: true },
           { text: 'Ze zingen samen.', isTrue: true },
@@ -1603,7 +1676,10 @@ export const THEMES = {
           { text: 'In het orkest spelen veel muzikanten samen.', isTrue: true },
           { text: 'De dirigent staat vooraan.', isTrue: true },
           { text: 'De dirigent speelt de trompet.', isTrue: false },
-          { text: 'Er zijn alleen strijkinstrumenten in het orkest.', isTrue: false },
+          {
+            text: 'Er zijn alleen strijkinstrumenten in het orkest.',
+            isTrue: false,
+          },
         ],
       },
     ],
@@ -1753,7 +1829,10 @@ export const THEMES = {
         answer: 'Onder een palmboom',
         wrongAnswers: ['In een grot', 'Op het schip', 'Onder het water'],
         statements: [
-          { text: 'In de kist zitten gouden munten en edelstenen.', isTrue: true },
+          {
+            text: 'In de kist zitten gouden munten en edelstenen.',
+            isTrue: true,
+          },
           { text: 'De piraten dansen op het strand.', isTrue: true },
           { text: 'De schat lag in een grot.', isTrue: false },
           { text: 'De piraten blijven op het eiland wonen.', isTrue: false },

@@ -372,9 +372,7 @@ export const generateReadingTrueFalseProblem = (settings) => {
   );
 
   if (pool.length === 0) {
-    pool = allTexts.filter(
-      (t) => t.statements && t.statements.length >= 4,
-    );
+    pool = allTexts.filter((t) => t.statements && t.statements.length >= 4);
   }
 
   if (pool.length === 0) {
