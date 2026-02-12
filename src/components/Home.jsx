@@ -912,7 +912,7 @@ function Home({ disabled = false }) {
             <button
               onClick={startMaze}
               disabled={!canLaunch}
-              className={`px-12 py-5 text-2xl font-bold rounded-2xl transition-all duration-300 ${
+              className={`w-full sm:w-auto px-6 sm:px-12 py-3 sm:py-5 text-base sm:text-2xl font-bold rounded-2xl transition-all duration-300 ${
                 canLaunch
                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl hover:shadow-2xl hover:scale-105'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -924,13 +924,13 @@ function Home({ disabled = false }) {
         </section>
 
         {/* Footer motivation */}
-        <footer className="text-center mt-10">
-          <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-full px-8 py-4 border border-white/20">
-            <span className="text-3xl">💪</span>
-            <p className="text-lg text-white font-medium">
+        <footer className="text-center mt-6 sm:mt-10">
+          <div className="inline-flex items-center gap-2 sm:gap-4 bg-white/10 backdrop-blur-md rounded-full px-4 sm:px-8 py-2 sm:py-4 border border-white/20">
+            <span className="text-xl sm:text-3xl">💪</span>
+            <p className="text-sm sm:text-lg text-white font-medium">
               Elke uitdaging is een goede oefening!
             </p>
-            <span className="text-3xl">🧠</span>
+            <span className="text-xl sm:text-3xl">🧠</span>
           </div>
         </footer>
       </div>

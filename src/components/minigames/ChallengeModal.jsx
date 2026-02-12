@@ -73,6 +73,14 @@ const GAME_NAMES = {
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
   const [gameType, setGameType] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [interactionReady, setInteractionReady] = useState(false);
+
+  // Korte delay voordat de modal interactief wordt, zodat een vinger die
+  // al op het scherm lag niet per ongeluk meteen een antwoord selecteert.
+  useEffect(() => {
+    const timer = setTimeout(() => setInteractionReady(true), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Bepaal welke game types beschikbaar zijn op basis van instellingen
@@ -178,7 +186,10 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
         </div>
 
         {/* Content area */}
-        <div className="bg-white p-4 sm:p-8 overflow-y-auto flex-1">
+        <div className="bg-white p-4 sm:p-8 overflow-y-auto flex-1 relative">
+          {!interactionReady && (
+            <div className="absolute inset-0 z-10" />
+          )}
           <div className="space-y-4 sm:space-y-6">
             {gameType === 'multiple-choice' && (
               <MultipleChoice

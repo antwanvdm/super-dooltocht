@@ -463,12 +463,18 @@ describe('generateReadingTrueFalseProblem', () => {
 
 describe('getReadingPool', () => {
   it('should return only general texts when includeThemeReading is false', () => {
-    const pool = getReadingPool({ includeThemeReading: false, themeId: 'space' });
+    const pool = getReadingPool({
+      includeThemeReading: false,
+      themeId: 'space',
+    });
     expect(pool.length).toBe(READING_TEXTS.length);
   });
 
   it('should include theme texts when includeThemeReading is true', () => {
-    const pool = getReadingPool({ includeThemeReading: true, themeId: 'space' });
+    const pool = getReadingPool({
+      includeThemeReading: true,
+      themeId: 'space',
+    });
     expect(pool.length).toBeGreaterThan(READING_TEXTS.length);
   });
 
@@ -484,7 +490,10 @@ describe('getReadingPool', () => {
 
   it('should include theme texts for all themes', () => {
     for (const theme of Object.values(THEMES)) {
-      const pool = getReadingPool({ includeThemeReading: true, themeId: theme.id });
+      const pool = getReadingPool({
+        includeThemeReading: true,
+        themeId: theme.id,
+      });
       expect(pool.length).toBeGreaterThan(READING_TEXTS.length);
     }
   });
@@ -497,8 +506,14 @@ describe('getReadingPool', () => {
 describe('theme readingTexts data integrity', () => {
   it('every theme should have exactly 4 readingTexts', () => {
     for (const [key, theme] of Object.entries(THEMES)) {
-      expect(theme.readingTexts, `${key} should have readingTexts`).toBeDefined();
-      expect(theme.readingTexts.length, `${key} should have 4 readingTexts`).toBe(4);
+      expect(
+        theme.readingTexts,
+        `${key} should have readingTexts`,
+      ).toBeDefined();
+      expect(
+        theme.readingTexts.length,
+        `${key} should have 4 readingTexts`,
+      ).toBe(4);
     }
   });
 
