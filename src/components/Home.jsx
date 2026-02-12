@@ -29,6 +29,11 @@ function Home({ disabled = false }) {
   const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
   const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
   const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
+  const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false });
+  const [spellingCategories, setSpellingCategories] = useState(savedSettings?.spellingCategories || [1, 2, 3, 4, 5, 6, 7, 8]);
+  const [includeThemeVocabulary, setIncludeThemeVocabulary] = useState(savedSettings?.includeThemeVocabulary ?? true);
+  const [includeThemeReading, setIncludeThemeReading] = useState(savedSettings?.includeThemeReading ?? true);
+  const [readingLevel, setReadingLevel] = useState(savedSettings?.readingLevel || 'short');
   const [adventureLength, setAdventureLength] = useState(savedSettings?.adventureLength || 'medium');
   const [playerEmoji, setPlayerEmoji] = useState(savedSettings?.playerEmoji || PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
@@ -49,10 +54,15 @@ function Home({ disabled = false }) {
       clockLevel,
       clock24h,
       clockWords,
+      taalOps,
+      spellingCategories,
+      includeThemeVocabulary,
+      includeThemeReading,
+      readingLevel,
       adventureLength,
       playerEmoji,
     });
-  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, adventureLength, playerEmoji]);
+  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -105,23 +115,35 @@ function Home({ disabled = false }) {
     if (savedGame && savedGame.themeId !== selectedTheme) {
       clearGameState();
     }
-    const mathSettings = exerciseCategory === 'klokkijken'
-      ? {
-          enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: true },
-          clockLevel,
-          clock24h,
-          clockWords,
-        }
-      : {
-          enabledOperations: ops,
-          maxValue: Number(maxValue),
-          mulTables: mulTables,
-          addSubMode: addSubMode,
-          beyondDigits: beyondDigits,
-          placeValueLevel: placeValueLevel,
-          moneyMaxAmount: moneyMaxAmount,
-          moneyIncludeCents: moneyIncludeCents,
-        };
+    let mathSettings;
+    if (exerciseCategory === 'klokkijken') {
+      mathSettings = {
+        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: true },
+        clockLevel,
+        clock24h,
+        clockWords,
+      };
+    } else if (exerciseCategory === 'taal') {
+      mathSettings = {
+        enabledOperations: { ...taalOps, add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: false },
+        spellingCategories,
+        includeThemeVocabulary,
+        includeThemeReading,
+        readingLevel,
+        themeId: selectedTheme,
+      };
+    } else {
+      mathSettings = {
+        enabledOperations: ops,
+        maxValue: Number(maxValue),
+        mulTables: mulTables,
+        addSubMode: addSubMode,
+        beyondDigits: beyondDigits,
+        placeValueLevel: placeValueLevel,
+        moneyMaxAmount: moneyMaxAmount,
+        moneyIncludeCents: moneyIncludeCents,
+      };
+    }
 
     navigate(`/maze/${selectedTheme}`, {
       state: {
@@ -132,7 +154,9 @@ function Home({ disabled = false }) {
     });
   };
 
-  const canStart = exerciseCategory === 'klokkijken' || ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money;
+  const canStart = exerciseCategory === 'klokkijken'
+    || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading)
+    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -187,7 +211,7 @@ function Home({ disabled = false }) {
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'klokkijken', label: 'Klokkijken', icon: '🕐', disabled: false },
-              { key: 'taal', label: 'Taal', icon: '📝', disabled: true },
+              { key: 'taal', label: 'Taal', icon: '📝', disabled: false },
             ].map(({ key, label, icon, disabled }) => (
               <button
                 key={key}
@@ -584,6 +608,201 @@ function Home({ disabled = false }) {
                   </label>
                 ))}
               </div>
+            </div>
+            )}
+
+            {/* Soort oefening - Taal */}
+            {exerciseCategory === 'taal' && (
+            <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-4 sm:p-7 border-2 border-rose-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">📝</span> Soort oefening
+              </h3>
+              <div className="space-y-3 sm:space-y-4">
+                {[
+                  { key: 'spelling', label: 'Spelling', icon: '✏️', desc: 'Oefen spellingcategorieën' },
+                  { key: 'vocabulary', label: 'Woordenschat', icon: '📖', desc: 'Leer de betekenis van woorden' },
+                  { key: 'reading', label: 'Begrijpend lezen', icon: '📚', desc: 'Lees teksten en beantwoord vragen' },
+                ].map(({ key, label, icon, desc }) => (
+                  <label
+                    key={key}
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                      taalOps[key]
+                        ? 'bg-rose-500 text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-rose-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={taalOps[key]}
+                      onChange={() => setTaalOps(prev => ({ ...prev, [key]: !prev[key] }))}
+                      className="sr-only"
+                    />
+                    <span className="text-xl">{icon}</span>
+                    <div className="min-w-0">
+                      <span className="font-semibold">{label}</span>
+                      <span className={`block text-xs mt-0.5 ${taalOps[key] ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                    </div>
+                    {taalOps[key] && <span className="ml-auto text-xl">✓</span>}
+                  </label>
+                ))}
+              </div>
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && (
+                <p className="mt-4 text-sm text-red-500 font-medium text-center">
+                  ⚠️ Kies minstens één soort oefening
+                </p>
+              )}
+            </div>
+            )}
+
+            {/* Niveau/opties - Taal */}
+            {exerciseCategory === 'taal' && (
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-7 border-2 border-green-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">📊</span> Opties
+              </h3>
+
+              {/* Spellingcategorieën */}
+              {taalOps.spelling && (
+                <>
+                  <p className="text-sm font-medium text-gray-600 mb-3">✏️ Spellingcategorieën:</p>
+                  <div className="space-y-1.5 mb-4">
+                    {[
+                      { id: 1, label: '🔨 Hakwoord', desc: 'kat' },
+                      { id: 2, label: '🎵 Zingwoord', desc: 'zing' },
+                      { id: 3, label: '💨 Luchtwoord', desc: 'lucht' },
+                      { id: 4, label: '🪵 Plankwoord', desc: 'plank' },
+                      { id: 5, label: '👂 Eer-oor-eur-eel', desc: 'beer, hoor, geur, geel' },
+                      { id: 6, label: '🌈 Aai-ooi-oei', desc: 'haai, mooi, loei' },
+                      { id: 7, label: '🦁 Eeuw-ieuw', desc: 'leeuw, nieuw' },
+                      { id: 8, label: '📏 Langermaakwoord', desc: 'hart, vind' },
+                    ].map(({ id, label, desc }) => {
+                      const active = spellingCategories.includes(id);
+                      return (
+                        <label
+                          key={id}
+                          className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                            active
+                              ? 'bg-rose-500 text-white shadow-sm'
+                              : 'bg-white text-gray-700 hover:bg-rose-50 border border-gray-200'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={() => {
+                              setSpellingCategories(prev =>
+                                active
+                                  ? prev.filter(c => c !== id)
+                                  : [...prev, id]
+                              );
+                            }}
+                            className="sr-only"
+                          />
+                          <div>
+                            <span className="font-medium">{label}</span>
+                            <span className={`ml-2 text-xs ${active ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                          </div>
+                          {active && <span>✓</span>}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {spellingCategories.length === 0 && (
+                    <p className="text-xs text-red-500 mb-3">Kies minstens één categorie</p>
+                  )}
+                </>
+              )}
+
+              {/* Woordenschat opties */}
+              {taalOps.vocabulary && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>📖 Woordenschat:</p>
+                  <label
+                    className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm mb-2 ${
+                      includeThemeVocabulary
+                        ? 'bg-emerald-500 text-white shadow-sm'
+                        : 'bg-white text-gray-700 hover:bg-emerald-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={includeThemeVocabulary}
+                      onChange={() => setIncludeThemeVocabulary(!includeThemeVocabulary)}
+                      className="sr-only"
+                    />
+                    <div>
+                      <span className="font-medium">🌍 Woorden van de gekozen wereld</span>
+                      <span className={`block text-xs mt-0.5 ${includeThemeVocabulary ? 'text-white/80' : 'text-gray-500'}`}>
+                        Thema-woorden worden meegenomen naast de algemene woorden
+                      </span>
+                    </div>
+                    {includeThemeVocabulary && <span className="ml-auto">✓</span>}
+                  </label>
+                </>
+              )}
+
+              {/* Begrijpend lezen opties */}
+              {taalOps.reading && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>📚 Begrijpend lezen:</p>
+                  <label
+                    className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm mb-2 ${
+                      includeThemeReading
+                        ? 'bg-emerald-500 text-white shadow-sm'
+                        : 'bg-white text-gray-700 hover:bg-emerald-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={includeThemeReading}
+                      onChange={() => setIncludeThemeReading(!includeThemeReading)}
+                      className="sr-only"
+                    />
+                    <div>
+                      <span className="font-medium">🌍 Teksten van de gekozen wereld</span>
+                      <span className={`block text-xs mt-0.5 ${includeThemeReading ? 'text-white/80' : 'text-gray-500'}`}>
+                        Thema-teksten worden meegenomen naast de algemene teksten
+                      </span>
+                    </div>
+                    {includeThemeReading && <span className="ml-auto">✓</span>}
+                  </label>
+                  <p className="text-sm font-medium text-gray-600 mb-2 mt-3">Niveau:</p>
+                  <div className="space-y-2">
+                    {[
+                      { key: 'short', label: 'Korte teksten', desc: '1-2 zinnen' },
+                      { key: 'long', label: 'Langere teksten', desc: '3-4 zinnen' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          readingLevel === key
+                            ? 'bg-amber-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-amber-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="readingLevel"
+                          value={key}
+                          checked={readingLevel === key}
+                          onChange={(e) => setReadingLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${readingLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {readingLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Geen opties geselecteerd */}
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && (
+                <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
+              )}
             </div>
             )}
 

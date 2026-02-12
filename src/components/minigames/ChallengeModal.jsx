@@ -15,6 +15,14 @@ import ClockInput from './ClockInput';
 import ClockMatchAnalog from './ClockMatchAnalog';
 import Clock24hGame from './Clock24hGame';
 import ClockWordsGame from './ClockWordsGame';
+import SpellingCategoryMatch from './SpellingCategoryMatch';
+import SpellingConnect from './SpellingConnect';
+import SpellingTypeWord from './SpellingTypeWord';
+import VocabularyMatch from './VocabularyMatch';
+import VocabularyMemory from './VocabularyMemory';
+import VocabularyFillIn from './VocabularyFillIn';
+import ReadingComprehension from './ReadingComprehension';
+import ReadingTrueFalse from './ReadingTrueFalse';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
@@ -25,6 +33,15 @@ const MONEY_GAMES = ['makeAmount', 'countMoney', 'smartPay', 'change'];
 
 // Clock minigames
 const CLOCK_GAMES = ['clockMultipleChoice', 'clockMemory', 'clockInput', 'clockMatchAnalog'];
+
+// Spelling minigames
+const SPELLING_GAMES = ['spellingCategoryMatch', 'spellingConnect', 'spellingTypeWord'];
+
+// Vocabulary minigames
+const VOCABULARY_GAMES = ['vocabularyMatch', 'vocabularyMemory', 'vocabularyFillIn'];
+
+// Reading comprehension minigames
+const READING_GAMES = ['readingComprehension', 'readingTrueFalse'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -43,6 +60,14 @@ const GAME_NAMES = {
   'clockMatchAnalog': 'Welke klok?',
   'clock24h': '24-uursklok',
   'clockWords': 'Schrijf de tijd',
+  'spellingCategoryMatch': 'Spellingcategorie',
+  'spellingConnect': 'Verbind de categorie',
+  'spellingTypeWord': 'Typ het woord',
+  'vocabularyMatch': 'Woordenschat',
+  'vocabularyMemory': 'Woorden Memory',
+  'vocabularyFillIn': 'Vul het woord in',
+  'readingComprehension': 'Begrijpend lezen',
+  'readingTrueFalse': 'Waar of niet waar',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -57,6 +82,9 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     const hasLovingHearts = enabled.lovingHearts;
     const hasMoney = enabled.money;
     const hasClock = enabled.clock;
+    const hasSpelling = enabled.spelling;
+    const hasVocabulary = enabled.vocabulary;
+    const hasReading = enabled.reading;
 
     // Bouw pool van beschikbare game types
     const availableTypes = [];
@@ -81,6 +109,20 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
       if (mathSettings?.clockWords) {
         availableTypes.push('clockWords');
       }
+    }
+    if (hasSpelling) {
+      availableTypes.push('spellingCategoryMatch', 'spellingTypeWord');
+      // SpellingConnect alleen als er 2+ categorieën geselecteerd zijn
+      const spellingCatCount = (mathSettings?.spellingCategories || []).length;
+      if (spellingCatCount >= 2) {
+        availableTypes.push('spellingConnect');
+      }
+    }
+    if (hasVocabulary) {
+      availableTypes.push(...VOCABULARY_GAMES);
+    }
+    if (hasReading) {
+      availableTypes.push(...READING_GAMES);
     }
 
     // Fallback naar multiple-choice als niets beschikbaar
@@ -273,6 +315,77 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
 
             {gameType === 'clockWords' && (
               <ClockWordsGame
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'spellingCategoryMatch' && (
+              <SpellingCategoryMatch
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'spellingConnect' && (
+              <SpellingConnect
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'spellingTypeWord' && (
+              <SpellingTypeWord
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'vocabularyMatch' && (
+              <VocabularyMatch
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'vocabularyMemory' && (
+              <VocabularyMemory
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'vocabularyFillIn' && (
+              <VocabularyFillIn
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'readingComprehension' && (
+              <ReadingComprehension
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'readingTrueFalse' && (
+              <ReadingTrueFalse
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}

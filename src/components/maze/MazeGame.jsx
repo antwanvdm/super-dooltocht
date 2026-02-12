@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTheme } from '../../utils/themes';
+import { SPELLING_CATEGORIES } from '../../utils/languageData';
 import { generateMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
 import { incrementCompletedMazes, saveGameState, getGameState, clearGameState, addSavedFriends, getCompletedMazes } from '../../utils/localStorage';
 import { useSyncToServer } from '../../hooks/useSyncToServer';
@@ -762,6 +763,34 @@ function MazeGame() {
                       </strong></p>
                       {mathSettings.clock24h && <p>24-uursklok: <strong>Aan</strong></p>}
                       {mathSettings.clockWords && <p>Tijd in woorden: <strong>Aan</strong></p>}
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.spelling && (
+                  <div className="bg-rose-50 rounded-xl p-4">
+                    <h4 className="font-bold text-rose-800 mb-2">✏️ Spelling</h4>
+                    <div className="grid grid-cols-2 gap-1 text-sm text-rose-700">
+                      {(mathSettings.spellingCategories || []).map(id => {
+                        const cat = SPELLING_CATEGORIES.find(c => c.id === id);
+                        return <span key={id}>{cat ? cat.name : `Cat ${id}`}</span>;
+                      })}
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.vocabulary && (
+                  <div className="bg-emerald-50 rounded-xl p-4">
+                    <h4 className="font-bold text-emerald-800 mb-2">📖 Woordenschat</h4>
+                    <div className="text-sm text-emerald-700 space-y-1">
+                      <p>Themawoorden: <strong>{mathSettings.includeThemeVocabulary ? 'Aan' : 'Uit'}</strong></p>
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.reading && (
+                  <div className="bg-amber-50 rounded-xl p-4">
+                    <h4 className="font-bold text-amber-800 mb-2">📚 Begrijpend lezen</h4>
+                    <div className="text-sm text-amber-700 space-y-1">
+                      <p>Niveau: <strong>{mathSettings.readingLevel === 'short' ? 'Korte teksten' : 'Langere teksten'}</strong></p>
+                      <p>Themateksten: <strong>{mathSettings.includeThemeReading ? 'Aan' : 'Uit'}</strong></p>
                     </div>
                   </div>
                 )}
