@@ -563,6 +563,10 @@ function MazeGame() {
         };
         const stopMove = () => clearAllIntervals();
 
+        // Track of de laatste interactie touch was, zodat
+        // gesynthetiseerde mousedown events genegeerd worden.
+        let usedTouch = false;
+
         const dpadButtons = [
           { dir: 'up', emoji: '⬆️', pos: 'absolute top-0 left-1/2 -translate-x-1/2' },
           { dir: 'left', emoji: '⬅️', pos: 'absolute top-1/2 left-0 -translate-y-1/2' },
@@ -576,10 +580,10 @@ function MazeGame() {
               {dpadButtons.map(({ dir, emoji, pos }) => (
                 <button
                   key={dir}
-                  onTouchStart={(e) => startMove(dir, e)}
+                  onTouchStart={(e) => { usedTouch = true; startMove(dir, e); }}
                   onTouchEnd={stopMove}
                   onTouchCancel={stopMove}
-                  onMouseDown={(e) => startMove(dir, e)}
+                  onMouseDown={(e) => { if (!usedTouch) startMove(dir, e); usedTouch = false; }}
                   onMouseUp={stopMove}
                   onMouseLeave={stopMove}
                   onContextMenu={(e) => e.preventDefault()}
