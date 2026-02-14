@@ -550,100 +550,52 @@ function MazeGame() {
       </div>
 
       {/* Touch Controls D-Pad Overlay */}
-      {showTouchControls && (
-        <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-30 select-none touch-none scale-90 sm:scale-100">
-          <div className="relative w-36 sm:w-40 h-36 sm:h-40">
-            {/* Omhoog */}
-            <button
-              onTouchStart={(e) => {
-                e.preventDefault();
-                clearInterval(window._touchIntervalUp);
-                clearInterval(window._touchIntervalDown);
-                clearInterval(window._touchIntervalLeft);
-                clearInterval(window._touchIntervalRight);
-                move('up');
-                window._touchIntervalUp = setInterval(() => move('up'), 120);
-              }}
-              onTouchEnd={() => {
-                clearInterval(window._touchIntervalUp);
-              }}
-              onTouchCancel={() => {
-                clearInterval(window._touchIntervalUp);
-              }}
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
-            >
-              ⬆️
-            </button>
-            {/* Links */}
-            <button
-              onTouchStart={(e) => {
-                e.preventDefault();
-                clearInterval(window._touchIntervalUp);
-                clearInterval(window._touchIntervalDown);
-                clearInterval(window._touchIntervalLeft);
-                clearInterval(window._touchIntervalRight);
-                move('left');
-                window._touchIntervalLeft = setInterval(() => move('left'), 120);
-              }}
-              onTouchEnd={() => {
-                clearInterval(window._touchIntervalLeft);
-              }}
-              onTouchCancel={() => {
-                clearInterval(window._touchIntervalLeft);
-              }}
-              className="absolute top-1/2 left-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
-            >
-              ⬅️
-            </button>
-            {/* Rechts */}
-            <button
-              onTouchStart={(e) => {
-                e.preventDefault();
-                clearInterval(window._touchIntervalUp);
-                clearInterval(window._touchIntervalDown);
-                clearInterval(window._touchIntervalLeft);
-                clearInterval(window._touchIntervalRight);
-                move('right');
-                window._touchIntervalRight = setInterval(() => move('right'), 120);
-              }}
-              onTouchEnd={() => {
-                clearInterval(window._touchIntervalRight);
-              }}
-              onTouchCancel={() => {
-                clearInterval(window._touchIntervalRight);
-              }}
-              className="absolute top-1/2 right-0 -translate-y-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
-            >
-              ➡️
-            </button>
-            {/* Omlaag */}
-            <button
-              onTouchStart={(e) => {
-                e.preventDefault();
-                clearInterval(window._touchIntervalUp);
-                clearInterval(window._touchIntervalDown);
-                clearInterval(window._touchIntervalLeft);
-                clearInterval(window._touchIntervalRight);
-                move('down');
-                window._touchIntervalDown = setInterval(() => move('down'), 120);
-              }}
-              onTouchEnd={() => {
-                clearInterval(window._touchIntervalDown);
-              }}
-              onTouchCancel={() => {
-                clearInterval(window._touchIntervalDown);
-              }}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation"
-            >
-              ⬇️
-            </button>
-            {/* Midden (decoratief) */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
-              <span className="text-white/60 text-xs sm:text-sm">🎮</span>
+      {showTouchControls && (() => {
+        const clearAllIntervals = () => {
+          clearInterval(window._dpadInterval);
+          window._dpadInterval = null;
+        };
+        const startMove = (dir, e) => {
+          if (e) e.preventDefault();
+          clearAllIntervals();
+          move(dir);
+          window._dpadInterval = setInterval(() => move(dir), 120);
+        };
+        const stopMove = () => clearAllIntervals();
+
+        const dpadButtons = [
+          { dir: 'up', emoji: '⬆️', pos: 'absolute top-0 left-1/2 -translate-x-1/2' },
+          { dir: 'left', emoji: '⬅️', pos: 'absolute top-1/2 left-0 -translate-y-1/2' },
+          { dir: 'right', emoji: '➡️', pos: 'absolute top-1/2 right-0 -translate-y-1/2' },
+          { dir: 'down', emoji: '⬇️', pos: 'absolute bottom-0 left-1/2 -translate-x-1/2' },
+        ];
+
+        return (
+          <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-30 select-none touch-none scale-90 sm:scale-100">
+            <div className="relative w-36 sm:w-40 h-36 sm:h-40">
+              {dpadButtons.map(({ dir, emoji, pos }) => (
+                <button
+                  key={dir}
+                  onTouchStart={(e) => startMove(dir, e)}
+                  onTouchEnd={stopMove}
+                  onTouchCancel={stopMove}
+                  onMouseDown={(e) => startMove(dir, e)}
+                  onMouseUp={stopMove}
+                  onMouseLeave={stopMove}
+                  onContextMenu={(e) => e.preventDefault()}
+                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation`}
+                >
+                  {emoji}
+                </button>
+              ))}
+              {/* Midden (decoratief) */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
+                <span className="text-white/60 text-xs sm:text-sm">🎮</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Settings Modal */}
       {showSettings && (
