@@ -583,7 +583,7 @@ function MazeGame() {
                   onMouseUp={stopMove}
                   onMouseLeave={stopMove}
                   onContextMenu={(e) => e.preventDefault()}
-                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-manipulation`}
+                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-none`}
                 >
                   {emoji}
                 </button>
