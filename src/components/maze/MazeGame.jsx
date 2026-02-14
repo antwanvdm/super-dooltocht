@@ -572,7 +572,7 @@ function MazeGame() {
 
         return (
           <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-30 select-none touch-none scale-90 sm:scale-100">
-            <div className="relative w-36 sm:w-40 h-36 sm:h-40">
+            <div className="relative w-36 sm:w-40 h-36 sm:h-40 touch-none">
               {dpadButtons.map(({ dir, emoji, pos }) => (
                 <button
                   key={dir}
@@ -583,7 +583,8 @@ function MazeGame() {
                   onMouseUp={stopMove}
                   onMouseLeave={stopMove}
                   onContextMenu={(e) => e.preventDefault()}
-                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-none`}
+                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-none select-none`}
+                  style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
                 >
                   {emoji}
                 </button>
