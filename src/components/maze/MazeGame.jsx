@@ -7,6 +7,7 @@ import { incrementCompletedMazes, saveGameState, getGameState, clearGameState, a
 import { useSyncToServer } from '../../hooks/useSyncToServer';
 import MazeView from './MazeView';
 import Minimap from './Minimap';
+import DPad from './DPad';
 import ChallengeModal from '../minigames/ChallengeModal';
 import Confetti from '../Confetti';
 
@@ -550,53 +551,7 @@ function MazeGame() {
       </div>
 
       {/* Touch Controls D-Pad Overlay */}
-      {showTouchControls && (() => {
-        const clearAllIntervals = () => {
-          clearInterval(window._dpadInterval);
-          window._dpadInterval = null;
-        };
-        const startMove = (dir, e) => {
-          if (e) e.preventDefault();
-          clearAllIntervals();
-          move(dir);
-          window._dpadInterval = setInterval(() => move(dir), 120);
-        };
-        const stopMove = () => clearAllIntervals();
-
-        const dpadButtons = [
-          { dir: 'up', emoji: '⬆️', pos: 'absolute top-0 left-1/2 -translate-x-1/2' },
-          { dir: 'left', emoji: '⬅️', pos: 'absolute top-1/2 left-0 -translate-y-1/2' },
-          { dir: 'right', emoji: '➡️', pos: 'absolute top-1/2 right-0 -translate-y-1/2' },
-          { dir: 'down', emoji: '⬇️', pos: 'absolute bottom-0 left-1/2 -translate-x-1/2' },
-        ];
-
-        return (
-          <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-30 select-none touch-none scale-90 sm:scale-100">
-            <div className="relative w-36 sm:w-40 h-36 sm:h-40 touch-none">
-              {dpadButtons.map(({ dir, emoji, pos }) => (
-                <button
-                  key={dir}
-                  onTouchStart={(e) => { window._dpadUsedTouch = true; startMove(dir, e); }}
-                  onTouchEnd={stopMove}
-                  onTouchCancel={stopMove}
-                  onMouseDown={(e) => { if (window._dpadUsedTouch) { window._dpadUsedTouch = false; return; } startMove(dir, e); }}
-                  onMouseUp={stopMove}
-                  onMouseLeave={stopMove}
-                  onContextMenu={(e) => e.preventDefault()}
-                  className={`${pos} w-12 sm:w-14 h-12 sm:h-14 bg-gray-800/80 hover:bg-gray-700/90 active:bg-gray-600 text-white text-xl sm:text-2xl rounded-xl flex items-center justify-center shadow-lg touch-none select-none`}
-                  style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
-                >
-                  {emoji}
-                </button>
-              ))}
-              {/* Midden (decoratief) */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 sm:w-10 h-8 sm:h-10 bg-gray-700/60 rounded-full flex items-center justify-center">
-                <span className="text-white/60 text-xs sm:text-sm">🎮</span>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      {showTouchControls && <DPad move={move} />}
 
       {/* Settings Modal */}
       {showSettings && (
