@@ -26,9 +26,13 @@ function Home({ disabled = false }) {
   const [placeValueLevel, setPlaceValueLevel] = useState(savedSettings?.placeValueLevel || 'tens');
   const [moneyMaxAmount, setMoneyMaxAmount] = useState(savedSettings?.moneyMaxAmount || 2000);
   const [moneyIncludeCents, setMoneyIncludeCents] = useState(savedSettings?.moneyIncludeCents || false);
+  const [tijdOps, setTijdOps] = useState(savedSettings?.tijdOps || { clock: true, timeAwareness: false });
   const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
   const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
   const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
+  const [timeAwarenessDagen, setTimeAwarenessDagen] = useState(savedSettings?.timeAwarenessDagen ?? true);
+  const [timeAwarenessMaanden, setTimeAwarenessMaanden] = useState(savedSettings?.timeAwarenessMaanden ?? true);
+  const [timeAwarenessSeizoen, setTimeAwarenessSeizoen] = useState(savedSettings?.timeAwarenessSeizoen ?? true);
   const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false, english: false });
   const [spellingCategories, setSpellingCategories] = useState(savedSettings?.spellingCategories || [1, 2, 3, 4, 5, 6, 7, 8]);
   const [includeThemeVocabulary, setIncludeThemeVocabulary] = useState(savedSettings?.includeThemeVocabulary ?? true);
@@ -53,9 +57,13 @@ function Home({ disabled = false }) {
       placeValueLevel,
       moneyMaxAmount,
       moneyIncludeCents,
+      tijdOps,
       clockLevel,
       clock24h,
       clockWords,
+      timeAwarenessDagen,
+      timeAwarenessMaanden,
+      timeAwarenessSeizoen,
       taalOps,
       spellingCategories,
       includeThemeVocabulary,
@@ -66,7 +74,7 @@ function Home({ disabled = false }) {
       adventureLength,
       playerEmoji,
     });
-  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
+  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, tijdOps, clockLevel, clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden, timeAwarenessSeizoen, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -120,12 +128,15 @@ function Home({ disabled = false }) {
       clearGameState();
     }
     let mathSettings;
-    if (exerciseCategory === 'klokkijken') {
+    if (exerciseCategory === 'tijd') {
       mathSettings = {
-        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: true },
+        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness },
         clockLevel,
         clock24h,
         clockWords,
+        timeAwarenessDagen,
+        timeAwarenessMaanden,
+        timeAwarenessSeizoen,
       };
     } else if (exerciseCategory === 'taal') {
       mathSettings = {
@@ -160,7 +171,7 @@ function Home({ disabled = false }) {
     });
   };
 
-  const canStart = exerciseCategory === 'klokkijken'
+  const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)))
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
@@ -216,7 +227,7 @@ function Home({ disabled = false }) {
           <div className="grid grid-cols-3 gap-2 sm:flex sm:justify-center sm:gap-3 mb-6 sm:mb-8">
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
-              { key: 'klokkijken', label: 'Klokkijken', icon: '🕐', disabled: false },
+              { key: 'tijd', label: 'Tijd', icon: '🕐', disabled: false },
               { key: 'taal', label: 'Taal', icon: '📝', disabled: false },
             ].map(({ key, label, icon, disabled }) => (
               <button
@@ -282,56 +293,45 @@ function Home({ disabled = false }) {
             </div>
             )}
 
-            {/* Extra opties - Klokkijken */}
-            {exerciseCategory === 'klokkijken' && (
+            {/* Soort oefening - Tijd */}
+            {exerciseCategory === 'tijd' && (
             <div className="bg-gradient-to-br from-sky-50 to-cyan-50 rounded-2xl p-4 sm:p-7 border-2 border-sky-100">
               <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">🕐</span> Extra opties
+                <span className="text-xl sm:text-2xl">🕐</span> Soort oefening
               </h3>
-
               <div className="space-y-3 sm:space-y-4">
-                <label
-                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-                    clockWords
-                      ? 'bg-sky-500 text-white shadow-md'
-                      : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={clockWords}
-                    onChange={() => setClockWords(!clockWords)}
-                    className="sr-only"
-                  />
-                  <span className="text-xl">💬</span>
-                  <div>
-                    <span className="font-semibold">Woorden</span>
-                    <span className={`block text-xs mt-0.5 ${clockWords ? 'text-white/80' : 'text-gray-500'}`}>Oefen met tijden in woorden (kwart over drie, half vijf)</span>
-                  </div>
-                  {clockWords && <span className="ml-auto text-xl">✓</span>}
-                </label>
-
-                <label
-                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-                    clock24h
-                      ? 'bg-sky-500 text-white shadow-md'
-                      : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={clock24h}
-                    onChange={() => setClock24h(!clock24h)}
-                    className="sr-only"
-                  />
-                  <span className="text-xl">🔄</span>
-                  <div>
-                    <span className="font-semibold">24-uurs notatie</span>
-                    <span className={`block text-xs mt-0.5 ${clock24h ? 'text-white/80' : 'text-gray-500'}`}>Oefen het verschil tussen nacht/ochtend en middag/avond (bijvoorbeeld 05:45 → 17:45)</span>
-                  </div>
-                  {clock24h && <span className="ml-auto text-xl">✓</span>}
-                </label>
+                {[
+                  { key: 'clock', label: 'Klokkijken', icon: '🕐', desc: 'Analoge en digitale klok aflezen' },
+                  { key: 'timeAwareness', label: 'Tijdsbesef', icon: '📅', desc: 'Dagen, maanden en seizoenen' },
+                ].map(({ key, label, icon, desc }) => (
+                  <label
+                    key={key}
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                      tijdOps[key]
+                        ? 'bg-sky-500 text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={tijdOps[key]}
+                      onChange={() => setTijdOps(prev => ({ ...prev, [key]: !prev[key] }))}
+                      className="sr-only"
+                    />
+                    <span className="text-xl">{icon}</span>
+                    <div className="min-w-0">
+                      <span className="font-semibold">{label}</span>
+                      <span className={`block text-xs mt-0.5 ${tijdOps[key] ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                    </div>
+                    {tijdOps[key] && <span className="ml-auto text-xl">✓</span>}
+                  </label>
+                ))}
               </div>
+              {!tijdOps.clock && !tijdOps.timeAwareness && (
+                <p className="mt-4 text-sm text-red-500 font-medium text-center">
+                  ⚠️ Kies minstens één soort oefening
+                </p>
+              )}
             </div>
             )}
 
@@ -576,44 +576,136 @@ function Home({ disabled = false }) {
             </div>
             )}
 
-            {/* Niveau - Klokkijken */}
-            {exerciseCategory === 'klokkijken' && (
+            {/* Niveau/opties - Tijd */}
+            {exerciseCategory === 'tijd' && (
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-7 border-2 border-green-100">
               <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">📊</span> Niveau
+                <span className="text-xl sm:text-2xl">📊</span> Opties
               </h3>
-              <div className="space-y-2">
-                {[
-                  { key: 'hours', label: 'Hele uren', desc: '03:00, 07:00' },
-                  { key: 'halfHours', label: 'Halve uren', desc: '03:00, 03:30' },
-                  { key: 'quarters', label: 'Kwartieren', desc: '03:00, 03:15, 03:30, 03:45' },
-                  { key: 'fiveMinutes', label: '5 minuten', desc: '03:05, 03:10, 03:25...' },
-                  { key: 'minutes', label: '1 minuut', desc: '03:07, 03:42...' },
-                ].map(({ key, label, desc }) => (
-                  <label
-                    key={key}
-                    className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
-                      clockLevel === key
-                        ? 'bg-green-500 text-white shadow-md'
-                        : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="clockLevel"
-                      value={key}
-                      checked={clockLevel === key}
-                      onChange={(e) => setClockLevel(e.target.value)}
-                      className="sr-only"
-                    />
-                    <div>
-                      <span className="font-semibold">{label}</span>
-                      <span className={`ml-2 text-xs ${clockLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
-                    </div>
-                    {clockLevel === key && <span className="text-xl">✓</span>}
-                  </label>
-                ))}
-              </div>
+
+              {/* Klokkijken niveau */}
+              {tijdOps.clock && (
+                <>
+                  <p className="text-sm font-medium text-gray-600 mb-3">🕐 Klokkijken niveau:</p>
+                  <div className="space-y-2 mb-3">
+                    {[
+                      { key: 'hours', label: 'Hele uren', desc: '03:00, 07:00' },
+                      { key: 'halfHours', label: 'Halve uren', desc: '03:00, 03:30' },
+                      { key: 'quarters', label: 'Kwartieren', desc: '03:00, 03:15, 03:30, 03:45' },
+                      { key: 'fiveMinutes', label: '5 minuten', desc: '03:05, 03:10, 03:25...' },
+                      { key: 'minutes', label: '1 minuut', desc: '03:07, 03:42...' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          clockLevel === key
+                            ? 'bg-green-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-green-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="clockLevel"
+                          value={key}
+                          checked={clockLevel === key}
+                          onChange={(e) => setClockLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${clockLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {clockLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+
+                  <p className="text-sm font-medium text-gray-600 mb-2 mt-3">Extra opties:</p>
+                  <div className="space-y-1.5 mb-3">
+                    <label
+                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                        clockWords
+                          ? 'bg-sky-500 text-white shadow-sm'
+                          : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={clockWords}
+                        onChange={() => setClockWords(!clockWords)}
+                        className="sr-only"
+                      />
+                      <div>
+                        <span className="font-medium">💬 Woorden</span>
+                        <span className={`block text-xs mt-0.5 ${clockWords ? 'text-white/80' : 'text-gray-500'}`}>Kwart over drie, half vijf</span>
+                      </div>
+                      {clockWords && <span className="ml-auto">✓</span>}
+                    </label>
+                    <label
+                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                        clock24h
+                          ? 'bg-sky-500 text-white shadow-sm'
+                          : 'bg-white text-gray-700 hover:bg-sky-50 border border-gray-200'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={clock24h}
+                        onChange={() => setClock24h(!clock24h)}
+                        className="sr-only"
+                      />
+                      <div>
+                        <span className="font-medium">🔄 24-uurs notatie</span>
+                        <span className={`block text-xs mt-0.5 ${clock24h ? 'text-white/80' : 'text-gray-500'}`}>05:45 → 17:45</span>
+                      </div>
+                      {clock24h && <span className="ml-auto">✓</span>}
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {/* Tijdsbesef opties */}
+              {tijdOps.timeAwareness && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${tijdOps.clock ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>📅 Tijdsbesef onderwerpen:</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { key: 'dagen', label: '📅 Dagen van de week', desc: 'Volgorde, gisteren/morgen', checked: timeAwarenessDagen, onChange: () => setTimeAwarenessDagen(!timeAwarenessDagen) },
+                      { key: 'maanden', label: '🗓️ Maanden van het jaar', desc: 'Volgorde, aantal dagen', checked: timeAwarenessMaanden, onChange: () => setTimeAwarenessMaanden(!timeAwarenessMaanden) },
+                      { key: 'seizoenen', label: '🌿 Seizoenen', desc: 'Volgorde, kenmerken', checked: timeAwarenessSeizoen, onChange: () => setTimeAwarenessSeizoen(!timeAwarenessSeizoen) },
+                    ].map(({ key, label, desc, checked, onChange }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          checked
+                            ? 'bg-cyan-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-cyan-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={onChange}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`block text-xs mt-0.5 ${checked ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {checked && <span className="ml-auto">✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                  {!timeAwarenessDagen && !timeAwarenessMaanden && !timeAwarenessSeizoen && (
+                    <p className="text-xs text-red-500 mt-2">Kies minstens één onderwerp</p>
+                  )}
+                </>
+              )}
+
+              {/* Geen opties geselecteerd */}
+              {!tijdOps.clock && !tijdOps.timeAwareness && (
+                <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
+              )}
             </div>
             )}
 

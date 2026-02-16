@@ -685,6 +685,16 @@ function MazeGame() {
                     </div>
                   </div>
                 )}
+                {mathSettings.enabledOperations.timeAwareness && (
+                  <div className="bg-cyan-50 rounded-xl p-4">
+                    <h4 className="font-bold text-cyan-800 mb-2">📅 Tijdsbesef</h4>
+                    <div className="text-sm text-cyan-700 space-y-1">
+                      {mathSettings.timeAwarenessDagen && <p>📅 Dagen van de week</p>}
+                      {mathSettings.timeAwarenessMaanden && <p>🗓️ Maanden van het jaar</p>}
+                      {mathSettings.timeAwarenessSeizoen && <p>🌿 Seizoenen</p>}
+                    </div>
+                  </div>
+                )}
                 {mathSettings.enabledOperations.spelling && (
                   <div className="bg-rose-50 rounded-xl p-4">
                     <h4 className="font-bold text-rose-800 mb-2">✏️ Spelling</h4>

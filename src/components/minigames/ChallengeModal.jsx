@@ -28,6 +28,10 @@ import EnglishMemory from './EnglishMemory';
 import EnglishTypeWord from './EnglishTypeWord';
 import EnglishFillIn from './EnglishFillIn';
 import EnglishConnect from './EnglishConnect';
+import KalenderQuiz from './KalenderQuiz';
+import VolgordeSorteer from './VolgordeSorteer';
+import SeizoenenMatch from './SeizoenenMatch';
+import KalenderMemory from './KalenderMemory';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
@@ -50,6 +54,9 @@ const READING_GAMES = ['readingComprehension', 'readingTrueFalse'];
 
 // English vocabulary minigames
 const ENGLISH_GAMES = ['englishMultipleChoice', 'englishMemory', 'englishConnect'];
+
+// Time awareness minigames
+const TIME_AWARENESS_GAMES = ['kalenderQuiz', 'volgordeSorteer', 'kalenderMemory'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -81,6 +88,10 @@ const GAME_NAMES = {
   'englishTypeWord': 'Typ het Engelse woord',
   'englishFillIn': 'Engels invullen',
   'englishConnect': 'Engels verbinden',
+  'kalenderQuiz': 'Kalenderquiz',
+  'volgordeSorteer': 'Volgorde',
+  'seizoenenMatch': 'Seizoenen verbinden',
+  'kalenderMemory': 'Kalender Memory',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -152,6 +163,21 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
       const level = mathSettings?.englishLevel || 'easy';
       if (level === 'medium' || level === 'hard') {
         availableTypes.push('englishTypeWord', 'englishFillIn');
+      }
+    }
+
+    // Time awareness
+    const hasTimeAwareness = enabled.timeAwareness;
+    if (hasTimeAwareness) {
+      const hasDagen = mathSettings?.timeAwarenessDagen ?? true;
+      const hasMaanden = mathSettings?.timeAwarenessMaanden ?? true;
+      const hasSeizoen = mathSettings?.timeAwarenessSeizoen ?? true;
+      if (hasDagen || hasMaanden || hasSeizoen) {
+        availableTypes.push(...TIME_AWARENESS_GAMES);
+        // SeizoenenMatch alleen als seizoenen aan staat
+        if (hasSeizoen) {
+          availableTypes.push('seizoenenMatch');
+        }
       }
     }
 
@@ -466,6 +492,41 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'kalenderQuiz' && (
+              <KalenderQuiz
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'volgordeSorteer' && (
+              <VolgordeSorteer
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'seizoenenMatch' && (
+              <SeizoenenMatch
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'kalenderMemory' && (
+              <KalenderMemory
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
                 theme={theme}
               />
             )}
