@@ -326,22 +326,6 @@ const MAANDEN_GENERATORS = [
 // ==========================================
 
 const SEIZOENEN_GENERATORS = [
-  // In welk seizoen valt maand X? (alleen niet-overgangsmaanden)
-  () => {
-    const seizoen = SEIZOENEN[Math.floor(Math.random() * 4)];
-    // Skip de 1ste maand (overgangsmaand), gebruik alleen maand 2 en 3
-    const maand = seizoen.maanden[1 + Math.floor(Math.random() * 2)];
-    const answer = seizoen.naam;
-    const wrongs = SEIZOENEN.filter((s) => s.naam !== answer).map(
-      (s) => s.naam,
-    );
-    return {
-      question: `In welk seizoen valt ${maand}?`,
-      answer,
-      wrongAnswers: wrongs,
-      category: 'seizoenen',
-    };
-  },
   // Wanneer begint seizoen X?
   () => {
     const seizoen = SEIZOENEN[Math.floor(Math.random() * 4)];
