@@ -28,8 +28,7 @@ export const SPORTS = {
     {
       word: 'doelpunt',
       definition: 'Wanneer de bal in het doel gaat bij voetbal.',
-      exampleSentence:
-        'In de laatste minuut maakte hij het winnende doelpunt!',
+      exampleSentence: 'In de laatste minuut maakte hij het winnende doelpunt!',
     },
     {
       word: 'record',

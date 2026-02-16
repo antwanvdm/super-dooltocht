@@ -60,8 +60,7 @@ export const PIRATES = {
     {
       word: 'buit',
       definition: 'Spullen die piraten stelen.',
-      exampleSentence:
-        'De piraten verdeelden de buit na hun avontuur op zee.',
+      exampleSentence: 'De piraten verdeelden de buit na hun avontuur op zee.',
     },
   ],
   readingTexts: [

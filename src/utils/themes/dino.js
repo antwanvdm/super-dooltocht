@@ -5,16 +5,13 @@ export const DINO = {
   vocabularyWords: [
     {
       word: 'fossiel',
-      definition:
-        'Overblijfselen van dieren of planten van heel lang geleden.',
-      exampleSentence:
-        'We vonden een fossiel van een dinosaurus in de grond.',
+      definition: 'Overblijfselen van dieren of planten van heel lang geleden.',
+      exampleSentence: 'We vonden een fossiel van een dinosaurus in de grond.',
     },
     {
       word: 'vulkaan',
       definition: 'Een berg die lava en rook kan uitspuwen.',
-      exampleSentence:
-        'De vulkaan spuwde hete lava en een grote rookwolk uit.',
+      exampleSentence: 'De vulkaan spuwde hete lava en een grote rookwolk uit.',
     },
     {
       word: 'oertijd',

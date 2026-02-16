@@ -17,8 +17,7 @@ export const OCEAN = {
     {
       word: 'duiken',
       definition: 'Onder water zwemmen.',
-      exampleSentence:
-        'We gingen duiken om de vissen onder water te bekijken.',
+      exampleSentence: 'We gingen duiken om de vissen onder water te bekijken.',
     },
     {
       word: 'zeewier',

@@ -6,8 +6,7 @@ export const TRAFFIC = {
     {
       word: 'kruispunt',
       definition: 'Een plek waar twee of meer wegen elkaar kruisen.',
-      exampleSentence:
-        "Op het kruispunt moest ik goed uitkijken voor auto's.",
+      exampleSentence: "Op het kruispunt moest ik goed uitkijken voor auto's.",
     },
     {
       word: 'stoplicht',

@@ -17,8 +17,7 @@ export const CANDY = {
     {
       word: 'lolly',
       definition: 'Een snoepje op een stokje.',
-      exampleSentence:
-        'Na het zwemmen kreeg ik een grote rode lolly van mama.',
+      exampleSentence: 'Na het zwemmen kreeg ik een grote rode lolly van mama.',
     },
     {
       word: 'marshmallow',

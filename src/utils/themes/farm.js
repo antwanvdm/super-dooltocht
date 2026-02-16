@@ -6,8 +6,7 @@ export const FARM = {
     {
       word: 'oogst',
       definition: 'Groenten of fruit van het land halen.',
-      exampleSentence:
-        'In de herfst is het tijd voor de oogst van de appels.',
+      exampleSentence: 'In de herfst is het tijd voor de oogst van de appels.',
     },
     {
       word: 'tractor',
@@ -16,8 +15,7 @@ export const FARM = {
     },
     {
       word: 'schuur',
-      definition:
-        'Een groot gebouw op de boerderij om spullen in te bewaren.',
+      definition: 'Een groot gebouw op de boerderij om spullen in te bewaren.',
       exampleSentence: 'Het hooi lag opgestapeld in de grote schuur.',
     },
     {
@@ -55,8 +53,7 @@ export const FARM = {
     {
       word: 'zaaien',
       definition: 'Zaadjes in de grond stoppen zodat er planten groeien.',
-      exampleSentence:
-        'In het voorjaar gaan we worteltjes zaaien in de tuin.',
+      exampleSentence: 'In het voorjaar gaan we worteltjes zaaien in de tuin.',
     },
   ],
   readingTexts: [

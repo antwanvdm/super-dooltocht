@@ -29,11 +29,13 @@ function Home({ disabled = false }) {
   const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
   const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
   const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
-  const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false });
+  const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false, english: false });
   const [spellingCategories, setSpellingCategories] = useState(savedSettings?.spellingCategories || [1, 2, 3, 4, 5, 6, 7, 8]);
   const [includeThemeVocabulary, setIncludeThemeVocabulary] = useState(savedSettings?.includeThemeVocabulary ?? true);
   const [includeThemeReading, setIncludeThemeReading] = useState(savedSettings?.includeThemeReading ?? true);
   const [readingLevel, setReadingLevel] = useState(savedSettings?.readingLevel || 'short');
+  const [englishLevel, setEnglishLevel] = useState(savedSettings?.englishLevel || 'easy');
+  const [englishDirection, setEnglishDirection] = useState(savedSettings?.englishDirection || 'nl-en');
   const [adventureLength, setAdventureLength] = useState(savedSettings?.adventureLength || 'medium');
   const [playerEmoji, setPlayerEmoji] = useState(savedSettings?.playerEmoji || PLAYER_EMOJIS[0]);
   const [selectedTheme, setSelectedTheme] = useState(null);
@@ -59,10 +61,12 @@ function Home({ disabled = false }) {
       includeThemeVocabulary,
       includeThemeReading,
       readingLevel,
+      englishLevel,
+      englishDirection,
       adventureLength,
       playerEmoji,
     });
-  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, adventureLength, playerEmoji]);
+  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, clockLevel, clock24h, clockWords, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -130,6 +134,8 @@ function Home({ disabled = false }) {
         includeThemeVocabulary,
         includeThemeReading,
         readingLevel,
+        englishLevel,
+        englishDirection,
         themeId: selectedTheme,
       };
     } else {
@@ -155,7 +161,7 @@ function Home({ disabled = false }) {
   };
 
   const canStart = exerciseCategory === 'klokkijken'
-    || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading)
+    || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
 
@@ -622,6 +628,7 @@ function Home({ disabled = false }) {
                   { key: 'spelling', label: 'Spelling', icon: '✏️', desc: 'Oefen spellingcategorieën' },
                   { key: 'vocabulary', label: 'Woordenschat', icon: '📖', desc: 'Leer de betekenis van woorden' },
                   { key: 'reading', label: 'Begrijpend lezen', icon: '📚', desc: 'Lees teksten en beantwoord vragen' },
+                  { key: 'english', label: 'Engels', icon: '🇬🇧', desc: 'Leer Engelse woordjes' },
                 ].map(({ key, label, icon, desc }) => (
                   <label
                     key={key}
@@ -646,7 +653,7 @@ function Home({ disabled = false }) {
                   </label>
                 ))}
               </div>
-              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && (
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && (
                 <p className="mt-4 text-sm text-red-500 font-medium text-center">
                   ⚠️ Kies minstens één soort oefening
                 </p>
@@ -799,8 +806,77 @@ function Home({ disabled = false }) {
                 </>
               )}
 
+              {/* Engels opties */}
+              {taalOps.english && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary || taalOps.reading ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🇬🇧 Engels:</p>
+                  <p className="text-xs text-gray-500 mb-2">Niveau:</p>
+                  <div className="space-y-1.5 mb-3">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: 'Kleuren, dieren, fruit, cijfers' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '+ weer, school, eten, hobby\'s' },
+                      { key: 'hard', label: 'Moeilijk', desc: '+ gevoelens, beroepen, reizen' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          englishLevel === key
+                            ? 'bg-blue-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="englishLevel"
+                          value={key}
+                          checked={englishLevel === key}
+                          onChange={(e) => setEnglishLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${englishLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {englishLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mb-2">Richting:</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { key: 'nl-en', label: 'Nederlands → Engels', desc: 'Je ziet het Nederlandse woord' },
+                      { key: 'en-nl', label: 'Engels → Nederlands', desc: 'Je ziet het Engelse woord' },
+                      { key: 'both', label: 'Beide richtingen', desc: 'Afwisselend NL→EN en EN→NL' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          englishDirection === key
+                            ? 'bg-blue-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="englishDirection"
+                          value={key}
+                          checked={englishDirection === key}
+                          onChange={(e) => setEnglishDirection(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`block text-xs mt-0.5 ${englishDirection === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {englishDirection === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
               {/* Geen opties geselecteerd */}
-              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && (
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
               )}
             </div>

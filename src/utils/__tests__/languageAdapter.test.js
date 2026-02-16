@@ -16,12 +16,19 @@ import {
   generateUniqueReadingProblems,
   generateReadingTrueFalseProblem,
   generateLanguageProblem,
+  getEnglishPool,
+  generateEnglishMultipleChoice,
+  generateEnglishMemoryPairs,
+  generateEnglishFillIn,
+  generateEnglishTypeWord,
+  generateEnglishConnectPairs,
 } from '../languageAdapter';
 import {
   SPELLING_CATEGORIES,
   SPELLING_WORDS,
   GENERAL_VOCABULARY,
   READING_TEXTS,
+  ENGLISH_VOCABULARY,
 } from '../languageData';
 import { THEMES } from '../themes';
 
@@ -713,5 +720,361 @@ describe('Data integrity', () => {
       const unique = new Set(words);
       expect(unique.size).toBe(words.length);
     }
+  });
+});
+
+// ============================================
+// ENGLISH VOCABULARY DATA
+// ============================================
+
+describe('ENGLISH_VOCABULARY data', () => {
+  it('should have exactly 150 words', () => {
+    expect(ENGLISH_VOCABULARY).toHaveLength(150);
+  });
+
+  it('should have 50 words per level', () => {
+    const easy = ENGLISH_VOCABULARY.filter((w) => w.level === 'easy');
+    const medium = ENGLISH_VOCABULARY.filter((w) => w.level === 'medium');
+    const hard = ENGLISH_VOCABULARY.filter((w) => w.level === 'hard');
+    expect(easy).toHaveLength(50);
+    expect(medium).toHaveLength(50);
+    expect(hard).toHaveLength(50);
+  });
+
+  it('every word should have english, dutch and level', () => {
+    ENGLISH_VOCABULARY.forEach((entry) => {
+      expect(entry.english).toBeTruthy();
+      expect(entry.dutch).toBeTruthy();
+      expect(['easy', 'medium', 'hard']).toContain(entry.level);
+    });
+  });
+
+  it('medium and hard words should have exampleSentence', () => {
+    const mediumHard = ENGLISH_VOCABULARY.filter(
+      (w) => w.level === 'medium' || w.level === 'hard',
+    );
+    mediumHard.forEach((entry) => {
+      expect(entry.exampleSentence).toBeTruthy();
+      expect(entry.exampleSentence).toContain('____');
+    });
+  });
+
+  it('easy words should not have exampleSentence', () => {
+    const easy = ENGLISH_VOCABULARY.filter((w) => w.level === 'easy');
+    easy.forEach((entry) => {
+      expect(entry.exampleSentence).toBeUndefined();
+    });
+  });
+
+  it('no duplicate english words', () => {
+    const englishWords = ENGLISH_VOCABULARY.map((w) => w.english.toLowerCase());
+    const unique = new Set(englishWords);
+    expect(unique.size).toBe(englishWords.length);
+  });
+
+  it('no duplicate dutch words', () => {
+    const dutchWords = ENGLISH_VOCABULARY.map((w) => w.dutch.toLowerCase());
+    const unique = new Set(dutchWords);
+    expect(unique.size).toBe(dutchWords.length);
+  });
+});
+
+// ============================================
+// ENGLISH POOL
+// ============================================
+
+describe('getEnglishPool', () => {
+  it('should return only easy words for easy level', () => {
+    const pool = getEnglishPool({ englishLevel: 'easy' });
+    expect(pool.length).toBe(50);
+    pool.forEach((w) => expect(w.level).toBe('easy'));
+  });
+
+  it('should return easy + medium for medium level', () => {
+    const pool = getEnglishPool({ englishLevel: 'medium' });
+    expect(pool.length).toBe(100);
+    const levels = new Set(pool.map((w) => w.level));
+    expect(levels).toEqual(new Set(['easy', 'medium']));
+  });
+
+  it('should return all words for hard level', () => {
+    const pool = getEnglishPool({ englishLevel: 'hard' });
+    expect(pool.length).toBe(150);
+  });
+
+  it('should default to easy when no level specified', () => {
+    const pool = getEnglishPool({});
+    expect(pool.length).toBe(50);
+  });
+});
+
+// ============================================
+// ENGLISH MULTIPLE CHOICE
+// ============================================
+
+describe('generateEnglishMultipleChoice', () => {
+  it('should return correct structure', () => {
+    const result = generateEnglishMultipleChoice({
+      englishLevel: 'easy',
+      englishDirection: 'nl-en',
+    });
+    expect(result.type).toBe('englishMultipleChoice');
+    expect(result.question).toBeTruthy();
+    expect(result.answer).toBeTruthy();
+    expect(result.wrongAnswers).toHaveLength(3);
+    expect(result.questionLang).toBe('nl');
+    expect(result.answerLang).toBe('en');
+  });
+
+  it('should respect nl-en direction', () => {
+    for (let i = 0; i < 10; i++) {
+      const result = generateEnglishMultipleChoice({
+        englishLevel: 'easy',
+        englishDirection: 'nl-en',
+      });
+      expect(result.questionLang).toBe('nl');
+      expect(result.answerLang).toBe('en');
+    }
+  });
+
+  it('should respect en-nl direction', () => {
+    for (let i = 0; i < 10; i++) {
+      const result = generateEnglishMultipleChoice({
+        englishLevel: 'easy',
+        englishDirection: 'en-nl',
+      });
+      expect(result.questionLang).toBe('en');
+      expect(result.answerLang).toBe('nl');
+    }
+  });
+
+  it('should produce both directions when set to both', () => {
+    const results = [];
+    for (let i = 0; i < 50; i++) {
+      results.push(
+        generateEnglishMultipleChoice({
+          englishLevel: 'easy',
+          englishDirection: 'both',
+        }),
+      );
+    }
+    const langs = new Set(results.map((r) => r.questionLang));
+    expect(langs.size).toBe(2);
+  });
+
+  it('wrongAnswers should not contain the correct answer', () => {
+    for (let i = 0; i < 20; i++) {
+      const result = generateEnglishMultipleChoice({
+        englishLevel: 'hard',
+        englishDirection: 'nl-en',
+      });
+      expect(result.wrongAnswers).not.toContain(result.answer);
+    }
+  });
+
+  it('should only use words from allowed levels', () => {
+    const easyPool = getEnglishPool({ englishLevel: 'easy' });
+    const easyDutch = new Set(easyPool.map((w) => w.dutch));
+    const easyEnglish = new Set(easyPool.map((w) => w.english));
+
+    for (let i = 0; i < 20; i++) {
+      const result = generateEnglishMultipleChoice({
+        englishLevel: 'easy',
+        englishDirection: 'nl-en',
+      });
+      // question is Dutch, answer is English
+      expect(easyDutch.has(result.question)).toBe(true);
+      expect(easyEnglish.has(result.answer)).toBe(true);
+    }
+  });
+});
+
+// ============================================
+// ENGLISH MEMORY PAIRS
+// ============================================
+
+describe('generateEnglishMemoryPairs', () => {
+  it('should return requested number of pairs', () => {
+    const pairs = generateEnglishMemoryPairs({ englishLevel: 'easy' }, 4);
+    expect(pairs).toHaveLength(4);
+  });
+
+  it('each pair should have question, answer, questionLang, answerLang', () => {
+    const pairs = generateEnglishMemoryPairs({ englishLevel: 'medium' }, 4);
+    pairs.forEach((pair) => {
+      expect(pair.question).toBeTruthy();
+      expect(pair.answer).toBeTruthy();
+      expect(pair.questionLang).toBeTruthy();
+      expect(pair.answerLang).toBeTruthy();
+    });
+  });
+
+  it('should not exceed available pool size', () => {
+    // Easy has 50 words, asking for 100 should cap at 50
+    const pairs = generateEnglishMemoryPairs({ englishLevel: 'easy' }, 100);
+    expect(pairs.length).toBeLessThanOrEqual(50);
+  });
+
+  it('should return unique words', () => {
+    const pairs = generateEnglishMemoryPairs({ englishLevel: 'hard' }, 10);
+    const questions = pairs.map((p) => p.question);
+    const unique = new Set(questions);
+    expect(unique.size).toBe(pairs.length);
+  });
+});
+
+// ============================================
+// ENGLISH FILL IN
+// ============================================
+
+describe('generateEnglishFillIn', () => {
+  it('should return fill-in structure for medium level', () => {
+    const result = generateEnglishFillIn({ englishLevel: 'medium' });
+    expect(result.type).toBe('englishFillIn');
+    expect(result.sentence).toBeTruthy();
+    expect(result.correctWord).toBeTruthy();
+    expect(result.wrongWords).toHaveLength(3);
+    expect(result.dutch).toBeTruthy();
+  });
+
+  it('should return fill-in structure for hard level', () => {
+    const result = generateEnglishFillIn({ englishLevel: 'hard' });
+    expect(result.type).toBe('englishFillIn');
+    expect(result.sentence).toContain('____');
+  });
+
+  it('wrongWords should not contain the correct word', () => {
+    for (let i = 0; i < 20; i++) {
+      const result = generateEnglishFillIn({ englishLevel: 'hard' });
+      expect(result.wrongWords).not.toContain(result.correctWord);
+    }
+  });
+
+  it('should fallback to multiple choice for easy level (no exampleSentences)', () => {
+    const result = generateEnglishFillIn({ englishLevel: 'easy' });
+    // Easy words have no exampleSentence, so it falls back to MC
+    expect(result.type).toBe('englishMultipleChoice');
+  });
+});
+
+// ============================================
+// ENGLISH TYPE WORD
+// ============================================
+
+describe('generateEnglishTypeWord', () => {
+  it('should return correct structure', () => {
+    const result = generateEnglishTypeWord({ englishLevel: 'easy' });
+    expect(result.type).toBe('englishTypeWord');
+    expect(result.dutch).toBeTruthy();
+    expect(result.english).toBeTruthy();
+    expect(result.prompt).toBeTruthy();
+    expect(result.answer).toBeTruthy();
+    expect(result.promptLang).toBeTruthy();
+    expect(result.answerLang).toBeTruthy();
+  });
+
+  it('should only use words from the allowed pool', () => {
+    const pool = getEnglishPool({ englishLevel: 'easy' });
+    const validEnglish = new Set(pool.map((w) => w.english));
+    for (let i = 0; i < 20; i++) {
+      const result = generateEnglishTypeWord({ englishLevel: 'easy' });
+      expect(validEnglish.has(result.english)).toBe(true);
+    }
+  });
+
+  it('should respect nl-en direction', () => {
+    for (let i = 0; i < 10; i++) {
+      const result = generateEnglishTypeWord({
+        englishLevel: 'easy',
+        englishDirection: 'nl-en',
+      });
+      expect(result.promptLang).toBe('nl');
+      expect(result.answerLang).toBe('en');
+      expect(result.prompt).toBe(result.dutch);
+      expect(result.answer).toBe(result.english);
+    }
+  });
+
+  it('should respect en-nl direction', () => {
+    for (let i = 0; i < 10; i++) {
+      const result = generateEnglishTypeWord({
+        englishLevel: 'easy',
+        englishDirection: 'en-nl',
+      });
+      expect(result.promptLang).toBe('en');
+      expect(result.answerLang).toBe('nl');
+      expect(result.prompt).toBe(result.english);
+      expect(result.answer).toBe(result.dutch);
+    }
+  });
+
+  it('should produce both directions when set to both', () => {
+    const results = [];
+    for (let i = 0; i < 50; i++) {
+      results.push(
+        generateEnglishTypeWord({
+          englishLevel: 'easy',
+          englishDirection: 'both',
+        }),
+      );
+    }
+    const langs = new Set(results.map((r) => r.promptLang));
+    expect(langs.size).toBe(2);
+  });
+});
+
+// ============================================
+// ENGLISH CONNECT PAIRS
+// ============================================
+
+describe('generateEnglishConnectPairs', () => {
+  it('should return requested number of pairs', () => {
+    const pairs = generateEnglishConnectPairs({ englishLevel: 'easy' }, 4);
+    expect(pairs).toHaveLength(4);
+  });
+
+  it('each pair should have dutch and english', () => {
+    const pairs = generateEnglishConnectPairs({ englishLevel: 'medium' }, 4);
+    pairs.forEach((pair) => {
+      expect(pair.dutch).toBeTruthy();
+      expect(pair.english).toBeTruthy();
+    });
+  });
+
+  it('pairs should be unique', () => {
+    const pairs = generateEnglishConnectPairs({ englishLevel: 'hard' }, 8);
+    const englishWords = pairs.map((p) => p.english);
+    const unique = new Set(englishWords);
+    expect(unique.size).toBe(pairs.length);
+  });
+});
+
+// ============================================
+// MAIN GENERATOR WITH ENGLISH
+// ============================================
+
+describe('generateLanguageProblem with english', () => {
+  it('should return english problem when only english is enabled', () => {
+    const result = generateLanguageProblem({
+      enabledOperations: { english: true },
+      englishLevel: 'easy',
+      englishDirection: 'nl-en',
+    });
+    expect(result.type).toBe('englishMultipleChoice');
+  });
+
+  it('should include english in pool when enabled alongside others', () => {
+    const types = new Set();
+    for (let i = 0; i < 100; i++) {
+      const result = generateLanguageProblem({
+        enabledOperations: { spelling: true, english: true },
+        spellingCategories: [1, 2, 3],
+        englishLevel: 'easy',
+        englishDirection: 'nl-en',
+      });
+      types.add(result.type);
+    }
+    expect(types.has('spelling')).toBe(true);
+    expect(types.has('englishMultipleChoice')).toBe(true);
   });
 });

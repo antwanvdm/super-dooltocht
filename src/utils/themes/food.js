@@ -12,8 +12,7 @@ export const FOOD = {
     {
       word: 'ingrediënt',
       definition: 'Iets dat je nodig hebt om eten klaar te maken.',
-      exampleSentence:
-        'We misten nog een ingrediënt voor het recept: een ei.',
+      exampleSentence: 'We misten nog een ingrediënt voor het recept: een ei.',
     },
     {
       word: 'oven',

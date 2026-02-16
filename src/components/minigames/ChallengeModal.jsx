@@ -23,6 +23,11 @@ import VocabularyMemory from './VocabularyMemory';
 import VocabularyFillIn from './VocabularyFillIn';
 import ReadingComprehension from './ReadingComprehension';
 import ReadingTrueFalse from './ReadingTrueFalse';
+import EnglishMultipleChoice from './EnglishMultipleChoice';
+import EnglishMemory from './EnglishMemory';
+import EnglishTypeWord from './EnglishTypeWord';
+import EnglishFillIn from './EnglishFillIn';
+import EnglishConnect from './EnglishConnect';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
@@ -42,6 +47,9 @@ const VOCABULARY_GAMES = ['vocabularyMatch', 'vocabularyMemory', 'vocabularyFill
 
 // Reading comprehension minigames
 const READING_GAMES = ['readingComprehension', 'readingTrueFalse'];
+
+// English vocabulary minigames
+const ENGLISH_GAMES = ['englishMultipleChoice', 'englishMemory', 'englishConnect'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -68,6 +76,11 @@ const GAME_NAMES = {
   'vocabularyFillIn': 'Vul het woord in',
   'readingComprehension': 'Begrijpend lezen',
   'readingTrueFalse': 'Waar of niet waar',
+  'englishMultipleChoice': 'Engels vertalen',
+  'englishMemory': 'Engels Memory',
+  'englishTypeWord': 'Typ het Engelse woord',
+  'englishFillIn': 'Engels invullen',
+  'englishConnect': 'Engels verbinden',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -93,6 +106,7 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     const hasSpelling = enabled.spelling;
     const hasVocabulary = enabled.vocabulary;
     const hasReading = enabled.reading;
+    const hasEnglish = enabled.english;
 
     // Bouw pool van beschikbare game types
     const availableTypes = [];
@@ -131,6 +145,14 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     }
     if (hasReading) {
       availableTypes.push(...READING_GAMES);
+    }
+    if (hasEnglish) {
+      availableTypes.push(...ENGLISH_GAMES);
+      // EnglishTypeWord en EnglishFillIn alleen vanaf medium niveau
+      const level = mathSettings?.englishLevel || 'easy';
+      if (level === 'medium' || level === 'hard') {
+        availableTypes.push('englishTypeWord', 'englishFillIn');
+      }
     }
 
     // Fallback naar multiple-choice als niets beschikbaar
@@ -397,6 +419,50 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
 
             {gameType === 'readingTrueFalse' && (
               <ReadingTrueFalse
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'englishMultipleChoice' && (
+              <EnglishMultipleChoice
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'englishMemory' && (
+              <EnglishMemory
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'englishTypeWord' && (
+              <EnglishTypeWord
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'englishFillIn' && (
+              <EnglishFillIn
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'englishConnect' && (
+              <EnglishConnect
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
                 onFailure={handleFailure}

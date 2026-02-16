@@ -16,6 +16,7 @@ import {
   SPELLING_WORDS,
   GENERAL_VOCABULARY,
   READING_TEXTS,
+  ENGLISH_VOCABULARY,
 } from './languageData';
 import { getTheme } from './themes';
 
@@ -414,6 +415,193 @@ export const generateUniqueReadingProblems = (settings, count = 4) => {
 };
 
 // ============================================
+// ENGELSE WOORDENSCHAT (ENGLISH VOCABULARY)
+// ============================================
+
+/**
+ * Haal de Engelse woordenpool op, gefilterd op niveau.
+ * @param {object} settings - mathSettings met englishLevel
+ * @returns {Array} gefilterde woordenlijst
+ */
+export const getEnglishPool = (settings) => {
+  const level = settings?.englishLevel || 'easy';
+  // Include all words up to and including the selected level
+  const levelOrder = ['easy', 'medium', 'hard'];
+  const maxIndex = levelOrder.indexOf(level);
+  const allowedLevels = levelOrder.slice(0, maxIndex + 1);
+  return ENGLISH_VOCABULARY.filter((w) => allowedLevels.includes(w.level));
+};
+
+/**
+ * Bepaal wat de vraag- en antwoordtaal is op basis van richting.
+ * @param {object} entry - { english, dutch }
+ * @param {string} direction - 'nl-en' | 'en-nl' | 'both'
+ * @returns {{ question: string, answer: string, questionLang: string, answerLang: string }}
+ */
+const getDirectionPair = (entry, direction) => {
+  const dir = direction || 'nl-en';
+  let useNlToEn;
+  if (dir === 'both') {
+    useNlToEn = Math.random() < 0.5;
+  } else {
+    useNlToEn = dir === 'nl-en';
+  }
+
+  if (useNlToEn) {
+    return {
+      question: entry.dutch,
+      answer: entry.english,
+      questionLang: 'nl',
+      answerLang: 'en',
+    };
+  }
+  return {
+    question: entry.english,
+    answer: entry.dutch,
+    questionLang: 'en',
+    answerLang: 'nl',
+  };
+};
+
+/**
+ * Genereer een Engels multiple-choice opgave.
+ * Returns: { type: 'englishMultipleChoice', question, answer, wrongAnswers, questionLang, answerLang }
+ */
+export const generateEnglishMultipleChoice = (settings) => {
+  const pool = getEnglishPool(settings);
+  const direction = settings?.englishDirection || 'nl-en';
+
+  if (pool.length < 4) {
+    const entry = pool[0] || ENGLISH_VOCABULARY[0];
+    const pair = getDirectionPair(entry, direction);
+    return {
+      type: 'englishMultipleChoice',
+      ...pair,
+      wrongAnswers: ['word1', 'word2', 'word3'],
+    };
+  }
+
+  const shuffled = shuffle(pool);
+  const correct = shuffled[0];
+  const pair = getDirectionPair(correct, direction);
+
+  // Genereer foute antwoorden in dezelfde taal als het antwoord
+  const wrongAnswers = shuffled
+    .slice(1)
+    .filter((e) => {
+      const wrongVal = pair.answerLang === 'en' ? e.english : e.dutch;
+      return wrongVal !== pair.answer;
+    })
+    .slice(0, 3)
+    .map((e) => (pair.answerLang === 'en' ? e.english : e.dutch));
+
+  while (wrongAnswers.length < 3) {
+    wrongAnswers.push(pair.answerLang === 'en' ? 'something' : 'iets');
+  }
+
+  return {
+    type: 'englishMultipleChoice',
+    ...pair,
+    wrongAnswers,
+  };
+};
+
+/**
+ * Genereer meerdere unieke Engelse opgaven voor memory.
+ * Returns: Array van { question, answer, questionLang, answerLang }
+ */
+export const generateEnglishMemoryPairs = (settings, count = 4) => {
+  const pool = getEnglishPool(settings);
+  const direction = settings?.englishDirection || 'nl-en';
+  const shuffled = shuffle(pool);
+  const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  return selected.map((entry) => {
+    const pair = getDirectionPair(entry, direction);
+    return pair;
+  });
+};
+
+/**
+ * Genereer een Engelse invuloefening (fill-in-the-blank).
+ * Alleen beschikbaar voor medium/hard woorden met exampleSentence.
+ * Returns: { type: 'englishFillIn', sentence, correctWord, wrongWords, dutch }
+ */
+export const generateEnglishFillIn = (settings) => {
+  const pool = getEnglishPool(settings).filter((e) => e.exampleSentence);
+
+  if (pool.length < 4) {
+    // Fallback naar multiple choice
+    return generateEnglishMultipleChoice(settings);
+  }
+
+  const shuffled = shuffle(pool);
+  const correct = shuffled[0];
+
+  const wrongWords = shuffled
+    .slice(1)
+    .filter((e) => e.english !== correct.english)
+    .slice(0, 3)
+    .map((e) => e.english);
+
+  while (wrongWords.length < 3) {
+    wrongWords.push('something');
+  }
+
+  return {
+    type: 'englishFillIn',
+    sentence: correct.exampleSentence,
+    correctWord: correct.english,
+    wrongWords,
+    dutch: correct.dutch,
+  };
+};
+
+/**
+ * Genereer een Engelse typ-opgave.
+ * Respecteert de richtingsinstelling (NL→EN, EN→NL, beide).
+ * Returns: { type: 'englishTypeWord', dutch, english, prompt, answer, promptLang, answerLang }
+ */
+export const generateEnglishTypeWord = (settings) => {
+  const pool = getEnglishPool(settings);
+  const chosen = pool[randBetween(0, pool.length - 1)];
+  const direction = settings?.englishDirection || 'nl-en';
+
+  let promptLang;
+  if (direction === 'both') {
+    promptLang = Math.random() < 0.5 ? 'nl' : 'en';
+  } else if (direction === 'en-nl') {
+    promptLang = 'en';
+  } else {
+    promptLang = 'nl';
+  }
+  const answerLang = promptLang === 'nl' ? 'en' : 'nl';
+
+  return {
+    type: 'englishTypeWord',
+    dutch: chosen.dutch,
+    english: chosen.english,
+    prompt: promptLang === 'nl' ? chosen.dutch : chosen.english,
+    answer: promptLang === 'nl' ? chosen.english : chosen.dutch,
+    promptLang,
+    answerLang,
+  };
+};
+
+/**
+ * Genereer opgaven uit verschillende woorden voor connect.
+ * Returns: Array van { dutch, english }
+ */
+export const generateEnglishConnectPairs = (settings, count = 4) => {
+  const pool = getEnglishPool(settings);
+  const shuffled = shuffle(pool);
+  return shuffled.slice(0, Math.min(count, shuffled.length)).map((e) => ({
+    dutch: e.dutch,
+    english: e.english,
+  }));
+};
+
+// ============================================
 // HOOFD GENERATOR
 // ============================================
 
@@ -428,6 +616,7 @@ export const generateLanguageProblem = (settings) => {
   if (enabled.spelling) pool.push('spelling');
   if (enabled.vocabulary) pool.push('vocabulary');
   if (enabled.reading) pool.push('reading');
+  if (enabled.english) pool.push('english');
 
   if (pool.length === 0) {
     // Fallback
@@ -443,6 +632,8 @@ export const generateLanguageProblem = (settings) => {
       return generateVocabularyProblem(settings);
     case 'reading':
       return generateReadingProblem(settings);
+    case 'english':
+      return generateEnglishMultipleChoice(settings);
     default:
       return generateSpellingProblem(settings);
   }

@@ -6,8 +6,7 @@ export const CASTLE = {
     {
       word: 'ridder',
       definition: 'Een dappere strijder die een harnas draagt.',
-      exampleSentence:
-        'De dappere ridder reed op zijn paard naar het kasteel.',
+      exampleSentence: 'De dappere ridder reed op zijn paard naar het kasteel.',
     },
     {
       word: 'toren',
@@ -18,8 +17,7 @@ export const CASTLE = {
     {
       word: 'slotgracht',
       definition: 'Het water rondom een kasteel.',
-      exampleSentence:
-        'Rondom het kasteel lag een brede slotgracht vol water.',
+      exampleSentence: 'Rondom het kasteel lag een brede slotgracht vol water.',
     },
     {
       word: 'ophaalbrug',
@@ -35,8 +33,7 @@ export const CASTLE = {
     {
       word: 'harnas',
       definition: 'Een ijzeren pak dat ridders beschermt.',
-      exampleSentence:
-        'De ridder trok zijn zware harnas aan voor het gevecht.',
+      exampleSentence: 'De ridder trok zijn zware harnas aan voor het gevecht.',
     },
     {
       word: 'kerker',

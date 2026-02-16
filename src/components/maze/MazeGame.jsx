@@ -73,6 +73,17 @@ function MazeGame() {
     return false;
   });
   const [pendingSync, setPendingSync] = useState(false);
+  const [modalInteractionReady, setModalInteractionReady] = useState(false);
+
+  // Korte delay voordat popup-modals interactief worden, zodat een vinger die
+  // al op het scherm lag (bijv. D-pad) niet per ongeluk meteen een knop indrukt.
+  useEffect(() => {
+    if (exitModal || friendsWarningModal || activeFriendly || hasWon) {
+      setModalInteractionReady(false);
+      const timer = setTimeout(() => setModalInteractionReady(true), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [exitModal, friendsWarningModal, activeFriendly, hasWon]);
 
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
@@ -702,6 +713,23 @@ function MazeGame() {
                     </div>
                   </div>
                 )}
+                {mathSettings.enabledOperations.english && (
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <h4 className="font-bold text-blue-800 mb-2">🇬🇧 Engels</h4>
+                    <div className="text-sm text-blue-700 space-y-1">
+                      <p>Niveau: <strong>
+                        {mathSettings.englishLevel === 'easy' && 'Makkelijk'}
+                        {mathSettings.englishLevel === 'medium' && 'Gemiddeld'}
+                        {mathSettings.englishLevel === 'hard' && 'Moeilijk'}
+                      </strong></p>
+                      <p>Richting: <strong>
+                        {mathSettings.englishDirection === 'nl-en' && 'Nederlands → Engels'}
+                        {mathSettings.englishDirection === 'en-nl' && 'Engels → Nederlands'}
+                        {mathSettings.englishDirection === 'both' && 'Beide richtingen'}
+                      </strong></p>
+                    </div>
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => setShowSettings(false)}
@@ -826,7 +854,8 @@ function MazeGame() {
       {/* Exit warning modal */}
       {exitModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-xl shadow-2xl text-center">
+          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-xl shadow-2xl text-center relative">
+            {!modalInteractionReady && <div className="absolute inset-0 z-10 rounded-2xl" />}
             <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-3">Bijna bij de deur!</h3>
             <p className="text-lg sm:text-xl text-gray-700 mb-3 sm:mb-4">
               Je mist nog {exitModal.remaining} {exitModal.remaining === 1 ? 'uitdaging' : 'uitdagingen'} om de sleutel compleet te maken.
@@ -845,7 +874,8 @@ function MazeGame() {
       {/* Friendly NPC Dialog */}
       {activeFriendly && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-full sm:max-w-md w-full overflow-hidden`}>
+          <div className={`${theme.colors.secondary || theme.colors.primary} rounded-3xl shadow-2xl max-w-full sm:max-w-md w-full overflow-hidden relative`}>
+            {!modalInteractionReady && <div className="absolute inset-0 z-10 rounded-3xl" />}
             <div className="p-4 sm:p-8 text-center">
               <div className="text-6xl sm:text-8xl mb-3 sm:mb-4 animate-bounce">
                 {activeFriendly.emoji}
@@ -869,7 +899,8 @@ function MazeGame() {
       {/* Friends Warning Modal - wanneer je weggaat zonder alle vriendjes */}
       {friendsWarningModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-lg shadow-2xl text-center">
+          <div className="bg-white rounded-2xl p-4 sm:p-8 w-full max-w-full sm:max-w-lg shadow-2xl text-center relative">
+            {!modalInteractionReady && <div className="absolute inset-0 z-10 rounded-2xl" />}
             <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">😢</div>
             <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3">Wacht even!</h3>
             <p className="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4">
@@ -915,7 +946,8 @@ function MazeGame() {
       {hasWon && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Confetti duration={5000} />
-          <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl max-w-lg mx-4">
+          <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl max-w-lg mx-4 relative">
+            {!modalInteractionReady && <div className="absolute inset-0 z-10 rounded-2xl" />}
             <div className="text-7xl md:text-8xl mb-4">{theme.emoji}</div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               {collectedFriends.length === friendlies.length ? '🎉 Geweldig!' : 'Goed gedaan!'}
