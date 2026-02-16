@@ -255,8 +255,9 @@ const generatePlaceValue = (level) => {
   switch (level) {
     case 'tens':
       // Getal van 10-99, vraag naar tiental of eenheid
-      number = randBetween(10, 99);
       position = Math.random() < 0.5 ? 'units' : 'tens';
+      // Tiental: het tiental mag geen 0 zijn (getal >= 10 garandeert dit al)
+      number = randBetween(10, 99);
       allPlaceValues = [
         number % 10, // eenheid: 4
         (Math.floor(number / 10) % 10) * 10, // tiental: 40
@@ -269,11 +270,17 @@ const generatePlaceValue = (level) => {
         positionName = 'tiental';
       }
       break;
-    case 'hundreds':
+    case 'hundreds': {
       // Getal van 100-999, vraag naar eenheid/tiental/honderdtal
-      number = randBetween(100, 999);
       const positions100 = ['units', 'tens', 'hundreds'];
       position = positions100[Math.floor(Math.random() * positions100.length)];
+      // Genereer getal zonder 0 op de gevraagde positie (behalve eenheid)
+      do {
+        number = randBetween(100, 999);
+      } while (
+        (position === 'tens' && Math.floor(number / 10) % 10 === 0) ||
+        (position === 'hundreds' && Math.floor(number / 100) % 10 === 0)
+      );
       allPlaceValues = [
         number % 10, // eenheid: 8
         (Math.floor(number / 10) % 10) * 10, // tiental: 70
@@ -290,13 +297,21 @@ const generatePlaceValue = (level) => {
         positionName = 'honderdtal';
       }
       break;
+    }
     case 'thousands':
-    default:
+    default: {
       // Getal van 1000-9999, vraag naar eenheid/tiental/honderdtal/duizendtal
-      number = randBetween(1000, 9999);
       const positions1000 = ['units', 'tens', 'hundreds', 'thousands'];
       position =
         positions1000[Math.floor(Math.random() * positions1000.length)];
+      // Genereer getal zonder 0 op de gevraagde positie (behalve eenheid)
+      do {
+        number = randBetween(1000, 9999);
+      } while (
+        (position === 'tens' && Math.floor(number / 10) % 10 === 0) ||
+        (position === 'hundreds' && Math.floor(number / 100) % 10 === 0) ||
+        (position === 'thousands' && Math.floor(number / 1000) % 10 === 0)
+      );
       allPlaceValues = [
         number % 10, // eenheid: 1
         (Math.floor(number / 10) % 10) * 10, // tiental: 20
@@ -317,6 +332,7 @@ const generatePlaceValue = (level) => {
         positionName = 'duizendtal';
       }
       break;
+    }
   }
 
   return {

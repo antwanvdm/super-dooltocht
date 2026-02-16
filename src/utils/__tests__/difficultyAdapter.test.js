@@ -410,6 +410,11 @@ describe('Place Value (Getallen begrijpen)', () => {
       } else if (problem.positionName === 'honderdtal') {
         expect(problem.answer).toBe(hundreds);
       }
+
+      // Gevraagde positie (behalve eenheid) mag geen 0 zijn
+      if (problem.positionName !== 'eenheid') {
+        expect(problem.answer).not.toBe(0);
+      }
     }
   });
 
@@ -432,6 +437,11 @@ describe('Place Value (Getallen begrijpen)', () => {
 
       // Sum equals original
       expect(units + tens + hundreds + thousands).toBe(number);
+
+      // Gevraagde positie (behalve eenheid) mag geen 0 zijn
+      if (problem.positionName !== 'eenheid') {
+        expect(problem.answer).not.toBe(0);
+      }
     }
   });
 
