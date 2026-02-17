@@ -168,14 +168,14 @@ function generateDayForwardQuestion() {
 
   const ansIdx = isForward
     ? (startIdx + duration) % 7
-    : ((startIdx - duration) % 7 + 7) % 7;
+    : (((startIdx - duration) % 7) + 7) % 7;
 
   const answer = DAGEN[ansIdx];
   const question = isForward
     ? `Het is ${DAGEN[startIdx]}. Welke dag is het over ${duration} ${duration === 1 ? 'dag' : 'dagen'}?`
     : `Het is ${DAGEN[startIdx]}. Welke dag was het ${duration} ${duration === 1 ? 'dag' : 'dagen'} geleden?`;
 
-  const wrongAnswers = DAGEN.filter(d => d !== answer)
+  const wrongAnswers = DAGEN.filter((d) => d !== answer)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3);
 
@@ -188,7 +188,10 @@ function generateDayForwardQuestion() {
  * @param {boolean} use24h - Use 24-hour notation
  * @returns {{ question: string, answer: string, wrongAnswers: string[] }}
  */
-export function generateKlokVooruitQuestion(level = 'wholeHours', use24h = false) {
+export function generateKlokVooruitQuestion(
+  level = 'wholeHours',
+  use24h = false,
+) {
   if (level === 'daysWeeks') {
     return generateDayForwardQuestion();
   }
@@ -207,7 +210,10 @@ export function generateKlokVooruitQuestion(level = 'wholeHours', use24h = false
  * @param {boolean} use24h - Use 24-hour notation for answers
  * @returns {{ startH: number, startM: number, durationText: string, isForward: boolean, answer: string, wrongAnswers: string[] }}
  */
-export function generateKlokRekenenQuestion(level = 'wholeHours', use24h = false) {
+export function generateKlokRekenenQuestion(
+  level = 'wholeHours',
+  use24h = false,
+) {
   const isForward = Math.random() > 0.3;
 
   let startH, startM, durationMin, durationText;
@@ -299,10 +305,11 @@ function generateDayDurationQuestion() {
     const answer = `${duration} ${duration === 1 ? 'dag' : 'dagen'}`;
     const question = `Hoeveel dagen is het van ${DAGEN[startIdx]} tot ${DAGEN[endIdx]}?`;
 
-    const wrongs = [1, 2, 3, 4, 5, 6].filter(d => d !== duration)
+    const wrongs = [1, 2, 3, 4, 5, 6]
+      .filter((d) => d !== duration)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
-      .map(d => `${d} ${d === 1 ? 'dag' : 'dagen'}`);
+      .map((d) => `${d} ${d === 1 ? 'dag' : 'dagen'}`);
 
     return { question, answer, wrongAnswers: wrongs };
   } else {
@@ -313,10 +320,11 @@ function generateDayDurationQuestion() {
     const question = `Hoeveel dagen zitten er in ${weeks} ${weeks === 1 ? 'week' : 'weken'}?`;
     const answer = `${days} dagen`;
 
-    const wrongs = [1, 2, 3, 4].filter(w => w !== weeks)
+    const wrongs = [1, 2, 3, 4]
+      .filter((w) => w !== weeks)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
-      .map(w => `${w * 7} dagen`);
+      .map((w) => `${w * 7} dagen`);
 
     return { question, answer, wrongAnswers: wrongs };
   }
@@ -328,7 +336,10 @@ function generateDayDurationQuestion() {
  * @param {boolean} use24h - Use 24-hour notation
  * @returns {{ question: string, answer: string, wrongAnswers: string[] }}
  */
-export function generateTijdsduurQuestion(level = 'wholeHours', use24h = false) {
+export function generateTijdsduurQuestion(
+  level = 'wholeHours',
+  use24h = false,
+) {
   if (level === 'daysWeeks') {
     return generateDayDurationQuestion();
   }
@@ -481,7 +492,10 @@ function generateDayCalculation() {
  * @param {boolean} use24h
  * @returns {{ question: string, answer: number }}
  */
-export function generateTijdRekenenProblem(level = 'wholeHours', use24h = false) {
+export function generateTijdRekenenProblem(
+  level = 'wholeHours',
+  use24h = false,
+) {
   if (level === 'daysWeeks') {
     return generateDayCalculation();
   }
@@ -495,7 +509,11 @@ export function generateTijdRekenenProblem(level = 'wholeHours', use24h = false)
  * @param {boolean} use24h
  * @returns {Array<{ question: string, answer: number }>}
  */
-export function generateTijdRekenenProblems(level = 'wholeHours', count = 4, use24h = false) {
+export function generateTijdRekenenProblems(
+  level = 'wholeHours',
+  count = 4,
+  use24h = false,
+) {
   const problems = [];
   const usedAnswers = new Set();
   let attempts = 0;

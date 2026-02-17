@@ -68,6 +68,43 @@ A separate exercise category with its own settings tab.
 - 📝 **Schrijf de tijd** – See a clock, type the time in Dutch words (words mode)
 - 🔄 **24-uursklok** – Convert between 12h+dagdeel and 24h notation (24h mode)
 
+### Time Awareness (Tijdsbesef)
+
+Practice calendar knowledge – days, months and seasons.
+
+- **Topics:**
+  - 📅 Days of the week (Dagen van de week)
+  - 🗓️ Months of the year (Maanden van het jaar)
+  - 🌿 Seasons (Seizoenen) – with characteristics and ordering
+
+### Time Awareness Challenge Types
+
+- ❓ **Kalenderquiz** – Multiple choice questions about calendar facts
+- 🔢 **Volgorde** – Drag items into the correct order (days, months, seasons)
+- 🔗 **Seizoenen verbinden** – Connect characteristics to the right season
+- 🃏 **Kalender Memory** – Match related calendar pairs (e.g. day ↔ position)
+
+### Time Calculation (Rekenen met Tijd)
+
+Calculate with clocks, durations and time units.
+
+- **Difficulty levels:**
+  - Whole hours (Hele uren) – 03:00 + 2 uur
+  - Half hours (Halve uren) – 03:30 + 1,5 uur
+  - Quarters (Kwartieren) – 03:15 + 45 min
+  - Minutes (Minuten) – 03:22 + 20 min
+  - Days & weeks (Dagen & weken) – 2 weken = … dagen
+- **Extra option:**
+  - 🔄 24-hour notation – Show times in 24h format (e.g. 15:00 instead of 03:00)
+
+### Time Calculation Challenge Types
+
+- 🕐 **Klok vooruit** – "It's 03:00, what time is it in 2 hours?" (multiple choice)
+- 🕐 **Klok rekenen** – See an analog clock, calculate time forward/backward (multiple choice)
+- ⏱️ **Hoe lang duurt het?** – Calculate duration between two times (multiple choice)
+- 🃏 **Omreken Memory** – Match time unit conversions (e.g. "1 uur" ↔ "60 min")
+- 📝 **Rekenen met tijd** – Fill in the missing number in time calculations
+
 ### Language Exercises (Taal)
 
 A separate exercise category with its own settings tab.
@@ -133,7 +170,7 @@ Practice Dutch spelling rules with 8 word categories:
 - 🎭 **Emoji Character Selection** – Choose your own avatar
 - 💾 **Auto-save** – Game progress automatically saved
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
-- 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), and Taal (language)
+- 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), Tijdsbesef (time awareness), Rekenen met Tijd (time calculation), and Taal (language)
 - �📱 **Touch Controls** – D-pad overlay for touchscreen devices
 - ⌨️ **Keyboard Shortcuts**:
   - Arrow keys: Move through maze
@@ -194,6 +231,14 @@ src/
 │   ├── minigames/      # Educational challenges
 │   │   ├── AnalogClock.jsx       # Reusable SVG analog clock
 │   │   ├── Clock*.jsx            # Clock reading minigames
+│   │   ├── Kalender*.jsx         # Time awareness minigames
+│   │   ├── VolgordeSorteer.jsx   # Ordering minigame
+│   │   ├── SeizoenenMatch.jsx    # Season matching minigame
+│   │   ├── KlokVooruit.jsx       # Time forward/backward MC
+│   │   ├── KlokRekenen.jsx       # Analog clock + calculation MC
+│   │   ├── TijdsduurQuiz.jsx     # Duration quiz MC
+│   │   ├── OmrekenMemory.jsx     # Time unit conversion memory
+│   │   ├── TijdRekenen.jsx       # Time calculation fill-in
 │   │   ├── Spelling*.jsx         # Spelling minigames
 │   │   ├── Vocabulary*.jsx       # Vocabulary minigames
 │   │   ├── Reading*.jsx          # Reading comprehension minigames
@@ -208,6 +253,8 @@ src/
 │   ├── difficultyAdapter.js  # Math problem generation
 │   ├── languageAdapter.js    # Language problem generation
 │   ├── languageData.js       # Spelling, vocabulary & reading data
+│   ├── timeAwarenessData.js  # Calendar/season quiz generation
+│   ├── timeCalculationData.js # Time calculation problem generation
 │   ├── emojiCode.js          # Emoji ↔ slug conversion
 │   ├── localStorage.js       # Game state persistence
 │   ├── mazeGenerator.js      # Procedural maze generation

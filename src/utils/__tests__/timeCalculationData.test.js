@@ -149,12 +149,20 @@ describe('generateKlokVooruitQuestion', () => {
   });
 
   it('should generate day forward questions', () => {
-    const days = ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'];
+    const days = [
+      'maandag',
+      'dinsdag',
+      'woensdag',
+      'donderdag',
+      'vrijdag',
+      'zaterdag',
+      'zondag',
+    ];
     for (let i = 0; i < 20; i++) {
       const q = generateKlokVooruitQuestion('daysWeeks');
       expect(days).toContain(q.answer);
       expect(q.wrongAnswers).toHaveLength(3);
-      q.wrongAnswers.forEach(w => expect(days).toContain(w));
+      q.wrongAnswers.forEach((w) => expect(days).toContain(w));
       // Wrong answers should not include the correct answer
       expect(q.wrongAnswers).not.toContain(q.answer);
     }
@@ -311,7 +319,7 @@ describe('generateOmrekenMemoryPairs', () => {
 
   it('should return pairs with content and matchContent', () => {
     const pairs = generateOmrekenMemoryPairs('wholeHours', 4);
-    pairs.forEach(pair => {
+    pairs.forEach((pair) => {
       expect(pair).toHaveProperty('content');
       expect(pair).toHaveProperty('matchContent');
       expect(pair.content).toBeTruthy();
@@ -321,25 +329,29 @@ describe('generateOmrekenMemoryPairs', () => {
 
   it('should have unique matchContent values', () => {
     const pairs = generateOmrekenMemoryPairs('wholeHours', 4);
-    const matchContents = pairs.map(p => p.matchContent);
+    const matchContents = pairs.map((p) => p.matchContent);
     expect(new Set(matchContents).size).toBe(4);
   });
 
   it('should work for all levels', () => {
-    ['wholeHours', 'halfHours', 'quarters', 'minutes', 'daysWeeks'].forEach(level => {
-      const pairs = generateOmrekenMemoryPairs(level, 4);
-      expect(pairs).toHaveLength(4);
-      pairs.forEach(pair => {
-        expect(pair.content).toBeTruthy();
-        expect(pair.matchContent).toBeTruthy();
-      });
-    });
+    ['wholeHours', 'halfHours', 'quarters', 'minutes', 'daysWeeks'].forEach(
+      (level) => {
+        const pairs = generateOmrekenMemoryPairs(level, 4);
+        expect(pairs).toHaveLength(4);
+        pairs.forEach((pair) => {
+          expect(pair.content).toBeTruthy();
+          expect(pair.matchContent).toBeTruthy();
+        });
+      },
+    );
   });
 
   it('should return day/week conversion pairs for daysWeeks level', () => {
     const pairs = generateOmrekenMemoryPairs('daysWeeks', 4);
     // At least some pairs should contain "dagen" or "uur"
-    const allText = pairs.map(p => `${p.content} ${p.matchContent}`).join(' ');
+    const allText = pairs
+      .map((p) => `${p.content} ${p.matchContent}`)
+      .join(' ');
     expect(allText).toMatch(/dagen|uur/);
   });
 });
@@ -400,7 +412,11 @@ describe('generateTijdRekenenProblem', () => {
     let saw24h = false;
     for (let i = 0; i < 50; i++) {
       const p = generateTijdRekenenProblem('wholeHours', true);
-      if (p.question.match(/\d{2}:\d{2}/) || p.question.match(/1[3-9]:|2[0-3]:/)) saw24h = true;
+      if (
+        p.question.match(/\d{2}:\d{2}/) ||
+        p.question.match(/1[3-9]:|2[0-3]:/)
+      )
+        saw24h = true;
     }
     expect(saw24h).toBe(true);
   });
@@ -423,18 +439,20 @@ describe('generateTijdRekenenProblems', () => {
   it('should try to generate unique answers', () => {
     // With wholeHours (answers 1-5), we should easily get 4 unique
     const problems = generateTijdRekenenProblems('wholeHours', 4);
-    const answers = problems.map(p => p.answer);
+    const answers = problems.map((p) => p.answer);
     expect(new Set(answers).size).toBe(4);
   });
 
   it('should work for all levels', () => {
-    ['wholeHours', 'halfHours', 'quarters', 'minutes', 'daysWeeks'].forEach(level => {
-      const problems = generateTijdRekenenProblems(level, 4);
-      expect(problems).toHaveLength(4);
-      problems.forEach(p => {
-        expect(p.question).toContain('___');
-        expect(typeof p.answer).toBe('number');
-      });
-    });
+    ['wholeHours', 'halfHours', 'quarters', 'minutes', 'daysWeeks'].forEach(
+      (level) => {
+        const problems = generateTijdRekenenProblems(level, 4);
+        expect(problems).toHaveLength(4);
+        problems.forEach((p) => {
+          expect(p.question).toContain('___');
+          expect(typeof p.answer).toBe('number');
+        });
+      },
+    );
   });
 });

@@ -72,8 +72,6 @@ function KalenderQuiz({ mathSettings, onSuccess, onFailure }) {
             btnClass = option.correct
               ? 'bg-green-100 border-2 border-green-500 text-green-800 scale-105'
               : 'bg-red-100 border-2 border-red-500 text-red-800 scale-95';
-          } else if (showFeedback && option.correct) {
-            btnClass = 'bg-green-50 border-2 border-green-300 text-green-700';
           }
 
           return (
@@ -91,6 +89,16 @@ function KalenderQuiz({ mathSettings, onSuccess, onFailure }) {
           );
         })}
       </div>
+
+      {showFeedback && (
+        <div className="mt-4 sm:mt-6 text-lg sm:text-2xl font-bold">
+          {options.find(o => o.label === selected)?.correct ? (
+            <p className="text-green-600">🎉 Goed zo!</p>
+          ) : (
+            <p className="text-orange-600">💪 Probeer nog eens!</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
