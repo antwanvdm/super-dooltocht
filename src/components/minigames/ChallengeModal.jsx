@@ -32,6 +32,11 @@ import KalenderQuiz from './KalenderQuiz';
 import VolgordeSorteer from './VolgordeSorteer';
 import SeizoenenMatch from './SeizoenenMatch';
 import KalenderMemory from './KalenderMemory';
+import KlokVooruit from './KlokVooruit';
+import TijdsduurQuiz from './TijdsduurQuiz';
+import OmrekenMemory from './OmrekenMemory';
+import TijdRekenen from './TijdRekenen';
+import KlokRekenen from './KlokRekenen';
 import Confetti from '../Confetti';
 
 // Standaard minigames voor reguliere sommen (add/sub/mul)
@@ -57,6 +62,9 @@ const ENGLISH_GAMES = ['englishMultipleChoice', 'englishMemory', 'englishConnect
 
 // Time awareness minigames
 const TIME_AWARENESS_GAMES = ['kalenderQuiz', 'volgordeSorteer', 'kalenderMemory'];
+
+// Time calculation minigames
+const TIME_CALCULATION_GAMES = ['klokVooruit', 'tijdsduurQuiz', 'omrekenMemory', 'tijdRekenen', 'klokRekenen'];
 
 const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -92,6 +100,11 @@ const GAME_NAMES = {
   'volgordeSorteer': 'Volgorde',
   'seizoenenMatch': 'Seizoenen verbinden',
   'kalenderMemory': 'Kalender Memory',
+  'klokVooruit': 'Klok vooruit',
+  'tijdsduurQuiz': 'Hoe lang duurt het?',
+  'omrekenMemory': 'Omreken Memory',
+  'tijdRekenen': 'Rekenen met tijd',
+  'klokRekenen': 'Klok rekenen',
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -178,6 +191,18 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
         if (hasSeizoen) {
           availableTypes.push('seizoenenMatch');
         }
+      }
+    }
+
+    // Time calculation
+    const hasTimeCalculation = enabled.timeCalculation;
+    if (hasTimeCalculation) {
+      const timeCalcLevel = mathSettings?.timeCalcLevel || 'wholeHours';
+      if (timeCalcLevel === 'daysWeeks') {
+        // KlokRekenen maakt geen zin bij dagen & weken (geen analoge klok)
+        availableTypes.push(...TIME_CALCULATION_GAMES.filter(g => g !== 'klokRekenen'));
+      } else {
+        availableTypes.push(...TIME_CALCULATION_GAMES);
       }
     }
 
@@ -527,6 +552,50 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
               <KalenderMemory
                 mathSettings={mathSettings}
                 onSuccess={handleSuccess}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'klokVooruit' && (
+              <KlokVooruit
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'tijdsduurQuiz' && (
+              <TijdsduurQuiz
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'omrekenMemory' && (
+              <OmrekenMemory
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'tijdRekenen' && (
+              <TijdRekenen
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
+                theme={theme}
+              />
+            )}
+
+            {gameType === 'klokRekenen' && (
+              <KlokRekenen
+                mathSettings={mathSettings}
+                onSuccess={handleSuccess}
+                onFailure={handleFailure}
                 theme={theme}
               />
             )}

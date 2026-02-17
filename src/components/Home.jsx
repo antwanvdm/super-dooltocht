@@ -26,13 +26,15 @@ function Home({ disabled = false }) {
   const [placeValueLevel, setPlaceValueLevel] = useState(savedSettings?.placeValueLevel || 'tens');
   const [moneyMaxAmount, setMoneyMaxAmount] = useState(savedSettings?.moneyMaxAmount || 2000);
   const [moneyIncludeCents, setMoneyIncludeCents] = useState(savedSettings?.moneyIncludeCents || false);
-  const [tijdOps, setTijdOps] = useState(savedSettings?.tijdOps || { clock: true, timeAwareness: false });
+  const [tijdOps, setTijdOps] = useState(savedSettings?.tijdOps || { clock: true, timeAwareness: false, timeCalculation: false });
   const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
   const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
   const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
   const [timeAwarenessDagen, setTimeAwarenessDagen] = useState(savedSettings?.timeAwarenessDagen ?? true);
   const [timeAwarenessMaanden, setTimeAwarenessMaanden] = useState(savedSettings?.timeAwarenessMaanden ?? true);
   const [timeAwarenessSeizoen, setTimeAwarenessSeizoen] = useState(savedSettings?.timeAwarenessSeizoen ?? true);
+  const [timeCalcLevel, setTimeCalcLevel] = useState(savedSettings?.timeCalcLevel || 'wholeHours');
+  const [timeCalc24h, setTimeCalc24h] = useState(savedSettings?.timeCalc24h || false);
   const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false, english: false });
   const [spellingCategories, setSpellingCategories] = useState(savedSettings?.spellingCategories || [1, 2, 3, 4, 5, 6, 7, 8]);
   const [includeThemeVocabulary, setIncludeThemeVocabulary] = useState(savedSettings?.includeThemeVocabulary ?? true);
@@ -64,6 +66,8 @@ function Home({ disabled = false }) {
       timeAwarenessDagen,
       timeAwarenessMaanden,
       timeAwarenessSeizoen,
+      timeCalcLevel,
+      timeCalc24h,
       taalOps,
       spellingCategories,
       includeThemeVocabulary,
@@ -74,7 +78,7 @@ function Home({ disabled = false }) {
       adventureLength,
       playerEmoji,
     });
-  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, tijdOps, clockLevel, clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden, timeAwarenessSeizoen, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
+  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, tijdOps, clockLevel, clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden, timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -130,13 +134,15 @@ function Home({ disabled = false }) {
     let mathSettings;
     if (exerciseCategory === 'tijd') {
       mathSettings = {
-        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness },
+        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness, timeCalculation: tijdOps.timeCalculation },
         clockLevel,
         clock24h,
         clockWords,
         timeAwarenessDagen,
         timeAwarenessMaanden,
         timeAwarenessSeizoen,
+        timeCalcLevel,
+        timeCalc24h,
       };
     } else if (exerciseCategory === 'taal') {
       mathSettings = {
@@ -171,7 +177,7 @@ function Home({ disabled = false }) {
     });
   };
 
-  const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)))
+  const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
@@ -303,6 +309,7 @@ function Home({ disabled = false }) {
                 {[
                   { key: 'clock', label: 'Klokkijken', icon: '🕐', desc: 'Analoge en digitale klok aflezen' },
                   { key: 'timeAwareness', label: 'Tijdsbesef', icon: '📅', desc: 'Dagen, maanden en seizoenen' },
+                  { key: 'timeCalculation', label: 'Rekenen met tijd', icon: '⏱️', desc: 'Tijd optellen, aftrekken en omrekenen' },
                 ].map(({ key, label, icon, desc }) => (
                   <label
                     key={key}
@@ -327,7 +334,7 @@ function Home({ disabled = false }) {
                   </label>
                 ))}
               </div>
-              {!tijdOps.clock && !tijdOps.timeAwareness && (
+              {!tijdOps.clock && !tijdOps.timeAwareness && !tijdOps.timeCalculation && (
                 <p className="mt-4 text-sm text-red-500 font-medium text-center">
                   ⚠️ Kies minstens één soort oefening
                 </p>
@@ -702,8 +709,72 @@ function Home({ disabled = false }) {
                 </>
               )}
 
+              {/* Rekenen met tijd niveau */}
+              {tijdOps.timeCalculation && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${tijdOps.clock || tijdOps.timeAwareness ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>⏱️ Rekenen met tijd niveau:</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { key: 'wholeHours', label: 'Hele uren', desc: '03:00 + 2 uur' },
+                      { key: 'halfHours', label: 'Halve uren', desc: '03:30 + 1,5 uur' },
+                      { key: 'quarters', label: 'Kwartieren', desc: '03:15 + 45 min' },
+                      { key: 'minutes', label: 'Minuten', desc: '03:22 + 20 min' },
+                      { key: 'daysWeeks', label: 'Dagen & weken', desc: '2 weken = ... dagen' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          timeCalcLevel === key
+                            ? 'bg-amber-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-amber-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="timeCalcLevel"
+                          value={key}
+                          checked={timeCalcLevel === key}
+                          onChange={(e) => setTimeCalcLevel(e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${timeCalcLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {timeCalcLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+
+                  {timeCalcLevel !== 'daysWeeks' && (
+                    <>
+                      <p className="text-sm font-medium text-gray-600 mb-2 mt-3">Extra optie:</p>
+                      <label
+                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          timeCalc24h
+                            ? 'bg-amber-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-amber-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={timeCalc24h}
+                          onChange={() => setTimeCalc24h(!timeCalc24h)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">🔄 24-uurs notatie</span>
+                          <span className={`block text-xs mt-0.5 ${timeCalc24h ? 'text-white/80' : 'text-gray-500'}`}>03:00 → 15:00</span>
+                        </div>
+                        {timeCalc24h && <span className="ml-auto">✓</span>}
+                      </label>
+                    </>
+                  )}
+                </>
+              )}
+
               {/* Geen opties geselecteerd */}
-              {!tijdOps.clock && !tijdOps.timeAwareness && (
+              {!tijdOps.clock && !tijdOps.timeAwareness && !tijdOps.timeCalculation && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
               )}
             </div>

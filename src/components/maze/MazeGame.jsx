@@ -680,7 +680,7 @@ function MazeGame() {
                         {mathSettings.clockLevel === 'fiveMinutes' && '5 minuten'}
                         {mathSettings.clockLevel === 'minutes' && '1 minuut'}
                       </strong></p>
-                      {mathSettings.clock24h && <p>24-uursklok: <strong>Aan</strong></p>}
+                      <p>24-uursklok: <strong>{mathSettings.clock24h ? 'Aan' : 'Uit'}</strong></p>
                       {mathSettings.clockWords && <p>Tijd in woorden: <strong>Aan</strong></p>}
                     </div>
                   </div>
@@ -692,6 +692,21 @@ function MazeGame() {
                       {mathSettings.timeAwarenessDagen && <p>📅 Dagen van de week</p>}
                       {mathSettings.timeAwarenessMaanden && <p>🗓️ Maanden van het jaar</p>}
                       {mathSettings.timeAwarenessSeizoen && <p>🌿 Seizoenen</p>}
+                    </div>
+                  </div>
+                )}
+                {mathSettings.enabledOperations.timeCalculation && (
+                  <div className="bg-amber-50 rounded-xl p-4">
+                    <h4 className="font-bold text-amber-800 mb-2">⏱️ Rekenen met tijd</h4>
+                    <div className="text-sm text-amber-700 space-y-1">
+                      <p>Niveau: <strong>
+                        {mathSettings.timeCalcLevel === 'wholeHours' && 'Hele uren'}
+                        {mathSettings.timeCalcLevel === 'halfHours' && 'Halve uren'}
+                        {mathSettings.timeCalcLevel === 'quarters' && 'Kwartieren'}
+                        {mathSettings.timeCalcLevel === 'minutes' && 'Minuten'}
+                        {mathSettings.timeCalcLevel === 'daysWeeks' && 'Dagen & weken'}
+                      </strong></p>
+                      {mathSettings.timeCalcLevel !== 'daysWeeks' && <p>24-uursklok: <strong>{mathSettings.timeCalc24h ? 'Aan' : 'Uit'}</strong></p>}
                     </div>
                   </div>
                 )}
