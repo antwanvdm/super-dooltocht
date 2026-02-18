@@ -1,110 +1,47 @@
-import { useState, useEffect } from 'react';
-import MultipleChoice from './MultipleChoice';
-import MemoryGame from './MemoryGame';
-import MathPuzzle from './MathPuzzle';
-import DartsGame from './DartsGame';
-import PlaceValueGame from './PlaceValueGame';
-import LovingHeartsGame from './LovingHeartsGame';
-import MakeAmountGame from './MakeAmountGame';
-import CountMoneyGame from './CountMoneyGame';
-import SmartPayGame from './SmartPayGame';
-import ChangeGame from './ChangeGame';
-import ClockMultipleChoice from './ClockMultipleChoice';
-import ClockMemory from './ClockMemory';
-import ClockInput from './ClockInput';
-import ClockMatchAnalog from './ClockMatchAnalog';
-import Clock24hGame from './Clock24hGame';
-import ClockWordsGame from './ClockWordsGame';
-import SpellingCategoryMatch from './SpellingCategoryMatch';
-import SpellingConnect from './SpellingConnect';
-import SpellingTypeWord from './SpellingTypeWord';
-import VocabularyMatch from './VocabularyMatch';
-import VocabularyMemory from './VocabularyMemory';
-import VocabularyFillIn from './VocabularyFillIn';
-import ReadingComprehension from './ReadingComprehension';
-import ReadingTrueFalse from './ReadingTrueFalse';
-import EnglishMultipleChoice from './EnglishMultipleChoice';
-import EnglishMemory from './EnglishMemory';
-import EnglishTypeWord from './EnglishTypeWord';
-import EnglishFillIn from './EnglishFillIn';
-import EnglishConnect from './EnglishConnect';
-import KalenderQuiz from './KalenderQuiz';
-import VolgordeSorteer from './VolgordeSorteer';
-import SeizoenenMatch from './SeizoenenMatch';
-import KalenderMemory from './KalenderMemory';
-import KlokVooruit from './KlokVooruit';
-import TijdsduurQuiz from './TijdsduurQuiz';
-import OmrekenMemory from './OmrekenMemory';
-import TijdRekenen from './TijdRekenen';
-import KlokRekenen from './KlokRekenen';
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { pickRandomGameType, GAME_NAMES } from '../../utils/gameSelection';
 import Confetti from '../Confetti';
 
-// Standaard minigames voor reguliere sommen (add/sub/mul)
-const STANDARD_GAMES = ['multiple-choice', 'memory', 'puzzle', 'darts'];
-
-// Money minigames
-const MONEY_GAMES = ['makeAmount', 'countMoney', 'smartPay', 'change'];
-
-// Clock minigames
-const CLOCK_GAMES = ['clockMultipleChoice', 'clockMemory', 'clockInput', 'clockMatchAnalog'];
-
-// Spelling minigames
-const SPELLING_GAMES = ['spellingCategoryMatch', 'spellingConnect', 'spellingTypeWord'];
-
-// Vocabulary minigames
-const VOCABULARY_GAMES = ['vocabularyMatch', 'vocabularyMemory', 'vocabularyFillIn'];
-
-// Reading comprehension minigames
-const READING_GAMES = ['readingComprehension', 'readingTrueFalse'];
-
-// English vocabulary minigames
-const ENGLISH_GAMES = ['englishMultipleChoice', 'englishMemory', 'englishConnect'];
-
-// Time awareness minigames
-const TIME_AWARENESS_GAMES = ['kalenderQuiz', 'volgordeSorteer', 'kalenderMemory'];
-
-// Time calculation minigames
-const TIME_CALCULATION_GAMES = ['klokVooruit', 'tijdsduurQuiz', 'omrekenMemory', 'tijdRekenen', 'klokRekenen'];
-
-const GAME_NAMES = {
-  'multiple-choice': 'Kies het antwoord',
-  'memory': 'Memory',
-  'puzzle': 'Sommenblad',
-  'darts': 'Darts',
-  'placeValue': 'Getallen begrijpen',
-  'lovingHearts': 'Verliefde harten',
-  'makeAmount': 'Maak het bedrag',
-  'countMoney': 'Tel het geld',
-  'smartPay': 'Slim betalen',
-  'change': 'Wisselgeld',
-  'clockMultipleChoice': 'Hoe laat is het?',
-  'clockMemory': 'Klok Memory',
-  'clockInput': 'Typ de tijd',
-  'clockMatchAnalog': 'Welke klok?',
-  'clock24h': '24-uursklok',
-  'clockWords': 'Schrijf de tijd',
-  'spellingCategoryMatch': 'Spellingcategorie',
-  'spellingConnect': 'Verbind de categorie',
-  'spellingTypeWord': 'Typ het woord',
-  'vocabularyMatch': 'Woordenschat',
-  'vocabularyMemory': 'Woorden Memory',
-  'vocabularyFillIn': 'Vul het woord in',
-  'readingComprehension': 'Begrijpend lezen',
-  'readingTrueFalse': 'Waar of niet waar',
-  'englishMultipleChoice': 'Engels vertalen',
-  'englishMemory': 'Engels Memory',
-  'englishTypeWord': 'Typ het Engelse woord',
-  'englishFillIn': 'Engels invullen',
-  'englishConnect': 'Engels verbinden',
-  'kalenderQuiz': 'Kalenderquiz',
-  'volgordeSorteer': 'Volgorde',
-  'seizoenenMatch': 'Seizoenen verbinden',
-  'kalenderMemory': 'Kalender Memory',
-  'klokVooruit': 'Klok vooruit',
-  'tijdsduurQuiz': 'Hoe lang duurt het?',
-  'omrekenMemory': 'Omreken Memory',
-  'tijdRekenen': 'Rekenen met tijd',
-  'klokRekenen': 'Klok rekenen',
+// Lazy-loaded component registry – components are only fetched when first rendered
+const GAME_COMPONENTS = {
+  'multiple-choice': lazy(() => import('./MultipleChoice')),
+  'memory': lazy(() => import('./MemoryGame')),
+  'puzzle': lazy(() => import('./MathPuzzle')),
+  'darts': lazy(() => import('./DartsGame')),
+  'placeValue': lazy(() => import('./PlaceValueGame')),
+  'lovingHearts': lazy(() => import('./LovingHeartsGame')),
+  'makeAmount': lazy(() => import('./MakeAmountGame')),
+  'countMoney': lazy(() => import('./CountMoneyGame')),
+  'smartPay': lazy(() => import('./SmartPayGame')),
+  'change': lazy(() => import('./ChangeGame')),
+  'clockMultipleChoice': lazy(() => import('./ClockMultipleChoice')),
+  'clockMemory': lazy(() => import('./ClockMemory')),
+  'clockInput': lazy(() => import('./ClockInput')),
+  'clockMatchAnalog': lazy(() => import('./ClockMatchAnalog')),
+  'clock24h': lazy(() => import('./Clock24hGame')),
+  'clockWords': lazy(() => import('./ClockWordsGame')),
+  'spellingCategoryMatch': lazy(() => import('./SpellingCategoryMatch')),
+  'spellingConnect': lazy(() => import('./SpellingConnect')),
+  'spellingTypeWord': lazy(() => import('./SpellingTypeWord')),
+  'vocabularyMatch': lazy(() => import('./VocabularyMatch')),
+  'vocabularyMemory': lazy(() => import('./VocabularyMemory')),
+  'vocabularyFillIn': lazy(() => import('./VocabularyFillIn')),
+  'readingComprehension': lazy(() => import('./ReadingComprehension')),
+  'readingTrueFalse': lazy(() => import('./ReadingTrueFalse')),
+  'englishMultipleChoice': lazy(() => import('./EnglishMultipleChoice')),
+  'englishMemory': lazy(() => import('./EnglishMemory')),
+  'englishTypeWord': lazy(() => import('./EnglishTypeWord')),
+  'englishFillIn': lazy(() => import('./EnglishFillIn')),
+  'englishConnect': lazy(() => import('./EnglishConnect')),
+  'kalenderQuiz': lazy(() => import('./KalenderQuiz')),
+  'volgordeSorteer': lazy(() => import('./VolgordeSorteer')),
+  'seizoenenMatch': lazy(() => import('./SeizoenenMatch')),
+  'kalenderMemory': lazy(() => import('./KalenderMemory')),
+  'klokVooruit': lazy(() => import('./KlokVooruit')),
+  'tijdsduurQuiz': lazy(() => import('./TijdsduurQuiz')),
+  'omrekenMemory': lazy(() => import('./OmrekenMemory')),
+  'tijdRekenen': lazy(() => import('./TijdRekenen')),
+  'klokRekenen': lazy(() => import('./KlokRekenen')),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
@@ -120,99 +57,7 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
   }, []);
 
   useEffect(() => {
-    // Bepaal welke game types beschikbaar zijn op basis van instellingen
-    const enabled = mathSettings?.enabledOperations || {};
-    const hasStandardOps = enabled.add || enabled.sub || enabled.mul;
-    const hasPlaceValue = enabled.placeValue;
-    const hasLovingHearts = enabled.lovingHearts;
-    const hasMoney = enabled.money;
-    const hasClock = enabled.clock;
-    const hasSpelling = enabled.spelling;
-    const hasVocabulary = enabled.vocabulary;
-    const hasReading = enabled.reading;
-    const hasEnglish = enabled.english;
-
-    // Bouw pool van beschikbare game types
-    const availableTypes = [];
-    
-    if (hasStandardOps) {
-      availableTypes.push(...STANDARD_GAMES);
-    }
-    if (hasPlaceValue) {
-      availableTypes.push('placeValue');
-    }
-    if (hasLovingHearts) {
-      availableTypes.push('lovingHearts');
-    }
-    if (hasMoney) {
-      availableTypes.push(...MONEY_GAMES);
-    }
-    if (hasClock) {
-      availableTypes.push(...CLOCK_GAMES);
-      if (mathSettings?.clock24h) {
-        availableTypes.push('clock24h');
-      }
-      if (mathSettings?.clockWords) {
-        availableTypes.push('clockWords');
-      }
-    }
-    if (hasSpelling) {
-      availableTypes.push('spellingCategoryMatch', 'spellingTypeWord');
-      // SpellingConnect alleen als er 2+ categorieën geselecteerd zijn
-      const spellingCatCount = (mathSettings?.spellingCategories || []).length;
-      if (spellingCatCount >= 2) {
-        availableTypes.push('spellingConnect');
-      }
-    }
-    if (hasVocabulary) {
-      availableTypes.push(...VOCABULARY_GAMES);
-    }
-    if (hasReading) {
-      availableTypes.push(...READING_GAMES);
-    }
-    if (hasEnglish) {
-      availableTypes.push(...ENGLISH_GAMES);
-      // EnglishTypeWord en EnglishFillIn alleen vanaf medium niveau
-      const level = mathSettings?.englishLevel || 'easy';
-      if (level === 'medium' || level === 'hard') {
-        availableTypes.push('englishTypeWord', 'englishFillIn');
-      }
-    }
-
-    // Time awareness
-    const hasTimeAwareness = enabled.timeAwareness;
-    if (hasTimeAwareness) {
-      const hasDagen = mathSettings?.timeAwarenessDagen ?? true;
-      const hasMaanden = mathSettings?.timeAwarenessMaanden ?? true;
-      const hasSeizoen = mathSettings?.timeAwarenessSeizoen ?? true;
-      if (hasDagen || hasMaanden || hasSeizoen) {
-        availableTypes.push(...TIME_AWARENESS_GAMES);
-        // SeizoenenMatch alleen als seizoenen aan staat
-        if (hasSeizoen) {
-          availableTypes.push('seizoenenMatch');
-        }
-      }
-    }
-
-    // Time calculation
-    const hasTimeCalculation = enabled.timeCalculation;
-    if (hasTimeCalculation) {
-      const timeCalcLevel = mathSettings?.timeCalcLevel || 'wholeHours';
-      if (timeCalcLevel === 'daysWeeks') {
-        // KlokRekenen maakt geen zin bij dagen & weken (geen analoge klok)
-        availableTypes.push(...TIME_CALCULATION_GAMES.filter(g => g !== 'klokRekenen'));
-      } else {
-        availableTypes.push(...TIME_CALCULATION_GAMES);
-      }
-    }
-
-    // Fallback naar multiple-choice als niets beschikbaar
-    if (availableTypes.length === 0) {
-      availableTypes.push('multiple-choice');
-    }
-
-    const randomType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-    setGameType(randomType);
+    setGameType(pickRandomGameType(mathSettings));
   }, [challenge, mathSettings]);
 
   const handleSuccess = () => {
@@ -263,343 +108,24 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
           {!interactionReady && (
             <div className="absolute inset-0 z-10" />
           )}
-          <div className="space-y-4 sm:space-y-6">
-            {gameType === 'multiple-choice' && (
-              <MultipleChoice
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'memory' && (
-              <MemoryGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'puzzle' && (
-              <MathPuzzle
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'darts' && (
-              <DartsGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'placeValue' && (
-              <PlaceValueGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'lovingHearts' && (
-              <LovingHeartsGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'makeAmount' && (
-              <MakeAmountGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'countMoney' && (
-              <CountMoneyGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'smartPay' && (
-              <SmartPayGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'change' && (
-              <ChangeGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clockMultipleChoice' && (
-              <ClockMultipleChoice
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clockMemory' && (
-              <ClockMemory
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clockInput' && (
-              <ClockInput
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clockMatchAnalog' && (
-              <ClockMatchAnalog
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clock24h' && (
-              <Clock24hGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'clockWords' && (
-              <ClockWordsGame
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'spellingCategoryMatch' && (
-              <SpellingCategoryMatch
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'spellingConnect' && (
-              <SpellingConnect
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'spellingTypeWord' && (
-              <SpellingTypeWord
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'vocabularyMatch' && (
-              <VocabularyMatch
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'vocabularyMemory' && (
-              <VocabularyMemory
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'vocabularyFillIn' && (
-              <VocabularyFillIn
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'readingComprehension' && (
-              <ReadingComprehension
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'readingTrueFalse' && (
-              <ReadingTrueFalse
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'englishMultipleChoice' && (
-              <EnglishMultipleChoice
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'englishMemory' && (
-              <EnglishMemory
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'englishTypeWord' && (
-              <EnglishTypeWord
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'englishFillIn' && (
-              <EnglishFillIn
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'englishConnect' && (
-              <EnglishConnect
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'kalenderQuiz' && (
-              <KalenderQuiz
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'volgordeSorteer' && (
-              <VolgordeSorteer
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'seizoenenMatch' && (
-              <SeizoenenMatch
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'kalenderMemory' && (
-              <KalenderMemory
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'klokVooruit' && (
-              <KlokVooruit
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'tijdsduurQuiz' && (
-              <TijdsduurQuiz
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'omrekenMemory' && (
-              <OmrekenMemory
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'tijdRekenen' && (
-              <TijdRekenen
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-
-            {gameType === 'klokRekenen' && (
-              <KlokRekenen
-                mathSettings={mathSettings}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
-                theme={theme}
-              />
-            )}
-          </div>
+          <Suspense fallback={
+            <div className="flex justify-center items-center p-8">
+              <span className="text-4xl animate-bounce">🎮</span>
+            </div>
+          }>
+            {(() => {
+              const GameComponent = GAME_COMPONENTS[gameType];
+              if (!GameComponent) return null;
+              return (
+                <GameComponent
+                  mathSettings={mathSettings}
+                  onSuccess={handleSuccess}
+                  onFailure={handleFailure}
+                  theme={theme}
+                />
+              );
+            })()}
+          </Suspense>
         </div>
 
         {/* Decoratieve rand onderaan in themakleur */}

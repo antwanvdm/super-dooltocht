@@ -1,4 +1,4 @@
-// Procedurele maze generator met depth-first search algoritme
+// Procedurele maze generator met iteratief depth-first search algoritme
 
 export const generateMaze = (width = 51, height = 51) => {
   // Creëer een grid met allemaal muren
@@ -10,20 +10,26 @@ export const generateMaze = (width = 51, height = 51) => {
         .map(() => ({ wall: true, visited: false })),
     );
 
-  // Recursive backtracking algoritme
-  const carve = (x, y) => {
-    maze[y][x].wall = false;
-    maze[y][x].visited = true;
+  // Iteratief backtracking algoritme (expliciete stack i.p.v. recursie)
+  const directions = [
+    [0, -2], // boven
+    [2, 0], // rechts
+    [0, 2], // onder
+    [-2, 0], // links
+  ];
 
-    // Random volgorde van richtingen
-    const directions = [
-      [0, -2], // boven
-      [2, 0], // rechts
-      [0, 2], // onder
-      [-2, 0], // links
-    ].sort(() => Math.random() - 0.5);
+  const stack = [[1, 1]];
+  maze[1][1].wall = false;
+  maze[1][1].visited = true;
 
-    for (const [dx, dy] of directions) {
+  while (stack.length > 0) {
+    const [x, y] = stack[stack.length - 1];
+
+    // Zoek onbezochte buren in willekeurige volgorde
+    const shuffled = directions.map((d) => d).sort(() => Math.random() - 0.5);
+
+    let carved = false;
+    for (const [dx, dy] of shuffled) {
       const newX = x + dx;
       const newY = y + dy;
 
@@ -36,13 +42,19 @@ export const generateMaze = (width = 51, height = 51) => {
       ) {
         // Breek de muur tussen huidige en nieuwe cel
         maze[y + dy / 2][x + dx / 2].wall = false;
-        carve(newX, newY);
+        maze[newY][newX].wall = false;
+        maze[newY][newX].visited = true;
+        stack.push([newX, newY]);
+        carved = true;
+        break;
       }
     }
-  };
 
-  // Start in het midden
-  carve(1, 1);
+    // Geen onbezochte buren → backtrack
+    if (!carved) {
+      stack.pop();
+    }
+  }
 
   // Zorg dat de start en finish open zijn
   maze[1][1].wall = false;

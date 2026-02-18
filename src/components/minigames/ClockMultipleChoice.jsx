@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { generateClockProblem, generateWrongClockTimes, formatDigital, formatDigital24, timeToWords, to24h } from '../../utils/difficultyAdapter';
+import { generateClockProblem, generateWrongClockTimes, formatDigital, formatDigital24, timeToWords, to24h } from '../../utils/clockAdapter';
 import AnalogClock from './AnalogClock';
 
 /**

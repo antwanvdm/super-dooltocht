@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { generateClockProblem } from '../../utils/difficultyAdapter';
+import { generateClockProblem } from '../../utils/clockAdapter';
 import AnalogClock from './AnalogClock';
 
 /**

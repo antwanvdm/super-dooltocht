@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { generateClockProblem, timeToWords, formatDigital } from '../../utils/difficultyAdapter';
+import { generateClockProblem, timeToWords, formatDigital } from '../../utils/clockAdapter';
 import AnalogClock from './AnalogClock';
 
 /**

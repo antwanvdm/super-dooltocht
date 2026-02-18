@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { THEMES, getTheme } from '../utils/themes';
 import { getCompletedMazes, getSavedFriends, getGameState, clearGameState, getUserSettings, saveUserSettings } from '../utils/localStorage';
@@ -9,76 +9,126 @@ const PLAYER_EMOJIS = [
   '🤠','🏴‍☠️','🦸','🦹','🧑‍🚀','🧑‍✈️','🧑‍🚒','🤹','🏊','🤿','🚴','🏇'
 ];
 
+// Default settings used when no saved settings exist
+const DEFAULT_SETTINGS = {
+  exerciseCategory: 'rekenen',
+  ops: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false },
+  maxValue: 100,
+  mulTables: 'easy',
+  addSubMode: 'beyond',
+  beyondDigits: 'units',
+  placeValueLevel: 'tens',
+  moneyMaxAmount: 2000,
+  moneyIncludeCents: false,
+  tijdOps: { clock: true, timeAwareness: false, timeCalculation: false },
+  clockLevel: 'hours',
+  clock24h: false,
+  clockWords: false,
+  timeAwarenessDagen: true,
+  timeAwarenessMaanden: true,
+  timeAwarenessSeizoen: true,
+  timeCalcLevel: 'wholeHours',
+  timeCalc24h: false,
+  taalOps: { spelling: false, vocabulary: false, reading: false, english: false },
+  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8],
+  includeThemeVocabulary: true,
+  includeThemeReading: true,
+  readingLevel: 'short',
+  englishLevel: 'easy',
+  englishDirection: 'nl-en',
+  adventureLength: 'medium',
+  playerEmoji: PLAYER_EMOJIS[0],
+};
+
+// Build initial state from saved settings, using defaults for missing values.
+// Uses nullish coalescing (??) for booleans that can be false, || for the rest.
+const buildInitialSettings = (saved) => ({
+  exerciseCategory: saved?.exerciseCategory || DEFAULT_SETTINGS.exerciseCategory,
+  ops: saved?.ops || DEFAULT_SETTINGS.ops,
+  maxValue: saved?.maxValue || DEFAULT_SETTINGS.maxValue,
+  mulTables: saved?.mulTables || DEFAULT_SETTINGS.mulTables,
+  addSubMode: saved?.addSubMode || DEFAULT_SETTINGS.addSubMode,
+  beyondDigits: saved?.beyondDigits || DEFAULT_SETTINGS.beyondDigits,
+  placeValueLevel: saved?.placeValueLevel || DEFAULT_SETTINGS.placeValueLevel,
+  moneyMaxAmount: saved?.moneyMaxAmount || DEFAULT_SETTINGS.moneyMaxAmount,
+  moneyIncludeCents: saved?.moneyIncludeCents || DEFAULT_SETTINGS.moneyIncludeCents,
+  tijdOps: saved?.tijdOps || DEFAULT_SETTINGS.tijdOps,
+  clockLevel: saved?.clockLevel || DEFAULT_SETTINGS.clockLevel,
+  clock24h: saved?.clock24h || DEFAULT_SETTINGS.clock24h,
+  clockWords: saved?.clockWords || DEFAULT_SETTINGS.clockWords,
+  timeAwarenessDagen: saved?.timeAwarenessDagen ?? DEFAULT_SETTINGS.timeAwarenessDagen,
+  timeAwarenessMaanden: saved?.timeAwarenessMaanden ?? DEFAULT_SETTINGS.timeAwarenessMaanden,
+  timeAwarenessSeizoen: saved?.timeAwarenessSeizoen ?? DEFAULT_SETTINGS.timeAwarenessSeizoen,
+  timeCalcLevel: saved?.timeCalcLevel || DEFAULT_SETTINGS.timeCalcLevel,
+  timeCalc24h: saved?.timeCalc24h || DEFAULT_SETTINGS.timeCalc24h,
+  taalOps: saved?.taalOps || DEFAULT_SETTINGS.taalOps,
+  spellingCategories: saved?.spellingCategories || DEFAULT_SETTINGS.spellingCategories,
+  includeThemeVocabulary: saved?.includeThemeVocabulary ?? DEFAULT_SETTINGS.includeThemeVocabulary,
+  includeThemeReading: saved?.includeThemeReading ?? DEFAULT_SETTINGS.includeThemeReading,
+  readingLevel: saved?.readingLevel || DEFAULT_SETTINGS.readingLevel,
+  englishLevel: saved?.englishLevel || DEFAULT_SETTINGS.englishLevel,
+  englishDirection: saved?.englishDirection || DEFAULT_SETTINGS.englishDirection,
+  adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
+  playerEmoji: saved?.playerEmoji || DEFAULT_SETTINGS.playerEmoji,
+});
+
+function settingsReducer(state, action) {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'TOGGLE_OPS':
+      return { ...state, ops: { ...state.ops, [action.key]: !state.ops[action.key] } };
+    case 'TOGGLE_TIJD_OPS':
+      return { ...state, tijdOps: { ...state.tijdOps, [action.key]: !state.tijdOps[action.key] } };
+    case 'TOGGLE_TAAL_OPS':
+      return { ...state, taalOps: { ...state.taalOps, [action.key]: !state.taalOps[action.key] } };
+    case 'TOGGLE_SPELLING_CATEGORY': {
+      const active = state.spellingCategories.includes(action.id);
+      return {
+        ...state,
+        spellingCategories: active
+          ? state.spellingCategories.filter(c => c !== action.id)
+          : [...state.spellingCategories, action.id],
+      };
+    }
+    default:
+      return state;
+  }
+}
+
 function Home({ disabled = false }) {
   const navigate = useNavigate();
   const { syncProgress } = useSyncToServer();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
   
-  // Load saved settings or use defaults
-  const savedSettings = getUserSettings();
-  const [exerciseCategory, setExerciseCategory] = useState(savedSettings?.exerciseCategory || 'rekenen');
-  const [ops, setOps] = useState(savedSettings?.ops || { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false });
-  const [maxValue, setMaxValue] = useState(savedSettings?.maxValue || 100);
-  const [mulTables, setMulTables] = useState(savedSettings?.mulTables || 'easy');
-  const [addSubMode, setAddSubMode] = useState(savedSettings?.addSubMode || 'beyond');
-  const [beyondDigits, setBeyondDigits] = useState(savedSettings?.beyondDigits || 'units');
-  const [placeValueLevel, setPlaceValueLevel] = useState(savedSettings?.placeValueLevel || 'tens');
-  const [moneyMaxAmount, setMoneyMaxAmount] = useState(savedSettings?.moneyMaxAmount || 2000);
-  const [moneyIncludeCents, setMoneyIncludeCents] = useState(savedSettings?.moneyIncludeCents || false);
-  const [tijdOps, setTijdOps] = useState(savedSettings?.tijdOps || { clock: true, timeAwareness: false, timeCalculation: false });
-  const [clockLevel, setClockLevel] = useState(savedSettings?.clockLevel || 'hours');
-  const [clock24h, setClock24h] = useState(savedSettings?.clock24h || false);
-  const [clockWords, setClockWords] = useState(savedSettings?.clockWords || false);
-  const [timeAwarenessDagen, setTimeAwarenessDagen] = useState(savedSettings?.timeAwarenessDagen ?? true);
-  const [timeAwarenessMaanden, setTimeAwarenessMaanden] = useState(savedSettings?.timeAwarenessMaanden ?? true);
-  const [timeAwarenessSeizoen, setTimeAwarenessSeizoen] = useState(savedSettings?.timeAwarenessSeizoen ?? true);
-  const [timeCalcLevel, setTimeCalcLevel] = useState(savedSettings?.timeCalcLevel || 'wholeHours');
-  const [timeCalc24h, setTimeCalc24h] = useState(savedSettings?.timeCalc24h || false);
-  const [taalOps, setTaalOps] = useState(savedSettings?.taalOps || { spelling: false, vocabulary: false, reading: false, english: false });
-  const [spellingCategories, setSpellingCategories] = useState(savedSettings?.spellingCategories || [1, 2, 3, 4, 5, 6, 7, 8]);
-  const [includeThemeVocabulary, setIncludeThemeVocabulary] = useState(savedSettings?.includeThemeVocabulary ?? true);
-  const [includeThemeReading, setIncludeThemeReading] = useState(savedSettings?.includeThemeReading ?? true);
-  const [readingLevel, setReadingLevel] = useState(savedSettings?.readingLevel || 'short');
-  const [englishLevel, setEnglishLevel] = useState(savedSettings?.englishLevel || 'easy');
-  const [englishDirection, setEnglishDirection] = useState(savedSettings?.englishDirection || 'nl-en');
-  const [adventureLength, setAdventureLength] = useState(savedSettings?.adventureLength || 'medium');
-  const [playerEmoji, setPlayerEmoji] = useState(savedSettings?.playerEmoji || PLAYER_EMOJIS[0]);
+  // All user settings managed by a single reducer
+  const [settings, dispatch] = useReducer(
+    settingsReducer,
+    getUserSettings(),
+    buildInitialSettings,
+  );
+
+  // Convenience aliases so the JSX can stay readable
+  const {
+    exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits,
+    placeValueLevel, moneyMaxAmount, moneyIncludeCents, tijdOps, clockLevel,
+    clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden,
+    timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
+    spellingCategories, includeThemeVocabulary, includeThemeReading,
+    readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji,
+  } = settings;
+
+  // Shorthand dispatch helpers for the JSX
+  const set = useCallback((field, value) => dispatch({ type: 'SET_FIELD', field, value }), []);
+
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [continueModal, setContinueModal] = useState(null);
 
   // Save settings whenever they change
   useEffect(() => {
-    saveUserSettings({
-      exerciseCategory,
-      ops,
-      maxValue,
-      mulTables,
-      addSubMode,
-      beyondDigits,
-      placeValueLevel,
-      moneyMaxAmount,
-      moneyIncludeCents,
-      tijdOps,
-      clockLevel,
-      clock24h,
-      clockWords,
-      timeAwarenessDagen,
-      timeAwarenessMaanden,
-      timeAwarenessSeizoen,
-      timeCalcLevel,
-      timeCalc24h,
-      taalOps,
-      spellingCategories,
-      includeThemeVocabulary,
-      includeThemeReading,
-      readingLevel,
-      englishLevel,
-      englishDirection,
-      adventureLength,
-      playerEmoji,
-    });
-  }, [exerciseCategory, ops, maxValue, mulTables, addSubMode, beyondDigits, placeValueLevel, moneyMaxAmount, moneyIncludeCents, tijdOps, clockLevel, clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden, timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps, spellingCategories, includeThemeVocabulary, includeThemeReading, readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji]);
+    saveUserSettings(settings);
+  }, [settings]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -238,7 +288,7 @@ function Home({ disabled = false }) {
             ].map(({ key, label, icon, disabled }) => (
               <button
                 key={key}
-                onClick={() => !disabled && setExerciseCategory(key)}
+                onClick={() => !disabled && set('exerciseCategory', key)}
                 disabled={disabled}
                 className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-lg transition-all min-w-0 ${
                   disabled
@@ -282,7 +332,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={ops[key]}
-                      onChange={() => setOps(prev => ({ ...prev, [key]: !prev[key] }))}
+                      onChange={() => dispatch({ type: 'TOGGLE_OPS', key })}
                       className="sr-only"
                     />
                     <span className="text-xl">{icon}</span>
@@ -322,7 +372,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={tijdOps[key]}
-                      onChange={() => setTijdOps(prev => ({ ...prev, [key]: !prev[key] }))}
+                      onChange={() => dispatch({ type: 'TOGGLE_TIJD_OPS', key })}
                       className="sr-only"
                     />
                     <span className="text-xl">{icon}</span>
@@ -368,7 +418,7 @@ function Home({ disabled = false }) {
                           name="level"
                           value={val}
                           checked={Number(maxValue) === val}
-                          onChange={(e) => setMaxValue(Number(e.target.value))}
+                          onChange={(e) => set('maxValue', Number(e.target.value))}
                           className="sr-only"
                         />
                         {val}
@@ -396,7 +446,7 @@ function Home({ disabled = false }) {
                           name="addSubMode"
                           value={key}
                           checked={addSubMode === key}
-                          onChange={(e) => setAddSubMode(e.target.value)}
+                          onChange={(e) => set('addSubMode', e.target.value)}
                           className="sr-only"
                         />
                         <span className="font-medium">{label}</span>
@@ -428,7 +478,7 @@ function Home({ disabled = false }) {
                               name="beyondDigits"
                               value={key}
                               checked={beyondDigits === key}
-                              onChange={(e) => setBeyondDigits(e.target.value)}
+                              onChange={(e) => set('beyondDigits', e.target.value)}
                               className="sr-only"
                             />
                             <div>
@@ -470,7 +520,7 @@ function Home({ disabled = false }) {
                           name="mulTables"
                           value={key}
                           checked={mulTables === key}
-                          onChange={(e) => setMulTables(e.target.value)}
+                          onChange={(e) => set('mulTables', e.target.value)}
                           className="sr-only"
                         />
                         <span className="font-medium">{label}</span>
@@ -504,7 +554,7 @@ function Home({ disabled = false }) {
                           name="placeValueLevel"
                           value={key}
                           checked={placeValueLevel === key}
-                          onChange={(e) => setPlaceValueLevel(e.target.value)}
+                          onChange={(e) => set('placeValueLevel', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -549,7 +599,7 @@ function Home({ disabled = false }) {
                           name="moneyMaxAmount"
                           value={key}
                           checked={moneyMaxAmount === key}
-                          onChange={(e) => setMoneyMaxAmount(Number(e.target.value))}
+                          onChange={(e) => set('moneyMaxAmount', Number(e.target.value))}
                           className="sr-only"
                         />
                         <span className="font-medium">{label}</span>
@@ -567,7 +617,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={moneyIncludeCents}
-                      onChange={() => setMoneyIncludeCents(!moneyIncludeCents)}
+                      onChange={() => set('moneyIncludeCents', !moneyIncludeCents)}
                       className="sr-only"
                     />
                     <span className="font-medium">Met centen (5c, 10c, 20c, 50c)</span>
@@ -615,7 +665,7 @@ function Home({ disabled = false }) {
                           name="clockLevel"
                           value={key}
                           checked={clockLevel === key}
-                          onChange={(e) => setClockLevel(e.target.value)}
+                          onChange={(e) => set('clockLevel', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -639,7 +689,7 @@ function Home({ disabled = false }) {
                       <input
                         type="checkbox"
                         checked={clockWords}
-                        onChange={() => setClockWords(!clockWords)}
+                        onChange={() => set('clockWords', !clockWords)}
                         className="sr-only"
                       />
                       <div>
@@ -658,7 +708,7 @@ function Home({ disabled = false }) {
                       <input
                         type="checkbox"
                         checked={clock24h}
-                        onChange={() => setClock24h(!clock24h)}
+                        onChange={() => set('clock24h', !clock24h)}
                         className="sr-only"
                       />
                       <div>
@@ -677,9 +727,9 @@ function Home({ disabled = false }) {
                   <p className={`text-sm font-medium text-gray-600 mb-3 ${tijdOps.clock ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>📅 Tijdsbesef onderwerpen:</p>
                   <div className="space-y-1.5">
                     {[
-                      { key: 'dagen', label: '📅 Dagen van de week', desc: 'Volgorde, gisteren/morgen', checked: timeAwarenessDagen, onChange: () => setTimeAwarenessDagen(!timeAwarenessDagen) },
-                      { key: 'maanden', label: '🗓️ Maanden van het jaar', desc: 'Volgorde, aantal dagen', checked: timeAwarenessMaanden, onChange: () => setTimeAwarenessMaanden(!timeAwarenessMaanden) },
-                      { key: 'seizoenen', label: '🌿 Seizoenen', desc: 'Volgorde, kenmerken', checked: timeAwarenessSeizoen, onChange: () => setTimeAwarenessSeizoen(!timeAwarenessSeizoen) },
+                      { key: 'dagen', label: '📅 Dagen van de week', desc: 'Volgorde, gisteren/morgen', checked: timeAwarenessDagen, onChange: () => set('timeAwarenessDagen', !timeAwarenessDagen) },
+                      { key: 'maanden', label: '🗓️ Maanden van het jaar', desc: 'Volgorde, aantal dagen', checked: timeAwarenessMaanden, onChange: () => set('timeAwarenessMaanden', !timeAwarenessMaanden) },
+                      { key: 'seizoenen', label: '🌿 Seizoenen', desc: 'Volgorde, kenmerken', checked: timeAwarenessSeizoen, onChange: () => set('timeAwarenessSeizoen', !timeAwarenessSeizoen) },
                     ].map(({ key, label, desc, checked, onChange }) => (
                       <label
                         key={key}
@@ -734,7 +784,7 @@ function Home({ disabled = false }) {
                           name="timeCalcLevel"
                           value={key}
                           checked={timeCalcLevel === key}
-                          onChange={(e) => setTimeCalcLevel(e.target.value)}
+                          onChange={(e) => set('timeCalcLevel', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -759,7 +809,7 @@ function Home({ disabled = false }) {
                         <input
                           type="checkbox"
                           checked={timeCalc24h}
-                          onChange={() => setTimeCalc24h(!timeCalc24h)}
+                          onChange={() => set('timeCalc24h', !timeCalc24h)}
                           className="sr-only"
                         />
                         <div>
@@ -804,7 +854,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={taalOps[key]}
-                      onChange={() => setTaalOps(prev => ({ ...prev, [key]: !prev[key] }))}
+                      onChange={() => dispatch({ type: 'TOGGLE_TAAL_OPS', key })}
                       className="sr-only"
                     />
                     <span className="text-xl">{icon}</span>
@@ -859,13 +909,7 @@ function Home({ disabled = false }) {
                           <input
                             type="checkbox"
                             checked={active}
-                            onChange={() => {
-                              setSpellingCategories(prev =>
-                                active
-                                  ? prev.filter(c => c !== id)
-                                  : [...prev, id]
-                              );
-                            }}
+                            onChange={() => dispatch({ type: 'TOGGLE_SPELLING_CATEGORY', id })}
                             className="sr-only"
                           />
                           <div>
@@ -897,7 +941,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={includeThemeVocabulary}
-                      onChange={() => setIncludeThemeVocabulary(!includeThemeVocabulary)}
+                      onChange={() => set('includeThemeVocabulary', !includeThemeVocabulary)}
                       className="sr-only"
                     />
                     <div>
@@ -925,7 +969,7 @@ function Home({ disabled = false }) {
                     <input
                       type="checkbox"
                       checked={includeThemeReading}
-                      onChange={() => setIncludeThemeReading(!includeThemeReading)}
+                      onChange={() => set('includeThemeReading', !includeThemeReading)}
                       className="sr-only"
                     />
                     <div>
@@ -955,7 +999,7 @@ function Home({ disabled = false }) {
                           name="readingLevel"
                           value={key}
                           checked={readingLevel === key}
-                          onChange={(e) => setReadingLevel(e.target.value)}
+                          onChange={(e) => set('readingLevel', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -993,7 +1037,7 @@ function Home({ disabled = false }) {
                           name="englishLevel"
                           value={key}
                           checked={englishLevel === key}
-                          onChange={(e) => setEnglishLevel(e.target.value)}
+                          onChange={(e) => set('englishLevel', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -1004,12 +1048,12 @@ function Home({ disabled = false }) {
                       </label>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mb-2">Richting:</p>
+                  <p className="text-xs text-gray-500 mb-2">Richting bij woordspellen:</p>
                   <div className="space-y-1.5">
                     {[
                       { key: 'nl-en', label: 'Nederlands → Engels', desc: 'Je ziet het Nederlandse woord' },
                       { key: 'en-nl', label: 'Engels → Nederlands', desc: 'Je ziet het Engelse woord' },
-                      { key: 'both', label: 'Beide richtingen', desc: 'Afwisselend NL→EN en EN→NL' },
+                      { key: 'both', label: 'Beide richtingen', desc: 'Afwisselend Nederlands of Engels' },
                     ].map(({ key, label, desc }) => (
                       <label
                         key={key}
@@ -1024,7 +1068,7 @@ function Home({ disabled = false }) {
                           name="englishDirection"
                           value={key}
                           checked={englishDirection === key}
-                          onChange={(e) => setEnglishDirection(e.target.value)}
+                          onChange={(e) => set('englishDirection', e.target.value)}
                           className="sr-only"
                         />
                         <div>
@@ -1069,7 +1113,7 @@ function Home({ disabled = false }) {
                       name="adventureLength"
                       value={key}
                       checked={adventureLength === key}
-                      onChange={(e) => setAdventureLength(e.target.value)}
+                      onChange={(e) => set('adventureLength', e.target.value)}
                       className="sr-only"
                     />
                     <div className="flex items-center gap-2">
@@ -1094,7 +1138,7 @@ function Home({ disabled = false }) {
                 {PLAYER_EMOJIS.map((emoji) => (
                   <button
                     key={emoji}
-                    onClick={() => setPlayerEmoji(emoji)}
+                    onClick={() => set('playerEmoji', emoji)}
                     className={`text-2xl p-2 rounded-xl transition-all aspect-square flex items-center justify-center ${
                       playerEmoji === emoji
                         ? 'bg-purple-500 shadow-md scale-110 ring-2 ring-purple-300'
