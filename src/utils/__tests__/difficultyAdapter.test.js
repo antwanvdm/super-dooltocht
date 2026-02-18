@@ -220,6 +220,170 @@ describe('Subtraction', () => {
 });
 
 // ============================================
+// EDGE CASE TESTS — small maxValue + mode combinations
+// ============================================
+
+describe('Addition – edge cases', () => {
+  it('should not crash or infinite-loop with maxValue=20 + within mode', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 20,
+      addSubMode: 'within',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('addition');
+      expect(problem.answer).toBeLessThanOrEqual(20);
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with maxValue=20 + beyond tens mode', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 20,
+      addSubMode: 'beyond',
+      beyondDigits: 'tens',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('addition');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with maxValue=20 + beyond hundreds mode', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 20,
+      addSubMode: 'beyond',
+      beyondDigits: 'hundreds',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('addition');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with very small maxValue=5', () => {
+    const settings = {
+      enabledOperations: { add: true },
+      maxValue: 5,
+      addSubMode: 'within',
+    };
+
+    for (let i = 0; i < 30; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('addition');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+});
+
+describe('Subtraction – edge cases', () => {
+  it('should not crash or infinite-loop with maxValue=20 + within mode', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 20,
+      addSubMode: 'within',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('subtraction');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with maxValue=20 + beyond units mode', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 20,
+      addSubMode: 'beyond',
+      beyondDigits: 'units',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('subtraction');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with maxValue=20 + beyond tens mode', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 20,
+      addSubMode: 'beyond',
+      beyondDigits: 'tens',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('subtraction');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with maxValue=20 + beyond hundreds mode', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 20,
+      addSubMode: 'beyond',
+      beyondDigits: 'hundreds',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('subtraction');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should not crash with very small maxValue=5', () => {
+    const settings = {
+      enabledOperations: { sub: true },
+      maxValue: 5,
+    };
+
+    for (let i = 0; i < 30; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('subtraction');
+      expect(problem.answer).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('should always produce non-negative answers regardless of mode/maxValue combo', () => {
+    // Test many random combinations of settings
+    const modes = ['within', 'beyond'];
+    const digits = ['units', 'tens', 'hundreds'];
+    const maxValues = [5, 10, 20, 50, 100, 200, 500, 1000];
+
+    for (const mode of modes) {
+      for (const beyondDigits of digits) {
+        for (const maxValue of maxValues) {
+          const settings = {
+            enabledOperations: { sub: true },
+            maxValue,
+            addSubMode: mode,
+            beyondDigits,
+          };
+
+          for (let i = 0; i < 10; i++) {
+            const problem = generateMathProblem(settings);
+            expect(problem.answer).toBeGreaterThanOrEqual(0);
+          }
+        }
+      }
+    }
+  });
+});
+
+// ============================================
 // MULTIPLICATION TESTS
 // ============================================
 

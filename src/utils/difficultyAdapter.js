@@ -61,8 +61,10 @@ export const generateMathProblem = (settings) => {
   }
 };
 
-const randBetween = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+const randBetween = (min, max) => {
+  if (min > max) [min, max] = [max, min];
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
 // Helper: bepaal het tiental van een getal
 const getTens = (n) => Math.floor(n / 10) * 10;
@@ -130,6 +132,10 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
     };
   } else if (beyondDigits === 'tens') {
     // Met tiental: bijv. 78+13=91
+    // Guard: bij kleine max (bijv. 20) is er niet genoeg ruimte voor tientallen
+    if (max < 21) {
+      return generateAddition(max, 'beyond', 'units', attempts);
+    }
     const a = randBetween(Math.max(10, Math.floor(max * 0.3)), max - 11);
     const b = randBetween(10, Math.min(99, max - a));
     return {
@@ -139,6 +145,10 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
     };
   } else {
     // Met honderdtal: bijv. 178+123=301
+    // Guard: bij kleine max is er niet genoeg ruimte voor honderdtallen
+    if (max < 201) {
+      return generateAddition(max, 'beyond', 'tens', attempts);
+    }
     const a = randBetween(Math.max(100, Math.floor(max * 0.3)), max - 100);
     const b = randBetween(100, Math.min(999, max - a));
     return {
@@ -149,16 +159,24 @@ const generateAddition = (max, mode, beyondDigits, attempts = 0) => {
   }
 };
 
-const generateSubtraction = (max, mode, beyondDigits) => {
+const generateSubtraction = (max, mode, beyondDigits, attempts = 0) => {
   if (mode === 'within') {
     // Binnen het tiental: resultaat blijft in hetzelfde tiental als eerste getal
     // Bijv: 45-4=41 (blijft in de 40), niet 43-5=38 (gaat naar 30)
+
+    // Prevent infinite loops voor kleine ranges
+    if (attempts > 20) {
+      const a = randBetween(2, max);
+      const b = randBetween(1, Math.min(a - 1, 5));
+      return { question: `${a} - ${b}`, answer: a - b, type: 'subtraction' };
+    }
+
     const a = randBetween(Math.max(11, Math.floor(max * 0.3)), max);
     const unitsOfA = a % 10;
     const maxB = unitsOfA; // niet onder het tiental
     if (maxB < 1) {
       // Als a op 0 eindigt, kies nieuw getal
-      return generateSubtraction(max, mode, beyondDigits);
+      return generateSubtraction(max, mode, beyondDigits, attempts + 1);
     }
     const b = randBetween(1, maxB);
     return {
@@ -171,13 +189,21 @@ const generateSubtraction = (max, mode, beyondDigits) => {
   // Buiten het tiental
   if (beyondDigits === 'units') {
     // Alleen eenheden: bijv. 61-9=52 (gaat over tiental maar b is eenheid)
+
+    // Prevent infinite loops
+    if (attempts > 20) {
+      const a = randBetween(11, max);
+      const b = randBetween(1, Math.min(9, a - 1));
+      return { question: `${a} - ${b}`, answer: a - b, type: 'subtraction' };
+    }
+
     const a = randBetween(Math.max(11, Math.floor(max * 0.3)), max);
     const unitsOfA = a % 10;
     // We willen dat a-b onder het tiental gaat, dus b > unitsOfA
     const minB = unitsOfA + 1;
     const maxB = Math.min(9, a - 1);
     if (maxB < minB) {
-      return generateSubtraction(max, mode, beyondDigits);
+      return generateSubtraction(max, mode, beyondDigits, attempts + 1);
     }
     const b = randBetween(minB, maxB);
     return {
@@ -187,6 +213,10 @@ const generateSubtraction = (max, mode, beyondDigits) => {
     };
   } else if (beyondDigits === 'tens') {
     // Met tiental: bijv. 61-39=22
+    // Guard: bij kleine max niet genoeg ruimte voor tientallen
+    if (max < 21) {
+      return generateSubtraction(max, 'beyond', 'units', attempts);
+    }
     const a = randBetween(Math.max(20, Math.floor(max * 0.4)), max);
     const b = randBetween(10, Math.min(99, a - 1));
     return {
@@ -196,6 +226,10 @@ const generateSubtraction = (max, mode, beyondDigits) => {
     };
   } else {
     // Met honderdtal: bijv. 461-239=222
+    // Guard: bij kleine max niet genoeg ruimte voor honderdtallen
+    if (max < 201) {
+      return generateSubtraction(max, 'beyond', 'tens', attempts);
+    }
     const a = randBetween(Math.max(200, Math.floor(max * 0.4)), max);
     const b = randBetween(100, Math.min(999, a - 1));
     return {

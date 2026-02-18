@@ -9,98 +9,124 @@ const STORAGE_KEYS = {
   PLAYER_CODE: 'super-dooltocht-player-code',
 };
 
+// ─── Veilige localStorage helpers ─────────────────────────────────────────────
+// Voorkomt dat corrupt data (JSON.parse crash) of volle opslag
+// (QuotaExceededError) de hele app laat crashen.
+
+function safeGet(key, defaultValue) {
+  try {
+    const data = localStorage.getItem(key);
+    return data !== null ? JSON.parse(data) : defaultValue;
+  } catch {
+    console.warn(`Corrupt localStorage data voor "${key}", reset naar default`);
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
+    return defaultValue;
+  }
+}
+
+function safeSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (e) {
+    console.error(`localStorage write mislukt voor "${key}":`, e.message);
+    return false;
+  }
+}
+
+function safeRemove(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}
+
+// ─── Getters & Setters ───────────────────────────────────────────────────────
+
 export const getCompletedMazes = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.COMPLETED_MAZES);
-  return data ? JSON.parse(data) : 0;
+  return safeGet(STORAGE_KEYS.COMPLETED_MAZES, 0);
 };
 
 export const incrementCompletedMazes = () => {
   const current = getCompletedMazes();
-  localStorage.setItem(
-    STORAGE_KEYS.COMPLETED_MAZES,
-    JSON.stringify(current + 1),
-  );
+  safeSet(STORAGE_KEYS.COMPLETED_MAZES, current + 1);
   return current + 1;
 };
 
 // Totaal geredde vriendjes
 export const getSavedFriends = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.SAVED_FRIENDS);
-  return data ? JSON.parse(data) : 0;
+  return safeGet(STORAGE_KEYS.SAVED_FRIENDS, 0);
 };
 
 export const addSavedFriends = (count) => {
   const current = getSavedFriends();
   const newTotal = current + count;
-  localStorage.setItem(STORAGE_KEYS.SAVED_FRIENDS, JSON.stringify(newTotal));
+  safeSet(STORAGE_KEYS.SAVED_FRIENDS, newTotal);
   return newTotal;
 };
 
 // Game state save/load
 export const saveGameState = (state) => {
-  localStorage.setItem(STORAGE_KEYS.GAME_STATE, JSON.stringify(state));
+  safeSet(STORAGE_KEYS.GAME_STATE, state);
 };
 
 export const getGameState = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.GAME_STATE);
-  return data ? JSON.parse(data) : null;
+  return safeGet(STORAGE_KEYS.GAME_STATE, null);
 };
 
 export const clearGameState = () => {
-  localStorage.removeItem(STORAGE_KEYS.GAME_STATE);
+  safeRemove(STORAGE_KEYS.GAME_STATE);
 };
 
 export const getDifficultyLevel = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.DIFFICULTY_LEVEL);
-  return data ? JSON.parse(data) : 1; // Start op niveau 1
+  return safeGet(STORAGE_KEYS.DIFFICULTY_LEVEL, 1);
 };
 
 export const setDifficultyLevel = (level) => {
-  localStorage.setItem(STORAGE_KEYS.DIFFICULTY_LEVEL, JSON.stringify(level));
+  safeSet(STORAGE_KEYS.DIFFICULTY_LEVEL, level);
 };
 
 export const getPerformanceHistory = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.PERFORMANCE_HISTORY);
-  return data ? JSON.parse(data) : [];
+  return safeGet(STORAGE_KEYS.PERFORMANCE_HISTORY, []);
 };
 
 export const addPerformanceRecord = (isCorrect) => {
   const history = getPerformanceHistory();
   // Bewaar de laatste 10 antwoorden
   const newHistory = [...history, isCorrect].slice(-10);
-  localStorage.setItem(
-    STORAGE_KEYS.PERFORMANCE_HISTORY,
-    JSON.stringify(newHistory),
-  );
+  safeSet(STORAGE_KEYS.PERFORMANCE_HISTORY, newHistory);
   return newHistory;
 };
 
 // User settings save/load
 export const saveUserSettings = (settings) => {
-  localStorage.setItem(STORAGE_KEYS.USER_SETTINGS, JSON.stringify(settings));
+  safeSet(STORAGE_KEYS.USER_SETTINGS, settings);
 };
 
 export const getUserSettings = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.USER_SETTINGS);
-  return data ? JSON.parse(data) : null;
+  return safeGet(STORAGE_KEYS.USER_SETTINGS, null);
 };
 
 export const clearAllData = () => {
-  Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+  Object.values(STORAGE_KEYS).forEach((key) => safeRemove(key));
 };
 
 // Code-based sync functions
 export const getPlayerCode = () => {
-  const data = localStorage.getItem(STORAGE_KEYS.PLAYER_CODE);
-  return data ? JSON.parse(data) : null;
+  return safeGet(STORAGE_KEYS.PLAYER_CODE, null);
 };
 
 export const setPlayerCode = (code) => {
-  localStorage.setItem(STORAGE_KEYS.PLAYER_CODE, JSON.stringify(code));
+  safeSet(STORAGE_KEYS.PLAYER_CODE, code);
 };
 
 export const clearPlayerCode = () => {
-  localStorage.removeItem(STORAGE_KEYS.PLAYER_CODE);
+  safeRemove(STORAGE_KEYS.PLAYER_CODE);
 };
 
 // Verzamel alle game data voor server sync
@@ -120,39 +146,21 @@ export const restoreAllGameData = (data) => {
   if (!data || typeof data !== 'object') return;
 
   if (data.completedMazes !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.COMPLETED_MAZES,
-      JSON.stringify(data.completedMazes),
-    );
+    safeSet(STORAGE_KEYS.COMPLETED_MAZES, data.completedMazes);
   }
   if (data.savedFriends !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.SAVED_FRIENDS,
-      JSON.stringify(data.savedFriends),
-    );
+    safeSet(STORAGE_KEYS.SAVED_FRIENDS, data.savedFriends);
   }
   if (data.difficultyLevel !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.DIFFICULTY_LEVEL,
-      JSON.stringify(data.difficultyLevel),
-    );
+    safeSet(STORAGE_KEYS.DIFFICULTY_LEVEL, data.difficultyLevel);
   }
   if (data.performanceHistory !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.PERFORMANCE_HISTORY,
-      JSON.stringify(data.performanceHistory),
-    );
+    safeSet(STORAGE_KEYS.PERFORMANCE_HISTORY, data.performanceHistory);
   }
   if (data.userSettings !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.USER_SETTINGS,
-      JSON.stringify(data.userSettings),
-    );
+    safeSet(STORAGE_KEYS.USER_SETTINGS, data.userSettings);
   }
   if (data.gameState !== undefined) {
-    localStorage.setItem(
-      STORAGE_KEYS.GAME_STATE,
-      JSON.stringify(data.gameState),
-    );
+    safeSet(STORAGE_KEYS.GAME_STATE, data.gameState);
   }
 };
