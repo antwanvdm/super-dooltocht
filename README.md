@@ -45,118 +45,58 @@ This game aims to be:
   - Make Amount (Bedrag Maken)
   - Smart Pay (Slim Betalen)
   - Change (Wisselgeld)
+- **Challenge types:**
+  - Multiple Choice – Pick the correct answer from 4 options
+  - Memory Game – Match math problems with their answers
+  - Math Puzzle (Sommenblad) – Fill in answers for multiple problems
+  - Darts Game – Throw darts to add up to the target number
 
 ### Clock Reading (Klokkijken)
 
-A separate exercise category with its own settings tab.
-
-- **Difficulty levels:**
-  - Whole hours (Hele uren) – 03:00, 07:00
-  - Half hours (Halve uren) – 03:00, 03:30
-  - Quarters (Kwartieren) – 03:00, 03:15, 03:30, 03:45
-  - 5 minutes – 03:05, 03:10, 03:25...
-  - 1 minute – 03:07, 03:42...
-- **Extra options:**
-  - 💬 Words mode – Practice reading/writing times in Dutch words ("kwart over drie", "half vijf")
-  - 🔄 24-hour notation – Practice converting between 12h and 24h (AM/PM understanding)
-
-### Clock Challenge Types
-
-- 🕐 **Hoe laat is het?** – See analog clock, choose the correct time from 4 options
-- 🃏 **Klok Memory** – Match analog clocks with digital/word representations
-- ⌨️ **Typ de tijd** – See analog clock, type the digital time (HH:MM)
-- 🔍 **Welke klok?** – Read a digital/word time, pick the correct analog clock
-- 📝 **Schrijf de tijd** – See a clock, type the time in Dutch words (words mode)
-- 🔄 **24-uursklok** – Convert between 12h+dagdeel and 24h notation (24h mode)
+- **Difficulty levels:** Whole hours → half hours → quarters → 5 minutes → 1 minute
+- **Words mode** – Practice reading/writing times in Dutch words ("kwart over drie", "half vijf")
+- **24-hour notation** – Practice converting between 12h and 24h (AM/PM understanding)
+- **Challenge types:**
+  - Hoe laat is het? – See analog clock, choose the correct time
+  - Klok Memory – Match analog clocks with digital/word representations
+  - Typ de tijd – See analog clock, type the digital time (HH:MM)
+  - Welke klok? – Read a time, pick the correct analog clock
+  - Schrijf de tijd – Type the time in Dutch words
+  - 24-uursklok – Convert between 12h and 24h notation
 
 ### Time Awareness (Tijdsbesef)
 
-Practice calendar knowledge – days, months and seasons.
-
-- **Topics:**
-  - 📅 Days of the week (Dagen van de week)
-  - 🗓️ Months of the year (Maanden van het jaar)
-  - 🌿 Seasons (Seizoenen) – with characteristics and ordering
-
-### Time Awareness Challenge Types
-
-- ❓ **Kalenderquiz** – Multiple choice questions about calendar facts
-- 🔢 **Volgorde** – Drag items into the correct order (days, months, seasons)
-- 🔗 **Seizoenen verbinden** – Connect characteristics to the right season
-- 🃏 **Kalender Memory** – Match related calendar pairs (e.g. day ↔ position)
+- **Topics:** Days of the week, months of the year, seasons (with characteristics)
+- **Challenge types:**
+  - Kalenderquiz – Multiple choice questions about calendar facts
+  - Volgorde – Drag items into the correct order
+  - Seizoenen verbinden – Connect characteristics to the right season
+  - Kalender Memory – Match related calendar pairs
 
 ### Time Calculation (Rekenen met Tijd)
 
-Calculate with clocks, durations and time units.
+- **Difficulty levels:** Whole hours → half hours → quarters → minutes → days & weeks
+- **24-hour notation** – Show times in 24h format (e.g. 15:00 instead of 03:00)
+- **Challenge types:**
+  - Klok vooruit – "It's 03:00, what time is it in 2 hours?"
+  - Klok rekenen – See an analog clock, calculate time forward/backward
+  - Hoe lang duurt het? – Calculate duration between two times
+  - Omreken Memory – Match time unit conversions (e.g. "1 uur" ↔ "60 min")
+  - Rekenen met tijd – Fill in the missing number in time calculations
 
-- **Difficulty levels:**
-  - Whole hours (Hele uren) – 03:00 + 2 uur
-  - Half hours (Halve uren) – 03:30 + 1,5 uur
-  - Quarters (Kwartieren) – 03:15 + 45 min
-  - Minutes (Minuten) – 03:22 + 20 min
-  - Days & weeks (Dagen & weken) – 2 weken = … dagen
-- **Extra option:**
-  - 🔄 24-hour notation – Show times in 24h format (e.g. 15:00 instead of 03:00)
+### Language (Taal)
 
-### Time Calculation Challenge Types
-
-- 🕐 **Klok vooruit** – "It's 03:00, what time is it in 2 hours?" (multiple choice)
-- 🕐 **Klok rekenen** – See an analog clock, calculate time forward/backward (multiple choice)
-- ⏱️ **Hoe lang duurt het?** – Calculate duration between two times (multiple choice)
-- 🃏 **Omreken Memory** – Match time unit conversions (e.g. "1 uur" ↔ "60 min")
-- 📝 **Rekenen met tijd** – Fill in the missing number in time calculations
-
-### Language Exercises (Taal)
-
-A separate exercise category with its own settings tab.
-
-#### Spelling
-
-Practice Dutch spelling rules with 8 word categories:
-
-- ✂️ **Hakwoord** – Words spelled as they sound (e.g. _kat_)
-- 🎵 **Zingwoord** – Words ending in -ng (e.g. _zing_)
-- 💨 **Luchtwoord** – Words with -cht (e.g. _lucht_)
-- 🪵 **Plankwoord** – Words with -nk (e.g. _plank_)
-- 🔤 **Eer/oor/eur/eel-woord** – With subcategories (e.g. _beer, hoor, geur, geel_)
-- 🌈 **Aai/ooi/oei-woord** – (e.g. _mooi, haai_)
-- ✨ **Eeuw/ieuw-woord** – (e.g. _leeuw, nieuw_)
-- 📏 **Langermaakwoord** – Words where you need to extend to hear d/t (e.g. _hond, hart_)
-
-#### Vocabulary (Woordenschat)
-
-- General vocabulary words with definitions and example sentences
-- Optional theme-specific vocabulary tied to the active game world
-
-#### Reading Comprehension (Begrijpend Lezen)
-
-- **Short texts** – 1-2 sentence passages with a comprehension question
-- **Long texts** – 3-4 sentence passages with more complex questions
-- Optional theme-specific reading passages
-
-### Spelling Challenge Types
-
-- 🏷️ **Spellingcategorie** – See a word, pick the correct spelling rule category
-- 🔗 **Spelling Verbinden** – Connect words to their matching spelling categories
-- ⌨️ **Woord Typen** – Type the word correctly and select its category
-
-### Vocabulary Challenge Types
-
-- 🎯 **Woordbetekenis** – See a word, pick the correct definition from 4 options
-- 🧠 **Woorden Memory** – Match words with their definitions in a memory game
-- ✏️ **Woord Invullen** – Fill in the missing word in a sentence
-
-### Reading Challenge Types
-
-- 📖 **Begrijpend Lezen** – Read a text and answer a multiple choice question
-- ✅ **Waar of Niet Waar** – Read a text and judge statements as true or false
-
-### Math Challenge Types
-
-- 🎯 **Multiple Choice** – Pick the correct answer from 4 options
-- 🧠 **Memory Game** – Match math problems with their answers
-- 📝 **Math Puzzle (Sommenblad)** – Fill in answers for multiple problems
-- 🎯 **Darts Game** – Throw darts to add up to the target number
+- **Spelling** – Practice Dutch spelling rules across 8 word categories:
+  - Hakwoord, zingwoord, luchtwoord, plankwoord, eer/oor/eur/eel, aai/ooi/oei, eeuw/ieuw, langermaakwoord
+  - Challenge types: pick the category, connect words to rules, type the word
+- **Vocabulary (Woordenschat)** – Words with definitions and example sentences:
+  - General vocabulary + optional theme-specific words
+  - Challenge types: pick the definition, memory matching, fill in the blank
+- **Reading Comprehension (Begrijpend Lezen)** – Short and long passages with questions:
+  - Optional theme-specific reading passages
+  - Challenge types: multiple choice, true or false
+- **English** – Basic English vocabulary practice:
+  - Challenge types: multiple choice, memory, connect pairs, fill in the blank, type the word
 
 ### Adventure Settings
 
@@ -172,7 +112,7 @@ Practice Dutch spelling rules with 8 word categories:
 - 💾 **Auto-save** – Game progress automatically saved
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
 - 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), Tijdsbesef (time awareness), Rekenen met Tijd (time calculation), and Taal (language)
-- �📱 **Touch Controls** – D-pad overlay for touchscreen devices
+- 📱 **Touch Controls** – D-pad overlay for touchscreen devices
 - ⌨️ **Keyboard Shortcuts**:
   - Arrow keys: Move through maze
   - **K**: Toggle minimap
