@@ -33,6 +33,52 @@ test.describe('Error scenarios – API failures', () => {
     await expect(page.getByText('Even laden...')).toBeVisible();
   });
 
+  test('shows server-down screen when emoji categories fail to load', async ({
+    page,
+  }) => {
+    // Abort the emoji categories request (server unreachable)
+    await page.route(`${API}/api/emoji-categories`, (route) =>
+      route.abort('connectionrefused'),
+    );
+
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.goto('/');
+
+    // Should show a friendly error screen with retry button
+    await expect(page.getByText(/server slaapt even/i)).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(
+      page.getByRole('button', { name: /Probeer opnieuw/i }),
+    ).toBeVisible();
+  });
+
+  test('shows server-down screen for returning player when server is down', async ({
+    page,
+  }) => {
+    // Abort the emoji categories request
+    await page.route(`${API}/api/emoji-categories`, (route) =>
+      route.abort('connectionrefused'),
+    );
+
+    // Returning player has a saved code
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem(
+        'super-dooltocht-player-code',
+        JSON.stringify(['dog', 'heart_red', 'star', 'one']),
+      );
+    });
+    await page.goto('/');
+
+    // Should show friendly error, NOT a broken screen with ❓❓❓❓
+    await expect(page.getByText(/server slaapt even/i)).toBeVisible({
+      timeout: 5000,
+    });
+  });
+
   test('shows error when creating a new adventure fails (server 500)', async ({
     page,
   }) => {
@@ -107,6 +153,41 @@ test.describe('Error scenarios – API failures', () => {
     });
   });
 
+  test('shows server-down message when validation returns 503', async ({
+    page,
+  }) => {
+    await page.route(`${API}/api/emoji-categories`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(MOCK_EMOJI_CATEGORIES),
+      }),
+    );
+
+    // Mock validation to return 503 (DB down)
+    await page.route(`${API}/api/players/validate`, (route) =>
+      route.fulfill({ status: 503, body: JSON.stringify({ error: 'Service unavailable' }) }),
+    );
+
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem(
+        'super-dooltocht-player-code',
+        JSON.stringify(['dog', 'apple', 'soccer', 'sun']),
+      );
+    });
+    await page.goto('/');
+
+    await page.getByText('Voer je code in').waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: /Dit is mijn code/i }).click();
+
+    // Should show server-down message, NOT "Deze code ken ik niet"
+    await expect(page.getByText(/server is even in slaap/i)).toBeVisible({
+      timeout: 5000,
+    });
+  });
+
   test('shows error when code validation has network error', async ({
     page,
   }) => {
@@ -141,8 +222,8 @@ test.describe('Error scenarios – API failures', () => {
     // Click submit to trigger validation
     await page.getByRole('button', { name: /Dit is mijn code/i }).click();
 
-    // Should show a generic error
-    await expect(page.getByText(/Er ging iets fout/)).toBeVisible({
+    // Should show a server-down error (not "code ken ik niet")
+    await expect(page.getByText(/server is even in slaap/i)).toBeVisible({
       timeout: 5000,
     });
   });

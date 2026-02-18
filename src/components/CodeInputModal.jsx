@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadEmojiCategories, getEmojiCategories, getCategoryLabels, emojisToCode, codeToEmojis } from '../utils/emojiCode';
+import { loadEmojiCategories, getEmojiCategories, getCategoryLabels, emojisToCode, codeToEmojis, resetEmojiCache } from '../utils/emojiCode';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -18,20 +18,29 @@ export default function CodeInputModal({
   // 'welcome' | 'enterCode' | 'newAdventure'
   const [screen, setScreen] = useState(prefillCode ? 'enterCode' : 'welcome');
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState(false);
 
   // Laad emoji categorieën van server
   useEffect(() => {
     const loadCategories = async () => {
       setCategoriesLoading(true);
+      setCategoriesError(false);
       const data = await loadEmojiCategories();
-      setCategories(data.categories || []);
+      
+      if (!data.categories || data.categories.length === 0) {
+        setCategoriesError(true);
+        setCategoriesLoading(false);
+        return;
+      }
+      
+      setCategories(data.categories);
       setCategoryLabels(data.labels || []);
       
       // Zet prefillCode (slugs) om naar emojis voor display
       if (prefillCode) {
         setSelectedEmojis(codeToEmojis(prefillCode));
       } else {
-        setSelectedEmojis(new Array(data.categories?.length || 4).fill(''));
+        setSelectedEmojis(new Array(data.categories.length || 4).fill(''));
       }
       setCategoriesLoading(false);
     };
@@ -71,7 +80,11 @@ export default function CodeInputModal({
       });
 
       if (!response.ok) {
-        setError('Deze code ken ik niet. Probeer het opnieuw!');
+        if (response.status === 404) {
+          setError('Deze code ken ik niet. Probeer het opnieuw!');
+        } else {
+          setError('De server is even in slaap gevallen 😴 Probeer het zo nog eens!');
+        }
         return;
       }
 
@@ -81,7 +94,7 @@ export default function CodeInputModal({
         progress: data.progress || {},
       });
     } catch (err) {
-      setError('Oeps! Er ging iets fout. Probeer het opnieuw.');
+      setError('De server is even in slaap gevallen 😴 Probeer het zo nog eens!');
       console.error('Code validation error:', err);
     } finally {
       setLoading(false);
@@ -102,6 +115,49 @@ export default function CodeInputModal({
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg p-6 shadow-xl">
           <p className="text-lg text-gray-600">Even laden... ⏳</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (categoriesError) {
+    const handleRetry = () => {
+      resetEmojiCache();
+      setCategoriesError(false);
+      setCategoriesLoading(true);
+      loadEmojiCategories().then((data) => {
+        if (!data.categories || data.categories.length === 0) {
+          setCategoriesError(true);
+          setCategoriesLoading(false);
+          return;
+        }
+        setCategories(data.categories);
+        setCategoryLabels(data.labels || []);
+        if (prefillCode) {
+          setSelectedEmojis(codeToEmojis(prefillCode));
+        } else {
+          setSelectedEmojis(new Array(data.categories.length || 4).fill(''));
+        }
+        setCategoriesLoading(false);
+      });
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl max-w-sm w-full text-center">
+          <div className="text-6xl mb-4">😴</div>
+          <h2 className="text-xl sm:text-2xl font-bold text-purple-600 mb-3">
+            Oeps!
+          </h2>
+          <p className="text-gray-600 mb-6 text-sm sm:text-base">
+            De server slaapt even... Maar we maken hem snel weer wakker! Probeer het zo nog eens.
+          </p>
+          <button
+            onClick={handleRetry}
+            className="w-full bg-blue-500 text-white font-bold py-3 rounded-xl hover:bg-blue-600 transition-colors text-base sm:text-lg"
+          >
+            🔄 Probeer opnieuw
+          </button>
         </div>
       </div>
     );

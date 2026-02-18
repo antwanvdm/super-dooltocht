@@ -53,7 +53,7 @@ export default function CodeFlowManager({ onReady }) {
       setDisplayCodeModalOpen(true);
     } catch (err) {
       console.error('Error creating adventure:', err);
-      setError('Oeps! Kon geen verbinding maken met de server. Controleer of de server draait.');
+      setError('De server slaapt even 😴 Probeer het zo nog eens!');
     }
   };
 

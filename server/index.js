@@ -24,7 +24,11 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-await mongoose.connect(MONGODB_URI);
+await mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 3000,
+  connectTimeoutMS: 3000,
+  socketTimeoutMS: 3000,
+});
 
 const playerSchema = new mongoose.Schema(
   {
@@ -169,19 +173,24 @@ app.post('/api/players/validate', async (req, res) => {
     return res.status(400).json({ error: 'Invalid code' });
   }
 
-  const codeKey = codeSlugs.join('-');
-  const player = await Player.findOne({ codeKey }).lean();
+  try {
+    const codeKey = codeSlugs.join('-');
+    const player = await Player.findOne({ codeKey }).lean();
 
-  if (!player) {
-    return res.status(404).json({ error: 'Code not found' });
+    if (!player) {
+      return res.status(404).json({ error: 'Code not found' });
+    }
+
+    return res.json({
+      code: player.codeSlugs,
+      progress: player.progress || {},
+      createdAt: player.createdAt,
+      updatedAt: player.updatedAt,
+    });
+  } catch (error) {
+    console.error('Validate error:', error.message);
+    return res.status(503).json({ error: 'Service unavailable' });
   }
-
-  return res.json({
-    code: player.codeSlugs,
-    progress: player.progress || {},
-    createdAt: player.createdAt,
-    updatedAt: player.updatedAt,
-  });
 });
 
 app.post('/api/players/:codeKey/progress', async (req, res) => {

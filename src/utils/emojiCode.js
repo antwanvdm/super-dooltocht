@@ -28,6 +28,12 @@ export const loadEmojiCategories = async () => {
 export const getEmojiCategories = () => EMOJI_CATEGORIES;
 export const getCategoryLabels = () => CATEGORY_LABELS;
 
+// Reset cache zodat een retry opnieuw fetcht
+export const resetEmojiCache = () => {
+  EMOJI_CATEGORIES = [];
+  CATEGORY_LABELS = [];
+};
+
 // Helper: slug naar emoji
 export const slugToEmoji = (slug) => {
   for (const category of EMOJI_CATEGORIES) {
