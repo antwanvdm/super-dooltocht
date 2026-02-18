@@ -5,6 +5,7 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
   const [problems, setProblems] = useState([]);
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState({});
+  const [warning, setWarning] = useState('');
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
     setProblems(newProblems);
     setAnswers({});
     setFeedback({});
+    setWarning('');
   }, [mathSettings]);
 
   // Autofocus eerste input
@@ -44,6 +46,7 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
   const handleInputChange = (index, value) => {
     setAnswers(prev => ({ ...prev, [index]: value }));
     setFeedback(prev => ({ ...prev, [index]: null }));
+    setWarning('');
   };
 
   const handleCheckAnswers = () => {
@@ -52,7 +55,20 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
     // Check of alle velden zijn ingevuld
     const allFilled = problems.every((_, idx) => answers[idx] !== undefined && answers[idx] !== '');
     if (!allFilled) {
-      alert('Vul alstublieft alle antwoorden in!');
+      setWarning('Vul eerst alle antwoorden in! 😊');
+      // Markeer lege velden
+      const emptyFeedback = {};
+      problems.forEach((_, idx) => {
+        if (answers[idx] === undefined || answers[idx] === '') {
+          emptyFeedback[idx] = 'empty';
+        }
+      });
+      setFeedback(prev => ({ ...prev, ...emptyFeedback }));
+      // Focus op eerste lege veld
+      const firstEmpty = problems.findIndex((_, idx) => answers[idx] === undefined || answers[idx] === '');
+      if (firstEmpty >= 0 && inputRefs.current[firstEmpty]) {
+        inputRefs.current[firstEmpty].focus();
+      }
       return;
     }
 
@@ -110,7 +126,11 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
             <input
               ref={el => inputRefs.current[index] = el}
               type="number"
-              className="w-16 sm:w-24 text-lg sm:text-2xl md:text-3xl font-bold text-center rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none px-1 sm:px-2 py-1"
+              className={`w-16 sm:w-24 text-lg sm:text-2xl md:text-3xl font-bold text-center rounded-lg border-2 focus:outline-none px-1 sm:px-2 py-1 ${
+                feedback[index] === 'empty'
+                  ? 'border-red-400 bg-red-50'
+                  : 'border-gray-300 focus:border-blue-500'
+              }`}
               onChange={(e) => handleInputChange(index, e.target.value)}
               value={answers[index] || ''}
             />
@@ -125,6 +145,11 @@ function MathPuzzle({ mathSettings, onSuccess, onFailure, theme }) {
       </div>
       
       <div className="mt-4 sm:mt-6 flex flex-col items-center gap-2">
+        {warning && (
+          <p className="text-red-500 font-semibold text-sm sm:text-base animate-pulse">
+            {warning}
+          </p>
+        )}
         <button
           onClick={handleCheckAnswers}
           className="px-4 sm:px-5 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white text-base sm:text-lg font-bold rounded-lg shadow"

@@ -120,7 +120,7 @@ function MemoryGame({ mathSettings, onSuccess, theme }) {
         setFlipped([]);
         setCanFlip(true);
         
-        // Check of alles gevonden is (6 paren = 12 kaarten)
+        // Check of alles gevonden is (4 paren = 8 kaarten)
         if (matched.length + 2 === cards.length) {
           setTimeout(() => {
             onSuccess();

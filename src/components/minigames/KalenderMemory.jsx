@@ -91,7 +91,7 @@ function KalenderMemory({ mathSettings, onSuccess }) {
         Vind de juiste paren! Koppel elk item aan het juiste nummer of seizoen.
       </p>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-md mx-auto">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
         {cards.map((card) => {
           const isFlipped = flipped.includes(card.id);
           const isMatched = matched.includes(card.pairId);

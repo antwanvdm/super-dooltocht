@@ -48,21 +48,27 @@ function MakeAmountGame({ mathSettings, onSuccess, onFailure }) {
       forceMoneyType: 'makeAmount',
     };
     
-    const mathProblem = generateMathProblem(moneySettings);
+    // Probeer max 3 keer een geldig makeAmount probleem te genereren
+    let mathProblem = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const candidate = generateMathProblem(moneySettings);
+      if (candidate.correctCombination && candidate.currency) {
+        mathProblem = candidate;
+        break;
+      }
+    }
     
-    // Defensieve check: als het probleem niet het juiste type heeft, skip
-    if (!mathProblem.correctCombination || !mathProblem.currency) {
-      // Fallback: probeer opnieuw
-      const retry = generateMathProblem(moneySettings);
-      setProblem(retry);
-      const correct = retry.correctCombination || [];
-      const wrongOptions = generateWrongCombinations(retry.amount, retry.currency || [], correct);
-      const allOptions = [
-        { combination: correct, isCorrect: true },
-        ...wrongOptions.filter(c => c).map(c => ({ combination: c, isCorrect: false }))
-      ].sort(() => Math.random() - 0.5);
-      setOptions(allOptions);
-      return;
+    // Fallback: als geen enkele poging lukte, maak een simpel probleem
+    if (!mathProblem) {
+      mathProblem = {
+        question: 'Maak €1,00',
+        answer: 100,
+        amount: 100,
+        amountFormatted: '€1,00',
+        correctCombination: [100],
+        currency: [200, 100, 50, 20, 10, 5],
+        type: 'makeAmount',
+      };
     }
     
     setProblem(mathProblem);

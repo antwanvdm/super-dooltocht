@@ -74,7 +74,7 @@ function OmrekenMemory({ mathSettings, onSuccess }) {
         Vind de juiste paren! Koppel elke tijdseenheid aan de juiste waarde.
       </p>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-md mx-auto">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
         {cards.map((card) => {
           const isFlipped = flipped.includes(card.id);
           const isMatched = matched.includes(card.pairId);

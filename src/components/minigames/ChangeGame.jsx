@@ -18,6 +18,16 @@ const generateChangeWrongAnswers = (correct, includeCents) => {
     if (wrong.size >= 3) break;
   }
   
+  // Fallback: als offsets niet genoeg opleveren (bijv. bij zeer klein wisselgeld),
+  // vul aan met veelvouden van het juiste bedrag
+  const fallbacks = [correct * 2, correct * 3, Math.max(step, Math.floor(correct / 2))];
+  for (const fb of fallbacks) {
+    if (wrong.size >= 3) break;
+    if (fb > 0 && fb !== correct) {
+      wrong.add(fb);
+    }
+  }
+  
   return Array.from(wrong).slice(0, 3);
 };
 

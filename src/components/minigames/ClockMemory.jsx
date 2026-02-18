@@ -102,7 +102,7 @@ function ClockMemory({ mathSettings, onSuccess, theme }) {
         Koppel de klok aan de juiste tijd!
       </p>
 
-      <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
         {cards.map((card, index) => {
           const isFlipped = flipped.includes(index) || matched.includes(index);
           const isMatched = matched.includes(index);
