@@ -561,13 +561,26 @@ const generateMoneyProblem = (maxAmount, includeCents, forceType = null) => {
 };
 
 // Type 1: Maak het bedrag - welke combinatie is juist?
-const generateMakeAmount = (amount, currency) => {
+const generateMakeAmount = (amount, currency, depth = 0) => {
   const correctCombination = findOptimalCombination(amount, currency);
 
   if (!correctCombination) {
+    if (depth >= 3) {
+      // Noodstop: gebruik kleinste munteenheid als fallback
+      const smallest = Math.min(...currency);
+      return {
+        type: 'makeAmount',
+        moneyType: 'makeAmount',
+        amount: smallest,
+        amountFormatted: formatMoney(smallest),
+        correctCombination: [smallest],
+        currency: currency,
+      };
+    }
     // Fallback: genereer een makkelijker bedrag
-    const simpleAmount = Math.floor(amount / 100) * 100;
-    return generateMakeAmount(simpleAmount, currency);
+    const simpleAmount =
+      Math.floor(amount / 100) * 100 || Math.min(...currency);
+    return generateMakeAmount(simpleAmount, currency, depth + 1);
   }
 
   return {

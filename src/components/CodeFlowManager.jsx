@@ -29,6 +29,7 @@ export default function CodeFlowManager({ onReady }) {
       onReady();
     } catch (err) {
       console.error('Error validating code:', err);
+      setError('Oeps! Er ging iets mis bij het laden van je voortgang. Probeer het opnieuw.');
     }
   };
 

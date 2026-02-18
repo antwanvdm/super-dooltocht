@@ -6,6 +6,7 @@ An educational math and language game for elementary school children, built with
 ![React Router](https://img.shields.io/badge/React%20Router-7-CA4245?logo=reactrouter&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?logo=tailwindcss&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
 ![Mongoose](https://img.shields.io/badge/Mongoose-9-880000?logo=mongoose&logoColor=white)
@@ -220,7 +221,8 @@ npm run preview
 | React Router | 7       | Navigation              |
 | Express      | 5       | Backend API server      |
 | Mongoose     | 9       | MongoDB ODM             |
-| Vitest       | 4       | Testing                 |
+| Vitest       | 4       | Unit testing            |
+| Playwright   | 1.58    | E2E testing             |
 
 ## 📁 Project Structure
 
@@ -228,40 +230,63 @@ npm run preview
 src/
 ├── components/
 │   ├── maze/           # Core maze game components
-│   ├── minigames/      # Educational challenges
+│   │   ├── MazeGame.jsx    # Main game controller
+│   │   ├── MazeView.jsx    # Maze rendering & player movement
+│   │   ├── DPad.jsx        # Touch controls overlay
+│   │   └── Minimap.jsx     # Overview minimap
+│   ├── minigames/      # Educational challenges (~40 components)
+│   │   ├── ChallengeModal.jsx    # Modal wrapper & game type router
+│   │   ├── MathPuzzle.jsx        # Fill-in-the-blank worksheet
+│   │   ├── MultipleChoice.jsx    # Multiple choice questions
+│   │   ├── MemoryGame.jsx        # Math memory matching
+│   │   ├── DartsGame.jsx         # Darts-style addition
 │   │   ├── AnalogClock.jsx       # Reusable SVG analog clock
+│   │   ├── MoneyDisplay.jsx      # Reusable coin/bill display
+│   │   ├── SpellingReferenceCard.jsx # Reusable spelling rule card
 │   │   ├── Clock*.jsx            # Clock reading minigames
 │   │   ├── Kalender*.jsx         # Time awareness minigames
-│   │   ├── VolgordeSorteer.jsx   # Ordering minigame
-│   │   ├── SeizoenenMatch.jsx    # Season matching minigame
-│   │   ├── KlokVooruit.jsx       # Time forward/backward MC
-│   │   ├── KlokRekenen.jsx       # Analog clock + calculation MC
-│   │   ├── TijdsduurQuiz.jsx     # Duration quiz MC
+│   │   ├── Klok*.jsx / Tijd*.jsx # Time calculation minigames
 │   │   ├── OmrekenMemory.jsx     # Time unit conversion memory
-│   │   ├── TijdRekenen.jsx       # Time calculation fill-in
 │   │   ├── Spelling*.jsx         # Spelling minigames
 │   │   ├── Vocabulary*.jsx       # Vocabulary minigames
+│   │   ├── English*.jsx          # English language minigames
 │   │   ├── Reading*.jsx          # Reading comprehension minigames
-│   │   └── ...                   # Math & money minigames
-│   ├── CodeFlowManager.jsx   # Player code auth flow
-│   ├── CodeInputModal.jsx    # Emoji code entry
-│   ├── CodeDisplayModal.jsx  # New code display
-│   ├── Home.jsx        # Home screen with settings
-│   └── Confetti.jsx    # Victory celebration
-├── hooks/              # Custom React hooks
+│   │   ├── *Money*.jsx / *Pay*.jsx / *Change*.jsx  # Money minigames
+│   │   └── PlaceValueGame.jsx, LovingHeartsGame.jsx, ...
+│   ├── CodeFlowManager.jsx  # Player code auth flow
+│   ├── CodeInputModal.jsx   # Emoji code entry modal
+│   ├── CodeDisplayModal.jsx # New code display modal
+│   ├── Home.jsx             # Home screen with settings tabs
+│   └── Confetti.jsx         # Victory celebration animation
+├── hooks/
+│   └── useSyncToServer.js   # Server sync hook
 ├── utils/
-│   ├── difficultyAdapter.js  # Math problem generation
-│   ├── languageAdapter.js    # Language problem generation
-│   ├── languageData.js       # Spelling, vocabulary & reading data
-│   ├── timeAwarenessData.js  # Calendar/season quiz generation
-│   ├── timeCalculationData.js # Time calculation problem generation
-│   ├── emojiCode.js          # Emoji ↔ slug conversion
-│   ├── localStorage.js       # Game state persistence
-│   ├── mazeGenerator.js      # Procedural maze generation
-│   ├── serverSync.js         # Server sync utilities
-│   ├── themes.js             # Visual themes
-│   └── __tests__/            # Unit tests
+│   ├── difficultyAdapter.js     # Math problem generation
+│   ├── languageAdapter.js       # Language problem generation
+│   ├── localStorage.js          # Game state persistence (safeGet/safeSet/safeRemove)
+│   ├── mazeGenerator.js         # Procedural maze generation
+│   ├── serverSync.js            # Server sync utilities
+│   ├── emojiCode.js             # Emoji ↔ slug conversion
+│   ├── themes.js                # Theme registry & exports
+│   ├── languageData.js          # Language data registry
+│   ├── timeAwarenessData.js     # Calendar/season quiz generation
+│   ├── timeCalculationData.js   # Time calculation problem generation
+│   ├── themes/                  # Individual theme files
+│   │   ├── space.js, ocean.js, jungle.js, castle.js, ...
+│   │   └── (12 themes total)
+│   ├── languageData/            # Language data files
+│   │   ├── spellingData.js      # Dutch spelling rules & words
+│   │   ├── vocabularyData.js    # Vocabulary words & definitions
+│   │   ├── readingData.js       # Reading comprehension passages
+│   │   └── englishData.js       # English vocabulary data
+│   └── __tests__/               # Unit tests (Vitest)
 └── assets/             # Static assets
+e2e/
+├── helpers.js            # Shared test utilities & fixtures
+├── settings.spec.js      # Home screen & settings tests
+├── play-adventure.spec.js # Adventure start & minigame tests
+├── gameplay.spec.js      # In-game mechanics & modal tests
+└── error-scenarios.spec.js # Error handling & edge cases
 server/
 ├── index.js            # Express API server
 ├── cleanup.js          # Stale player cleanup script
@@ -296,7 +321,43 @@ node --env-file=.env cleanup.js
 node --env-file=.env cleanup.js --confirm
 ```
 
-## 🤝 Contributing
+## � Testing
+
+The project has two layers of testing:
+
+### Unit Tests (Vitest)
+
+~390 unit tests covering math problem generation, language adapters, time awareness/calculation data, and edge cases.
+
+```bash
+# Run all unit tests
+npm run test:run
+
+# Run in watch mode
+npm test
+
+# Run with UI
+npm run test:ui
+```
+
+### E2E Tests (Playwright)
+
+~110 end-to-end tests covering settings, adventure flow, gameplay mechanics, and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
+
+```bash
+# Run all E2E tests (headless)
+npm run test:e2e
+
+# Run with interactive UI
+npm run test:e2e:ui
+
+# Run with slow motion (500ms) for debugging
+npm run test:e2e:ui:slow
+```
+
+E2E test output is written to `e2e/test-results/` and `e2e/playwright-report/`.
+
+## �🤝 Contributing
 
 Contributions are welcome! Feel free to:
 
