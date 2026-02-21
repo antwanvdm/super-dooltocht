@@ -157,6 +157,22 @@ describe('generateKalenderQuizQuestion', () => {
     // Should have at least 2 different categories over 100 tries
     expect(categories.size).toBeGreaterThanOrEqual(2);
   });
+
+  it('should include overmorgen/eergisteren concept questions for dagen', () => {
+    const questions = [];
+    for (let i = 0; i < 200; i++) {
+      const q = generateKalenderQuizQuestion({
+        dagen: true,
+        maanden: false,
+        seizoenen: false,
+      });
+      questions.push(q.question);
+    }
+    const hasOvermorgen = questions.some((q) => q.includes('dag na morgen'));
+    const hasEergisteren = questions.some((q) => q.includes('dag vóór gisteren'));
+    expect(hasOvermorgen).toBe(true);
+    expect(hasEergisteren).toBe(true);
+  });
 });
 
 // ============================================
@@ -190,6 +206,7 @@ describe('generateVolgordeChallenge', () => {
       });
       expect(c.items).toHaveLength(4);
       expect(c.category).toBe('dagen');
+      expect(c.cyclical).toBe(true);
     }
   });
 
@@ -202,6 +219,7 @@ describe('generateVolgordeChallenge', () => {
       });
       expect(c.items).toHaveLength(4);
       expect(c.category).toBe('maanden');
+      expect(c.cyclical).toBe(true);
     }
   });
 

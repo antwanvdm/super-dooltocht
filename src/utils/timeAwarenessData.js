@@ -219,6 +219,20 @@ const DAGEN_GENERATORS = [
       category: 'dagen',
     };
   },
+  // Hoe noem je de dag na morgen?
+  () => ({
+    question: 'Hoe noem je de dag na morgen?',
+    answer: 'Overmorgen',
+    wrongAnswers: ['Eergisteren', 'Gisteren', 'Morgen'],
+    category: 'dagen',
+  }),
+  // Hoe noem je de dag voor gisteren?
+  () => ({
+    question: 'Hoe noem je de dag vóór gisteren?',
+    answer: 'Eergisteren',
+    wrongAnswers: ['Overmorgen', 'Morgen', 'Gisteren'],
+    category: 'dagen',
+  }),
 ];
 
 // ==========================================
@@ -413,6 +427,7 @@ export const generateVolgordeChallenge = (options = {}) => {
         correctOrder,
         label: 'Zet de dagen in de juiste volgorde',
         category: 'dagen',
+        cyclical: true,
       };
     }
     case 'maanden': {
@@ -428,6 +443,7 @@ export const generateVolgordeChallenge = (options = {}) => {
         correctOrder,
         label: 'Zet de maanden in de juiste volgorde',
         category: 'maanden',
+        cyclical: true,
       };
     }
     case 'seizoenen': {
