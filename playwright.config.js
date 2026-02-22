@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: './e2e/playwright-report' }]],
 
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5174',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     // Slow down actions in headed mode so you can follow along
@@ -28,8 +28,8 @@ export default defineConfig({
 
   // Start Vite dev server automatically before running tests
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: 'npm run dev -- --port 5174',
+    url: 'http://localhost:5174',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

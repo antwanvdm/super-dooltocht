@@ -103,7 +103,8 @@ export const GAME_NAMES = {
  */
 export const getAvailableGameTypes = (mathSettings) => {
   const enabled = mathSettings?.enabledOperations || {};
-  const hasStandardOps = enabled.add || enabled.sub || enabled.mul;
+  const hasStandardOps =
+    enabled.add || enabled.sub || enabled.mul || enabled.div;
   const hasPlaceValue = enabled.placeValue;
   const hasLovingHearts = enabled.lovingHearts;
   const hasMoney = enabled.money;
@@ -198,11 +199,31 @@ export const getAvailableGameTypes = (mathSettings) => {
 };
 
 /**
- * Kies een willekeurig game type uit de beschikbare types.
+ * Kies een game type met round-robin verdeling.
+ * Houdt bij welke types al gespeeld zijn en kiest uit de nog-niet-gespeelde.
+ * Als alle types gespeeld zijn, reset de lijst en begin opnieuw.
+ *
+ * LET OP: deze functie muteert playedTypes NIET. De aanroeper is verantwoordelijk
+ * om het gekozen type pas toe te voegen aan playedTypes nadat de challenge
+ * succesvol is afgerond (zodat een kind niet kan weglopen om moeilijke games te skippen).
+ *
  * @param {object} mathSettings - De instellingen van het spel
- * @returns {string} Een random game type string
+ * @param {string[]} playedTypes - Array van al voltooide game types
+ * @returns {string} Een game type string
  */
-export const pickRandomGameType = (mathSettings) => {
+export const pickRandomGameType = (mathSettings, playedTypes = []) => {
   const availableTypes = getAvailableGameTypes(mathSettings);
-  return availableTypes[Math.floor(Math.random() * availableTypes.length)];
+
+  // Filter out already-played types
+  let remaining = availableTypes.filter((t) => !playedTypes.includes(t));
+
+  // If all types have been played, reset the list
+  if (remaining.length === 0) {
+    playedTypes.length = 0;
+    remaining = availableTypes;
+  }
+
+  const chosen = remaining[Math.floor(Math.random() * remaining.length)];
+
+  return chosen;
 };

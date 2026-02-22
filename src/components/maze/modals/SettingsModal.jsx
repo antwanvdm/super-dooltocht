@@ -73,7 +73,20 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                   {mathSettings.mulTables === 'medium' && 'Tafels: 3, 4, 6, 7, 8, 9'}
                   {mathSettings.mulTables === 'hard' && 'Tafels: 11, 12'}
                   {mathSettings.mulTables === 'expert' && 'Tafels: 13 t/m 20'}
-                  {mathSettings.mulTables === 'all' && 'Tafels: 1 t/m 12'}
+                  {mathSettings.mulTables === 'all' && 'Tafels: 1 t/m 10'}
+                  {mathSettings.mulTables === 'allplus' && 'Tafels: 1 t/m 20'}
+                </p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.div && (
+              <div className="bg-green-50 rounded-xl p-4">
+                <h4 className="font-bold text-green-800 mb-2">➗ Delen</h4>
+                <p className="text-sm text-green-700">
+                  {mathSettings.mulTables === 'easy' && 'Tafels: 1, 2, 5, 10'}
+                  {mathSettings.mulTables === 'medium' && 'Tafels: 3, 4, 6, 7, 8, 9'}
+                  {mathSettings.mulTables === 'hard' && 'Tafels: 11, 12'}
+                  {mathSettings.mulTables === 'expert' && 'Tafels: 13 t/m 20'}
+                  {mathSettings.mulTables === 'all' && 'Tafels: 1 t/m 10'}
                   {mathSettings.mulTables === 'allplus' && 'Tafels: 1 t/m 20'}
                 </p>
               </div>

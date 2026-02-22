@@ -18,6 +18,10 @@ const parseQuestion = (question, type) => {
     const [a, , b] = question.split(' ');
     return { a: parseInt(a), b: parseInt(b) };
   }
+  if (type === 'division') {
+    const [a, , b] = question.split(' ');
+    return { a: parseInt(a), b: parseInt(b) };
+  }
   if (type === 'addition') {
     const [a, , b] = question.split(' ');
     return { a: parseInt(a), b: parseInt(b) };
@@ -500,6 +504,144 @@ describe('Multiplication', () => {
       const { a, b } = parseQuestion(problem.question, 'multiplication');
       expect(b).toBeGreaterThanOrEqual(1);
       expect(b).toBeLessThanOrEqual(20);
+    }
+  });
+});
+
+// ============================================
+// DIVISION TESTS
+// ============================================
+
+describe('Division', () => {
+  it('should generate 100 valid division problems', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'all',
+    };
+
+    for (let i = 0; i < 100; i++) {
+      const problem = generateMathProblem(settings);
+      expect(problem.type).toBe('division');
+
+      const { a, b } = parseQuestion(problem.question, 'division');
+      // a ÷ b should equal answer and be a whole number
+      expect(a / b).toBe(problem.answer);
+      expect(Number.isInteger(problem.answer)).toBe(true);
+    }
+  });
+
+  it('should use the ÷ symbol in the question', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'easy',
+    };
+
+    const problem = generateMathProblem(settings);
+    expect(problem.question).toContain('÷');
+  });
+
+  it('should respect correct order: product ÷ table = multiplier', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'easy', // 1, 2, 5, 10
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      const { a, b } = parseQuestion(problem.question, 'division');
+
+      // b is the table number, should be from easy tables
+      expect([1, 2, 5, 10]).toContain(b);
+      // answer is the multiplier (1-10)
+      expect(problem.answer).toBeGreaterThanOrEqual(1);
+      expect(problem.answer).toBeLessThanOrEqual(10);
+      // a is the product
+      expect(a).toBe(problem.answer * b);
+    }
+  });
+
+  it('should only use easy tables (1, 2, 5, 10) when selected', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'easy',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      const { b } = parseQuestion(problem.question, 'division');
+      expect([1, 2, 5, 10]).toContain(b);
+    }
+  });
+
+  it('should only use medium tables (3, 4, 6, 7, 8, 9) when selected', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'medium',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      const { b } = parseQuestion(problem.question, 'division');
+      expect([3, 4, 6, 7, 8, 9]).toContain(b);
+    }
+  });
+
+  it('should only use hard tables (11, 12) when selected', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'hard',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      const { b } = parseQuestion(problem.question, 'division');
+      expect([11, 12]).toContain(b);
+    }
+  });
+
+  it('should only use expert tables (13-20) when selected', () => {
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'expert',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const problem = generateMathProblem(settings);
+      const { b } = parseQuestion(problem.question, 'division');
+      expect(b).toBeGreaterThanOrEqual(13);
+      expect(b).toBeLessThanOrEqual(20);
+    }
+  });
+
+  it('should use the same mulTables setting as multiplication', () => {
+    // When both mul and div are enabled, div should respect the same tables
+    const settings = {
+      enabledOperations: { div: true },
+      mulTables: 'hard',
+    };
+
+    for (let i = 0; i < 30; i++) {
+      const problem = generateMathProblem(settings);
+      const { b } = parseQuestion(problem.question, 'division');
+      expect([11, 12]).toContain(b);
+    }
+  });
+
+  it('should always produce whole number answers', () => {
+    const tables = ['easy', 'medium', 'hard', 'expert', 'all', 'allplus'];
+
+    for (const mulTables of tables) {
+      const settings = {
+        enabledOperations: { div: true },
+        mulTables,
+      };
+
+      for (let i = 0; i < 20; i++) {
+        const problem = generateMathProblem(settings);
+        expect(Number.isInteger(problem.answer)).toBe(true);
+        expect(problem.answer).toBeGreaterThanOrEqual(1);
+        expect(problem.answer).toBeLessThanOrEqual(10);
+      }
     }
   });
 });

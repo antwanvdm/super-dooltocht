@@ -76,7 +76,7 @@ test.describe('Home – Settings flow', () => {
     await page.locator('label').filter({ hasText: 'Plussommen' }).click();
 
     // Level options should appear
-    await expect(page.getByText('Plus/Min sommen tot:')).toBeVisible();
+    await expect(page.getByText('Plussommen tot:')).toBeVisible();
   });
 
   test('toggling Keersommen shows table selection', async ({ page }) => {
@@ -84,6 +84,22 @@ test.describe('Home – Settings flow', () => {
 
     await expect(page.getByText('Keersommen tafels:')).toBeVisible();
     await expect(page.getByText('Tafels van 1, 2, 5, 10')).toBeVisible();
+  });
+
+  test('toggling Deelsommen shows table selection', async ({ page }) => {
+    await page.locator('label').filter({ hasText: 'Deelsommen' }).click();
+
+    await expect(page.getByText('Deelsommen tafels:')).toBeVisible();
+    await expect(page.getByText('Tafels van 1, 2, 5, 10')).toBeVisible();
+  });
+
+  test('toggling both Keer- en Deelsommen shows combined label', async ({
+    page,
+  }) => {
+    await page.locator('label').filter({ hasText: 'Keersommen' }).click();
+    await page.locator('label').filter({ hasText: 'Deelsommen' }).click();
+
+    await expect(page.getByText('Keer- & deelsommen tafels:')).toBeVisible();
   });
 
   test('toggling Getallen begrijpen shows level options', async ({ page }) => {

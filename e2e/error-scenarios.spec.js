@@ -108,7 +108,7 @@ test.describe('Error scenarios – API failures', () => {
     await page.getByRole('button', { name: /Maak mijn code/i }).click();
 
     // Should show error message
-    await expect(page.getByText(/Kon geen verbinding maken/)).toBeVisible({
+    await expect(page.getByText(/server slaapt even/i)).toBeVisible({
       timeout: 5000,
     });
   });
@@ -166,7 +166,10 @@ test.describe('Error scenarios – API failures', () => {
 
     // Mock validation to return 503 (DB down)
     await page.route(`${API}/api/players/validate`, (route) =>
-      route.fulfill({ status: 503, body: JSON.stringify({ error: 'Service unavailable' }) }),
+      route.fulfill({
+        status: 503,
+        body: JSON.stringify({ error: 'Service unavailable' }),
+      }),
     );
 
     await page.goto('/');

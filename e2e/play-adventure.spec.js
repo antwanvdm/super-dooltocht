@@ -42,6 +42,16 @@ test.describe('Play adventure – Rekenen', () => {
     await expectMazeLoaded(page);
   });
 
+  test('start a short Deelsommen adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'rekenen',
+      operation: 'div',
+      theme: 'jungle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
   test('start a short Minsommen adventure', async ({ page }) => {
     await startAdventure(page, {
       category: 'rekenen',

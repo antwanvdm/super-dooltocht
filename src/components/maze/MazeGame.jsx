@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTheme } from '../../utils/themes';
 import { generateMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
@@ -7,6 +7,7 @@ import { useSyncToServer } from '../../hooks/useSyncToServer';
 import MazeView from './MazeView';
 import DPad from './DPad';
 import ChallengeModal from '../minigames/ChallengeModal';
+import { pickRandomGameType } from '../../utils/gameSelection';
 import SettingsModal from './modals/SettingsModal';
 import HelpModal from './modals/HelpModal';
 import MinimapModal from './modals/MinimapModal';
@@ -68,6 +69,12 @@ function MazeGame() {
   const [exitModal, setExitModal] = useState(null);
   const [friendsWarningModal, setFriendsWarningModal] = useState(null); // Waarschuwing voor achtergelaten vriendjes
   const [showHelp, setShowHelp] = useState(false);
+
+  // Track welke game types al gespeeld zijn voor round-robin verdeling.
+  // Leeft in MazeGame (niet in ChallengeModal) omdat ChallengeModal
+  // elke keer opnieuw gemount wordt per challenge.
+  const playedGameTypesRef = useRef([]);
+  const [activeGameType, setActiveGameType] = useState(null);
   const [lastCompletedPos, setLastCompletedPos] = useState(null); // Voorkom direct opnieuw triggeren
   const [showOnboarding, setShowOnboarding] = useState(false); // Onboarding hint voor nieuwe spelers
   const [showStoryIntro, setShowStoryIntro] = useState(false); // Story intro bij start van nieuw spel
@@ -368,6 +375,7 @@ function MazeGame() {
     // Alleen triggeren als we niet net op deze plek een challenge hebben afgesloten
     const isLastCompletedPos = lastCompletedPos && lastCompletedPos.x === x && lastCompletedPos.y === y;
     if (challenge && !activeChallenge && !isLastCompletedPos) {
+      setActiveGameType(pickRandomGameType(mathSettings, playedGameTypesRef.current));
       setActiveChallenge(challenge);
       return;
     }
@@ -425,6 +433,11 @@ function MazeGame() {
   };
 
   const handleChallengeComplete = (challengeId) => {
+    // Registreer het voltooide game type in de round-robin lijst
+    if (activeGameType) {
+      playedGameTypesRef.current.push(activeGameType);
+    }
+
     // Onthoud waar we waren zodat de challenge niet direct opnieuw triggert
     setLastCompletedPos({ ...playerPos });
 
@@ -675,6 +688,7 @@ function MazeGame() {
           challenge={activeChallenge}
           theme={theme}
           mathSettings={mathSettings}
+          gameType={activeGameType}
           onComplete={handleChallengeComplete}
           onClose={handleChallengeClose}
         />

@@ -38,6 +38,10 @@ This game aims to be:
   - Hard: Tables 11, 12
   - Expert: Tables 13-20
   - All Tables (1-20)
+- **Division (Deelsommen)** – Shares the same table selection as multiplication:
+  - Reverses multiplication: product ÷ table = answer
+  - Always produces whole-number answers (1-10)
+  - Same difficulty levels as Keersommen
 - **Place Value (Getallen begrijpen)** – Understanding tens, hundreds, thousands
 - **Loving Hearts (Verliefde Harten)** – Number pairs that sum to 10
 - **Money (Rekenen met Geld)** – Multiple money-based challenges:
@@ -45,7 +49,7 @@ This game aims to be:
   - Make Amount (Bedrag Maken)
   - Smart Pay (Slim Betalen)
   - Change (Wisselgeld)
-- **Challenge types:**
+- **Challenge types** (round-robin: each type is played before any repeats):
   - Multiple Choice – Pick the correct answer from 4 options
   - Memory Game – Match math problems with their answers
   - Math Puzzle (Sommenblad) – Fill in answers for multiple problems

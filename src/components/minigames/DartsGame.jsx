@@ -17,6 +17,7 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
         add: mathSettings?.enabledOperations?.add || false,
         sub: mathSettings?.enabledOperations?.sub || false,
         mul: mathSettings?.enabledOperations?.mul || false,
+        div: mathSettings?.enabledOperations?.div || false,
         placeValue: false,
         lovingHearts: false,
         money: false,
@@ -26,7 +27,8 @@ function DartsGame({ mathSettings, onSuccess, onFailure, theme }) {
     // Fallback to add if no standard ops enabled
     if (!standardSettings.enabledOperations.add && 
         !standardSettings.enabledOperations.sub && 
-        !standardSettings.enabledOperations.mul) {
+        !standardSettings.enabledOperations.mul &&
+        !standardSettings.enabledOperations.div) {
       standardSettings.enabledOperations.add = true;
     }
     

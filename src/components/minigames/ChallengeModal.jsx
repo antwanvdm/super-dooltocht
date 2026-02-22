@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { pickRandomGameType, GAME_NAMES } from '../../utils/gameSelection';
+import { GAME_NAMES } from '../../utils/gameSelection';
 import Confetti from '../Confetti';
 
 // Lazy-loaded component registry – components are only fetched when first rendered
@@ -44,8 +44,7 @@ const GAME_COMPONENTS = {
   'klokRekenen': lazy(() => import('./KlokRekenen')),
 };
 
-function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose }) {
-  const [gameType, setGameType] = useState(null);
+function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {
   const [showConfetti, setShowConfetti] = useState(false);
   const [interactionReady, setInteractionReady] = useState(false);
 
@@ -55,10 +54,6 @@ function ChallengeModal({ challenge, theme, mathSettings, onComplete, onClose })
     const timer = setTimeout(() => setInteractionReady(true), 400);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    setGameType(pickRandomGameType(mathSettings));
-  }, [challenge, mathSettings]);
 
   const handleSuccess = () => {
     // Toon confetti!

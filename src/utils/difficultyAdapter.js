@@ -1,6 +1,6 @@
 // Genereer rekensommen op basis van gekozen instellingen
 // settings: {
-//   enabledOperations: { add, sub, mul, placeValue, lovingHearts, money },
+//   enabledOperations: { add, sub, mul, div, placeValue, lovingHearts, money },
 //   maxValue: number,
 //   mulTables: string,
 //   addSubMode: 'within' | 'beyond',  // binnen of buiten het tiental
@@ -30,6 +30,7 @@ export const generateMathProblem = (settings) => {
   if (enabled.add) pool.push('add');
   if (enabled.sub) pool.push('sub');
   if (enabled.mul) pool.push('mul');
+  if (enabled.div) pool.push('div');
   if (enabled.placeValue) pool.push('placeValue');
   if (enabled.lovingHearts) pool.push('lovingHearts');
   if (enabled.money) pool.push('money');
@@ -42,6 +43,8 @@ export const generateMathProblem = (settings) => {
   switch (type) {
     case 'mul':
       return generateMultiplication(mulTables);
+    case 'div':
+      return generateDivision(mulTables);
     case 'sub':
       return generateSubtraction(maxValue, addSubMode, beyondDigits);
     case 'placeValue':
@@ -278,6 +281,47 @@ const generateMultiplication = (mulTables) => {
     question: `${multiplier} × ${table}`,
     answer: multiplier * table,
     type: 'multiplication',
+  };
+};
+
+const generateDivision = (mulTables) => {
+  // Deelsommen: hergebruik dezelfde tafelselectie als keersommen.
+  // We genereren een vermenigvuldiging en draaien het om:
+  // multiplier × table = product  →  product ÷ table = multiplier
+  let availableTables;
+  switch (mulTables) {
+    case 'easy':
+      availableTables = [1, 2, 5, 10];
+      break;
+    case 'medium':
+      availableTables = [3, 4, 6, 7, 8, 9];
+      break;
+    case 'hard':
+      availableTables = [11, 12];
+      break;
+    case 'expert':
+      availableTables = [13, 14, 15, 16, 17, 18, 19, 20];
+      break;
+    case 'all':
+      availableTables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      break;
+    case 'allplus':
+    default:
+      availableTables = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+      ];
+      break;
+  }
+
+  const table =
+    availableTables[Math.floor(Math.random() * availableTables.length)];
+  const multiplier = randBetween(1, 10);
+  const product = multiplier * table;
+
+  return {
+    question: `${product} ÷ ${table}`,
+    answer: multiplier,
+    type: 'division',
   };
 };
 

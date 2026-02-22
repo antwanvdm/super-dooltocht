@@ -161,6 +161,7 @@ export async function startAdventure(
     add: 'Plussommen',
     sub: 'Minsommen',
     mul: 'Keersommen',
+    div: 'Deelsommen',
     placeValue: 'Getallen begrijpen',
     lovingHearts: 'Verliefde harten',
     money: 'Rekenen met geld',

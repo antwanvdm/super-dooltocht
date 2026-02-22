@@ -11,7 +11,11 @@ import { describe, it, expect } from 'vitest';
 
 // We import from the utility that will be created.
 // Before extraction this file can be run to verify the extraction is correct.
-import { getAvailableGameTypes, GAME_NAMES } from '../gameSelection';
+import {
+  getAvailableGameTypes,
+  pickRandomGameType,
+  GAME_NAMES,
+} from '../gameSelection';
 
 describe('getAvailableGameTypes', () => {
   // ============================================
@@ -41,6 +45,16 @@ describe('getAvailableGameTypes', () => {
 
     it('should return standard games when mul is enabled', () => {
       const settings = { enabledOperations: { mul: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('multiple-choice');
+      expect(types).toContain('memory');
+      expect(types).toContain('puzzle');
+      expect(types).toContain('darts');
+    });
+
+    it('should return standard games when div is enabled', () => {
+      const settings = { enabledOperations: { div: true } };
       const types = getAvailableGameTypes(settings);
 
       expect(types).toContain('multiple-choice');
@@ -413,6 +427,7 @@ describe('getAvailableGameTypes', () => {
           add: true,
           sub: true,
           mul: true,
+          div: true,
           placeValue: true,
           lovingHearts: true,
           money: true,
@@ -505,5 +520,138 @@ describe('GAME_NAMES', () => {
       expect(typeof GAME_NAMES[type]).toBe('string');
       expect(GAME_NAMES[type].length).toBeGreaterThan(0);
     }
+  });
+});
+
+// ============================================
+// ROUND-ROBIN GAME TYPE SELECTION
+// ============================================
+
+describe('pickRandomGameType (round-robin)', () => {
+  // Helper: simuleert het voltooien van een challenge door het gekozen type
+  // toe te voegen aan playedTypes (net als MazeGame.handleChallengeComplete).
+  const pickAndComplete = (settings, playedTypes) => {
+    const chosen = pickRandomGameType(settings, playedTypes);
+    playedTypes.push(chosen);
+    return chosen;
+  };
+
+  it('should pick from available types', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+    const type = pickRandomGameType(settings, playedTypes);
+
+    expect(['multiple-choice', 'memory', 'puzzle', 'darts']).toContain(type);
+  });
+
+  it('should not mutate playedTypes (caller is responsible for tracking)', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    pickRandomGameType(settings, playedTypes);
+    expect(playedTypes.length).toBe(0);
+  });
+
+  it('should avoid already-played types', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    pickAndComplete(settings, playedTypes);
+    expect(playedTypes.length).toBe(1);
+
+    pickAndComplete(settings, playedTypes);
+    expect(playedTypes.length).toBe(2);
+
+    // Both entries should be different
+    expect(playedTypes[0]).not.toBe(playedTypes[1]);
+  });
+
+  it('should not repeat a type until all types are played', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    // Standard games: 4 types (multiple-choice, memory, puzzle, darts)
+    const results = [];
+    for (let i = 0; i < 4; i++) {
+      results.push(pickAndComplete(settings, playedTypes));
+    }
+
+    // All 4 should be unique
+    const unique = new Set(results);
+    expect(unique.size).toBe(4);
+  });
+
+  it('should reset and start a new round after all types are played', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    // Play all 4 types
+    for (let i = 0; i < 4; i++) {
+      pickAndComplete(settings, playedTypes);
+    }
+    expect(playedTypes.length).toBe(4);
+
+    // 5th pick should reset and pick a new one
+    const fifth = pickAndComplete(settings, playedTypes);
+    expect(['multiple-choice', 'memory', 'puzzle', 'darts']).toContain(fifth);
+    // After reset, playedTypes should have 1 entry
+    expect(playedTypes.length).toBe(1);
+  });
+
+  it('should work correctly over multiple full rounds', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    // Play 3 full rounds (12 picks)
+    for (let round = 0; round < 3; round++) {
+      const roundResults = [];
+      for (let i = 0; i < 4; i++) {
+        roundResults.push(pickAndComplete(settings, playedTypes));
+      }
+      // Each round should contain all 4 unique types
+      const unique = new Set(roundResults);
+      expect(unique.size).toBe(4);
+    }
+  });
+
+  it('should work with a larger pool of game types', () => {
+    const settings = { enabledOperations: { add: true, money: true } };
+    const playedTypes = [];
+    const available = getAvailableGameTypes(settings);
+
+    // Play all available types
+    const results = [];
+    for (let i = 0; i < available.length; i++) {
+      results.push(pickAndComplete(settings, playedTypes));
+    }
+
+    // All should be unique
+    const unique = new Set(results);
+    expect(unique.size).toBe(available.length);
+  });
+
+  it('should fallback to pure random when no playedTypes array provided', () => {
+    const settings = { enabledOperations: { add: true } };
+    // Should not crash when called without playedTypes
+    const type = pickRandomGameType(settings);
+    expect(['multiple-choice', 'memory', 'puzzle', 'darts']).toContain(type);
+  });
+
+  it('should give same type again if challenge was not completed', () => {
+    const settings = { enabledOperations: { add: true } };
+    const playedTypes = [];
+
+    // Pick without completing (child walked away)
+    const first = pickRandomGameType(settings, playedTypes);
+    // playedTypes is still empty, so the same type is still in the pool
+    expect(playedTypes.length).toBe(0);
+
+    // Pick again - first type is still available since it was never tracked
+    // Over many attempts, we should see 'first' appear again
+    const attempts = new Set();
+    for (let i = 0; i < 50; i++) {
+      attempts.add(pickRandomGameType(settings, playedTypes));
+    }
+    expect(attempts.has(first)).toBe(true);
   });
 });

@@ -12,7 +12,7 @@ const PLAYER_EMOJIS = [
 // Default settings used when no saved settings exist
 const DEFAULT_SETTINGS = {
   exerciseCategory: 'rekenen',
-  ops: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false },
+  ops: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false },
   maxValue: 100,
   mulTables: 'easy',
   addSubMode: 'beyond',
@@ -184,7 +184,7 @@ function Home({ disabled = false }) {
     let mathSettings;
     if (exerciseCategory === 'tijd') {
       mathSettings = {
-        enabledOperations: { add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness, timeCalculation: tijdOps.timeCalculation },
+        enabledOperations: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness, timeCalculation: tijdOps.timeCalculation },
         clockLevel,
         clock24h,
         clockWords,
@@ -196,7 +196,7 @@ function Home({ disabled = false }) {
       };
     } else if (exerciseCategory === 'taal') {
       mathSettings = {
-        enabledOperations: { ...taalOps, add: false, sub: false, mul: false, placeValue: false, lovingHearts: false, money: false, clock: false },
+        enabledOperations: { ...taalOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: false },
         spellingCategories,
         includeThemeVocabulary,
         includeThemeReading,
@@ -229,7 +229,7 @@ function Home({ disabled = false }) {
 
   const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
-    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts || ops.money);
+    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -317,6 +317,7 @@ function Home({ disabled = false }) {
                   { key: 'add', label: 'Plussommen', icon: '➕' },
                   { key: 'sub', label: 'Minsommen', icon: '➖' },
                   { key: 'mul', label: 'Keersommen', icon: '✖️' },
+                  { key: 'div', label: 'Deelsommen', icon: '➗' },
                   { key: 'placeValue', label: 'Getallen begrijpen', icon: '🧮' },
                   { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
                   { key: 'money', label: 'Rekenen met geld', icon: '💶' },
@@ -402,7 +403,7 @@ function Home({ disabled = false }) {
               {/* Plus/Min niveau - alleen zichtbaar als plus of min aan staat */}
               {(ops.add || ops.sub) && (
                 <>
-                  <p className="text-sm font-medium text-gray-600 mb-3">➕➖ Plus/Min sommen tot:</p>
+                  <p className="text-sm font-medium text-gray-600 mb-3">{ops.add && ops.sub ? '➕➖' : ops.add ? '➕' : '➖'} {ops.add && ops.sub ? 'Plus- & minsommen' : ops.add ? 'Plussommen' : 'Minsommen'} tot:</p>
                   <div className="grid grid-cols-3 gap-2 mb-4">
                     {[20, 50, 100, 200, 500, 1000].map((val) => (
                       <label
@@ -494,10 +495,10 @@ function Home({ disabled = false }) {
                 </>
               )}
               
-              {/* Tafel selectie - alleen zichtbaar als keersommen aan staat */}
-              {ops.mul && (
+              {/* Tafel selectie - alleen zichtbaar als keer- of deelsommen aan staat */}
+              {(ops.mul || ops.div) && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>✖️ Keersommen tafels:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>{ops.mul && ops.div ? '✖️➗' : ops.mul ? '✖️' : '➗'} {ops.mul && ops.div ? 'Keer- & deelsommen' : ops.mul ? 'Keersommen' : 'Deelsommen'} tafels:</p>
                   <div className="space-y-2">
                     {[
                       { key: 'easy', label: 'Tafels van 1, 2, 5, 10' },

@@ -11,8 +11,8 @@
 - **Routing:** React Router v7 (HashRouter)
 - **Language:** JavaScript (JSX)
 - **Build Tool:** Vite with ESLint
-- **Unit Tests:** Vitest 4 (~390 tests)
-- **E2E Tests:** Playwright (~110 tests)
+- **Unit Tests:** Vitest 4 (~408 tests)
+- **E2E Tests:** Playwright (~89 tests)
 - **Backend:** Express 5 + Mongoose 9 (MongoDB)
 
 ## Project Structure
@@ -44,6 +44,7 @@ src/
 ├── hooks/              # Custom React hooks
 ├── utils/
 │   ├── difficultyAdapter.js     # Math problem generation
+│   ├── gameSelection.js         # Minigame type selection (round-robin)
 │   ├── languageAdapter.js       # Language problem generation
 │   ├── languageData.js          # Spelling, vocabulary & reading data
 │   ├── timeAwarenessData.js     # Calendar/season quiz generation
@@ -70,7 +71,7 @@ server/
 
 ### Exercise Categories
 
-- **Rekenen (Math):** Addition, subtraction, multiplication, place value, loving hearts, money
+- **Rekenen (Math):** Addition, subtraction, multiplication, division, place value, loving hearts, money
 - **Klokkijken (Clock Reading):** Analog/digital clocks, words mode, 24h notation
 - **Tijdsbesef (Time Awareness):** Days, months, seasons
 - **Rekenen met Tijd (Time Calculation):** Duration, forward/backward time
