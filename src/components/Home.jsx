@@ -628,7 +628,7 @@ function Home({ disabled = false }) {
               )}
               
               {/* Geen opties geselecteerd */}
-              {!ops.add && !ops.sub && !ops.mul && !ops.placeValue && !ops.lovingHearts && !ops.money && (
+              {!ops.add && !ops.sub && !ops.mul && !ops.div && !ops.placeValue && !ops.lovingHearts && !ops.money && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
               )}
             </div>
