@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTheme } from '../../utils/themes';
-import { generateMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
+import { generateMaze, generateMultiFloorMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
 import { incrementCompletedMazes, saveGameState, getGameState, clearGameState, addSavedFriends } from '../../utils/localStorage';
 import { useSyncToServer } from '../../hooks/useSyncToServer';
 import MazeView from './MazeView';
@@ -47,16 +47,24 @@ function MazeGame() {
   const mazeConfig = useMemo(() => {
     switch (adventureLength) {
       case 'short':
-        return { size: 31, challenges: 4, friendlies: 2 };
+        return { size: 31, challenges: 4, friendlies: 2, floors: 1 };
       case 'long':
-        return { size: 61, challenges: 10, friendlies: 6 };
+        return { size: 61, challenges: 10, friendlies: 6, floors: 1 };
+      case 'xl':
+        return { size: 53, challenges: 16, friendlies: 10, floors: 2 };
       case 'medium':
       default:
-        return { size: 45, challenges: 7, friendlies: 4 };
+        return { size: 45, challenges: 7, friendlies: 4, floors: 1 };
     }
   }, [adventureLength]);
 
+  const isMultiFloor = mazeConfig.floors > 1;
+
   const [maze, setMaze] = useState(null);
+  const [floors, setFloors] = useState(null); // Array van verdiepingen (null = single-floor)
+  const [currentFloor, setCurrentFloor] = useState(0);
+  const [portals, setPortals] = useState([]); // Portal objecten
+  const [portalTransition, setPortalTransition] = useState(false); // Animatie bij verdiepingswisseling
   const [challenges, setChallenges] = useState([]);
   const [friendlies, setFriendlies] = useState([]);
   const [collectedFriends, setCollectedFriends] = useState([]); // Verzamelde vriendjes
@@ -76,6 +84,7 @@ function MazeGame() {
   const playedGameTypesRef = useRef([]);
   const [activeGameType, setActiveGameType] = useState(null);
   const [lastCompletedPos, setLastCompletedPos] = useState(null); // Voorkom direct opnieuw triggeren
+  const [lastPortalPos, setLastPortalPos] = useState(null); // Voorkom heen-en-weer portaal loop
   const [showOnboarding, setShowOnboarding] = useState(false); // Onboarding hint voor nieuwe spelers
   const [showStoryIntro, setShowStoryIntro] = useState(false); // Story intro bij start van nieuw spel
   const [showSettings, setShowSettings] = useState(false); // Settings modal
@@ -110,8 +119,18 @@ function MazeGame() {
 
     // Check of er een saved state is voor dit thema
     if (savedState && savedState.themeId === themeId) {
-      // Laad opgeslagen spel
-      setMaze(savedState.maze);
+      // Laad opgeslagen spel — backward-compatible: floors kan ontbreken
+      if (savedState.floors) {
+        setFloors(savedState.floors);
+        setMaze(savedState.floors[savedState.currentFloor || 0]);
+        setCurrentFloor(savedState.currentFloor || 0);
+        setPortals(savedState.portals || []);
+      } else {
+        setFloors(null);
+        setMaze(savedState.maze);
+        setCurrentFloor(0);
+        setPortals([]);
+      }
       setChallenges(savedState.challenges);
       setFriendlies(savedState.friendlies);
       setCollectedFriends(savedState.collectedFriends || []);
@@ -123,15 +142,83 @@ function MazeGame() {
       setActiveFriendly(null);
     } else {
       // Nieuw spel starten
-      const newMaze = generateMaze(mazeConfig.size, mazeConfig.size);
-      const newChallenges = placeChallenges(newMaze, mazeConfig.challenges);
-      const newFriendlies = placeFriendlies(
-        newMaze,
-        newChallenges,
-        theme.friendlies || ['🌟', '🎈', '🤖', '🧸', '🐶'],
-        mazeConfig.friendlies,
-        theme.story?.friendTexts || theme.friendTexts // Gebruik story friendTexts als beschikbaar
-      );
+      let newMaze, newFloors = null, newPortals = [];
+
+      if (mazeConfig.floors > 1) {
+        // Multi-floor XL modus
+        const result = generateMultiFloorMaze(mazeConfig.size, mazeConfig.size, mazeConfig.floors);
+        newFloors = result.floors;
+        newPortals = result.portals;
+        newMaze = newFloors[0]; // Actieve verdieping = 0
+      } else {
+        newMaze = generateMaze(mazeConfig.size, mazeConfig.size);
+      }
+
+      // Verdeel challenges en friendlies over alle verdiepingen
+      let newChallenges, newFriendlies;
+      if (newFloors) {
+        newChallenges = [];
+        newFriendlies = [];
+        const challengesPerFloor = Math.ceil(mazeConfig.challenges / mazeConfig.floors);
+        const friendliesPerFloor = Math.ceil(mazeConfig.friendlies / mazeConfig.floors);
+        let challengeIdCounter = 0;
+        let friendlyIdCounter = 0;
+
+        // Shuffle de volledige emoji-pool één keer en verdeel uniek over verdiepingen
+        const allEmojis = [...(theme.friendlies || ['🌟', '🎈', '🤖', '🧸', '🐶'])]
+          .sort(() => Math.random() - 0.5);
+
+        for (let fi = 0; fi < newFloors.length; fi++) {
+          const floorChallengeCount = fi < newFloors.length - 1
+            ? challengesPerFloor
+            : mazeConfig.challenges - newChallenges.length;
+          const floorChallenges = placeChallenges(newFloors[fi], floorChallengeCount);
+          // Tag challenges with floor + renumber IDs
+          for (const c of floorChallenges) {
+            c.floor = fi;
+            c.id = challengeIdCounter++;
+          }
+          // Avoid portal cells for challenges
+          const portalCells = newPortals.filter(p => p.floor === fi);
+          const filtered = floorChallenges.filter(c => !portalCells.some(p => p.x === c.x && p.y === c.y));
+          newChallenges.push(...filtered);
+
+          const floorFriendlyCount = fi < newFloors.length - 1
+            ? friendliesPerFloor
+            : mazeConfig.friendlies - newFriendlies.length;
+          // Geef elke verdieping een unieke slice van de emoji-pool
+          const emojiStart = fi * friendliesPerFloor;
+          const floorEmojis = allEmojis.slice(emojiStart, emojiStart + floorFriendlyCount);
+          const floorFriendlies = placeFriendlies(
+            newFloors[fi],
+            floorChallenges,
+            floorEmojis,
+            floorFriendlyCount,
+            theme.story?.friendTexts || theme.friendTexts
+          );
+          for (const f of floorFriendlies) {
+            f.floor = fi;
+            f.id = `friendly-${friendlyIdCounter++}`;
+          }
+          newFriendlies.push(...floorFriendlies);
+        }
+        // Trim to exact counts
+        newChallenges = newChallenges.slice(0, mazeConfig.challenges);
+        newFriendlies = newFriendlies.slice(0, mazeConfig.friendlies);
+      } else {
+        newChallenges = placeChallenges(newMaze, mazeConfig.challenges);
+        newFriendlies = placeFriendlies(
+          newMaze,
+          newChallenges,
+          theme.friendlies || ['🌟', '🎈', '🤖', '🧸', '🐶'],
+          mazeConfig.friendlies,
+          theme.story?.friendTexts || theme.friendTexts
+        );
+      }
+
+      setFloors(newFloors);
+      setPortals(newPortals);
+      setCurrentFloor(0);
       setMaze(newMaze);
       setChallenges(newChallenges);
       setFriendlies(newFriendlies);
@@ -150,6 +237,9 @@ function MazeGame() {
       saveGameState({
         themeId,
         maze: newMaze,
+        floors: newFloors,
+        portals: newPortals,
+        currentFloor: 0,
         challenges: newChallenges,
         friendlies: newFriendlies,
         collectedFriends: [],
@@ -169,6 +259,9 @@ function MazeGame() {
     saveGameState({
       themeId,
       maze,
+      floors,
+      portals,
+      currentFloor,
       challenges,
       friendlies,
       collectedFriends,
@@ -178,7 +271,7 @@ function MazeGame() {
       playerEmoji,
       adventureLength,
     });
-  }, [maze, themeId, challenges, friendlies, collectedFriends, playerPos, completedCount, mathSettings, playerEmoji, adventureLength]);
+  }, [maze, floors, portals, currentFloor, themeId, challenges, friendlies, collectedFriends, playerPos, completedCount, mathSettings, playerEmoji, adventureLength]);
 
   // Save + sync in één keer – aangeroepen bij challenge klaar, vriendje verzameld, etc.
   const saveAndSync = useCallback(() => {
@@ -197,8 +290,26 @@ function MazeGame() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [maze, hasWon, saveCurrentState]);
 
+  // Portal transitie: wisselt van verdieping met animatie
+  const handlePortalStep = useCallback((portal) => {
+    if (portalTransition) return; // Voorkom dubbele transitie
+    setPortalTransition(true);
+    // Markeer de landing-positie zodat de portal op de andere verdieping niet direct opnieuw triggert
+    setLastPortalPos({ x: portal.targetX, y: portal.targetY, floor: portal.targetFloor });
+    setTimeout(() => {
+      const targetFloor = portal.targetFloor;
+      setCurrentFloor(targetFloor);
+      if (floors) {
+        setMaze(floors[targetFloor]);
+      }
+      setPlayerPos({ x: portal.targetX, y: portal.targetY });
+      setTimeout(() => setPortalTransition(false), 300);
+    }, 300);
+  }, [floors, portalTransition]);
+
   // Move functie - herbruikbaar voor keyboard en touch
   const move = useCallback((direction) => {
+    if (portalTransition) return; // Blokkeer beweging tijdens verdiepingswisseling
     setPlayerPos(prev => {
       const { x, y } = prev;
       let newX = x;
@@ -222,7 +333,7 @@ function MazeGame() {
       }
       return prev;
     });
-  }, [maze]);
+  }, [maze, portalTransition]);
 
   // Keyboard controls met snellere beweging
   useEffect(() => {
@@ -333,17 +444,31 @@ function MazeGame() {
       window.removeEventListener('keyup', handleKeyUp);
       if (moveInterval) clearInterval(moveInterval);
     };
-  }, [maze, activeChallenge, activeFriendly, showMinimap, showHelp, exitModal, friendsWarningModal, showOnboarding, showStoryIntro, showSettings]);
+  }, [move, activeChallenge, activeFriendly, showMinimap, showHelp, exitModal, friendsWarningModal, showOnboarding, showStoryIntro, showSettings]);
 
-  // Check voor challenges/friendlies/exit na beweging
+  // Check voor challenges/friendlies/exit/portalen na beweging
   useEffect(() => {
-    if (!maze || hasWon) return;
+    if (!maze || hasWon || portalTransition) return;
 
     const { x, y } = playerPos;
 
-    // Check exit
+    // Check portal (multi-floor) — skip als we net hier geland zijn via een portal
+    const isLastPortalPos = lastPortalPos && lastPortalPos.x === x && lastPortalPos.y === y && lastPortalPos.floor === currentFloor;
+    if (isMultiFloor && maze[y] && maze[y][x] && maze[y][x].portal && !isLastPortalPos) {
+      const portal = maze[y][x].portal;
+      handlePortalStep(portal);
+      return; // Wacht op transitie, check rest daarna
+    }
+
+    // Reset lastPortalPos zodra de speler van de portal-cel afstapt
+    if (lastPortalPos && (lastPortalPos.x !== x || lastPortalPos.y !== y || lastPortalPos.floor !== currentFloor)) {
+      setLastPortalPos(null);
+    }
+
+    // Check exit — alleen op de laatste verdieping (of single-floor)
     const endPos = getEndPosition(maze);
-    if (x === endPos.x && y === endPos.y) {
+    const isGroundFloor = !isMultiFloor || currentFloor === 0;
+    if (x === endPos.x && y === endPos.y && isGroundFloor) {
       if (completedCount === challenges.length) {
         // Check of er nog vriendjes achterblijven
         const uncollectedFriends = friendlies.filter(f => !f.collected);
@@ -368,12 +493,12 @@ function MazeGame() {
       }
     }
 
-    // Check of speler op een challenge staat
+    // Check of speler op een challenge staat (filter op huidige verdieping)
     const challenge = challenges.find(
-      c => c.x === x && c.y === y && !c.completed
+      c => c.x === x && c.y === y && !c.completed && (c.floor === undefined || c.floor === currentFloor)
     );
     // Alleen triggeren als we niet net op deze plek een challenge hebben afgesloten
-    const isLastCompletedPos = lastCompletedPos && lastCompletedPos.x === x && lastCompletedPos.y === y;
+    const isLastCompletedPos = lastCompletedPos && lastCompletedPos.x === x && lastCompletedPos.y === y && (lastCompletedPos.floor === undefined || lastCompletedPos.floor === currentFloor);
     if (challenge && !activeChallenge && !isLastCompletedPos) {
       setActiveGameType(pickRandomGameType(mathSettings, playedGameTypesRef.current));
       setActiveChallenge(challenge);
@@ -385,14 +510,14 @@ function MazeGame() {
       setLastCompletedPos(null);
     }
 
-    // Check of speler op een friendly NPC staat (nog niet verzameld)
+    // Check of speler op een friendly NPC staat (filter op huidige verdieping)
     const friendly = friendlies.find(
-      f => f.x === x && f.y === y && !f.collected
+      f => f.x === x && f.y === y && !f.collected && (f.floor === undefined || f.floor === currentFloor)
     );
     if (friendly && !activeFriendly) {
       setActiveFriendly(friendly);
     }
-  }, [playerPos, maze, challenges, friendlies, completedCount, activeChallenge, activeFriendly, collectedFriends, hasWon, navigate]);
+  }, [playerPos, maze, challenges, friendlies, completedCount, activeChallenge, activeFriendly, collectedFriends, hasWon, navigate, currentFloor, isMultiFloor, portalTransition, handlePortalStep]);
 
   const handleFriendlyClose = () => {
     // Verzamel het vriendje - gaat nu met je mee!
@@ -406,7 +531,7 @@ function MazeGame() {
     // Save bijgewerkte data direct (niet via stale closure)
     if (maze) {
       saveGameState({
-        themeId, maze, challenges, friendlies: updatedFriendlies,
+        themeId, maze, floors, portals, currentFloor, challenges, friendlies: updatedFriendlies,
         collectedFriends: updatedCollected, playerPos, completedCount,
         mathSettings, playerEmoji, adventureLength,
       });
@@ -439,7 +564,7 @@ function MazeGame() {
     }
 
     // Onthoud waar we waren zodat de challenge niet direct opnieuw triggert
-    setLastCompletedPos({ ...playerPos });
+    setLastCompletedPos({ ...playerPos, floor: currentFloor });
 
     const updatedChallenges = challenges.map(c => c.id === challengeId ? { ...c, completed: true } : c);
     setChallenges(updatedChallenges);
@@ -452,7 +577,7 @@ function MazeGame() {
     // Save bijgewerkte data direct (niet via stale closure)
     if (maze) {
       saveGameState({
-        themeId, maze, challenges: updatedChallenges, friendlies,
+        themeId, maze, floors, portals, currentFloor, challenges: updatedChallenges, friendlies,
         collectedFriends, playerPos, completedCount: newCount,
         mathSettings, playerEmoji, adventureLength,
       });
@@ -487,7 +612,7 @@ function MazeGame() {
           {pieces.map((filled, idx) => (
             <div
               key={idx}
-              className={`h-3 w-6 rounded-sm ${filled ? 'bg-amber-500' : 'bg-gray-200'}`}
+              className={`h-3 w-4 rounded-sm ${filled ? 'bg-amber-500' : 'bg-gray-200'}`}
             />
           ))}
         </div>
@@ -534,6 +659,11 @@ function MazeGame() {
               <h2 className="text-base sm:text-xl font-bold text-gray-800">
                 {theme.emoji} {theme.name}
               </h2>
+              {isMultiFloor && (
+                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-bold rounded-full border border-indigo-200">
+                  🪜 {currentFloor === 0 ? 'Beneden' : 'Boven'}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 sm:gap-5 flex-wrap">
               {renderCollectedFriends()}
@@ -544,16 +674,26 @@ function MazeGame() {
       </div>
 
       {/* Main maze view */}
-      <div className="flex-1 flex items-center justify-center w-full px-2">
+      <div className="flex-1 flex items-center justify-center w-full px-2 relative">
         <MazeView
           maze={maze}
           playerPos={playerPos}
-          challenges={challenges}
-          friendlies={friendlies}
+          challenges={challenges.filter(c => c.floor === undefined || c.floor === currentFloor)}
+          friendlies={friendlies.filter(f => f.floor === undefined || f.floor === currentFloor)}
           collectedFriends={collectedFriends}
           theme={theme}
           playerEmoji={playerEmoji}
+          currentFloor={currentFloor}
+          isMultiFloor={isMultiFloor}
+          totalFloors={mazeConfig.floors}
         />
+        {/* Portal transitie overlay */}
+        {portalTransition && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+            <div className="animate-portalFlash absolute inset-0 bg-indigo-500/40" />
+            <span className="text-6xl sm:text-8xl animate-bounce drop-shadow-lg">🪜</span>
+          </div>
+        )}
       </div>
 
       {/* Controls hint + kaart knop */}
@@ -626,6 +766,7 @@ function MazeGame() {
         <HelpModal
           mazeConfig={mazeConfig}
           theme={theme}
+          isMultiFloor={isMultiFloor}
           onClose={() => setShowHelp(false)}
         />
       )}
@@ -634,6 +775,9 @@ function MazeGame() {
       {showMinimap && (
         <MinimapModal
           maze={maze}
+          floors={floors}
+          currentFloor={currentFloor}
+          isMultiFloor={isMultiFloor}
           playerPos={playerPos}
           challenges={challenges}
           theme={theme}

@@ -1,6 +1,6 @@
 import Minimap from '../Minimap';
 
-function MinimapModal({ maze, playerPos, challenges, theme, onClose }) {
+function MinimapModal({ maze, playerPos, challenges, theme, onClose, floors = null, currentFloor = 0, isMultiFloor = false }) {
   return (
     <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-[90vw] max-h-[90vh] relative">
@@ -16,6 +16,9 @@ function MinimapModal({ maze, playerPos, challenges, theme, onClose }) {
           challenges={challenges}
           theme={theme}
           maxHeight="70vh"
+          floors={floors}
+          currentFloor={currentFloor}
+          isMultiFloor={isMultiFloor}
         />
       </div>
     </div>

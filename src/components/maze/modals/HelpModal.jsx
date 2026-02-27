@@ -1,4 +1,4 @@
-function HelpModal({ mazeConfig, theme, onClose }) {
+function HelpModal({ mazeConfig, theme, onClose, isMultiFloor = false }) {
   return (
     <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-full sm:max-w-lg max-h-[90vh] flex flex-col relative">
@@ -24,6 +24,13 @@ function HelpModal({ mazeConfig, theme, onClose }) {
               <h4 className="font-bold text-green-800 mb-1 sm:mb-2 text-sm sm:text-base">🤝 Vriendjes redden</h4>
               <p className="text-green-700 text-xs sm:text-sm">Er zijn <strong>{mazeConfig.friendlies} verdwaalde vriendjes</strong> in het doolhof. Vind ze en neem ze mee naar de uitgang om ze te redden!</p>
             </div>
+            {isMultiFloor && (
+              <div className="bg-indigo-50 rounded-xl p-3 sm:p-4">
+                <h4 className="font-bold text-indigo-800 mb-1 sm:mb-2 text-sm sm:text-base">🪜 Verdiepingen & Trappen</h4>
+                <p className="text-indigo-700 text-xs sm:text-sm">Dit doolhof heeft een <strong>benedenverdieping</strong> en een <strong>bovenverdieping</strong>! Loop op een <strong>🪜 trap</strong> om naar de andere verdieping te gaan. Trappen werken in beide richtingen.</p>
+                <p className="text-indigo-700 text-xs sm:text-sm mt-1">Uitdagingen en vriendjes zijn verdeeld over beide verdiepingen. De <strong>🚪 uitgang</strong> is beneden.</p>
+              </div>
+            )}
             <div className="bg-purple-50 rounded-xl p-3 sm:p-4">
               <h4 className="font-bold text-purple-800 mb-1 sm:mb-2 text-sm sm:text-base">🗺️ Hulpmiddelen</h4>
               <p className="text-purple-700 text-xs sm:text-sm">Druk op <strong>K</strong> voor kaart, <strong>H</strong> voor help, <strong>S</strong> voor speler-info, en <strong>ESC</strong> om vensters te sluiten.</p>

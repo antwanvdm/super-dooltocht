@@ -309,4 +309,100 @@ export const placeFriendlies = (
   return friendlies;
 };
 
+// Plaats bidirectionele portalen tussen verdiepingen
+// Kiest 2–3 paden per verdieping die niet start/eind/muur zijn en
+// koppelt ze aan dezelfde coördinaat op de andere verdieping.
+export const placePortals = (floors) => {
+  const numPortals = floors.length <= 2 ? 3 : 2;
+  const portals = []; // { floor, x, y, targetFloor, targetX, targetY, id }
+
+  for (let f = 0; f < floors.length - 1; f++) {
+    const mazeA = floors[f];
+    const mazeB = floors[f + 1];
+    const height = mazeA.length;
+    const width = mazeA[0].length;
+    const startPos = { x: 1, y: 1 };
+    const endA = getEndPosition(mazeA);
+    const endB = getEndPosition(mazeB);
+
+    const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    const placed = [];
+    let attempts = 0;
+
+    while (placed.length < numPortals && attempts < 3000) {
+      attempts++;
+      const x = 1 + Math.floor(Math.random() * (width - 2));
+      const y = 1 + Math.floor(Math.random() * (height - 2));
+
+      // Beide verdiepingen moeten een pad zijn op deze coördinaat
+      if (mazeA[y][x].wall || mazeB[y][x].wall) continue;
+
+      // Niet op start/eind
+      if (x === startPos.x && y === startPos.y) continue;
+      if (x === endA.x && y === endA.y) continue;
+      if (x === endB.x && y === endB.y) continue;
+
+      // Minimale afstand tot andere portalen op dezelfde verdieping
+      if (placed.some((p) => manhattan(p, { x, y }) < 10)) continue;
+
+      // Minimale afstand tot start en eind
+      if (manhattan(startPos, { x, y }) < 6) continue;
+      if (manhattan(endA, { x, y }) < 6) continue;
+
+      placed.push({ x, y });
+
+      const portalId = `portal-${f}-${placed.length}`;
+
+      // Markeer de cel op verdieping A
+      mazeA[y][x].portal = {
+        targetFloor: f + 1,
+        targetX: x,
+        targetY: y,
+        id: portalId,
+      };
+      // Markeer de cel op verdieping B (bidirectioneel)
+      mazeB[y][x].portal = {
+        targetFloor: f,
+        targetX: x,
+        targetY: y,
+        id: portalId,
+      };
+
+      portals.push(
+        {
+          floor: f,
+          x,
+          y,
+          targetFloor: f + 1,
+          targetX: x,
+          targetY: y,
+          id: portalId,
+        },
+        {
+          floor: f + 1,
+          x,
+          y,
+          targetFloor: f,
+          targetX: x,
+          targetY: y,
+          id: portalId,
+        },
+      );
+    }
+  }
+
+  return portals;
+};
+
+// Genereer een multi-floor doolhof
+// Retourneert { floors: [maze, maze, ...], portals: [...] }
+export const generateMultiFloorMaze = (width, height, numFloors = 2) => {
+  const floors = [];
+  for (let i = 0; i < numFloors; i++) {
+    floors.push(generateMaze(width, height));
+  }
+  const portals = placePortals(floors);
+  return { floors, portals };
+};
+
 export const getStartPosition = () => ({ x: 1, y: 1 });

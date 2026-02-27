@@ -271,6 +271,25 @@ test.describe('Home – Settings flow', () => {
         .locator('label')
         .filter({ hasText: 'Red 6 vriendjes + 10 uitdagingen' }),
     ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: '2 verdiepingen!' }),
+    ).toBeVisible();
+  });
+
+  test('XL option shows 2 floors description', async ({ page }) => {
+    await expect(
+      page
+        .locator('label')
+        .filter({ hasText: 'Red 10 vriendjes + 16 uitdagingen' }),
+    ).toBeVisible();
+  });
+
+  test('can select XL adventure length', async ({ page }) => {
+    const xlLabel = page
+      .locator('label')
+      .filter({ hasText: 'Red 10 vriendjes' });
+    await xlLabel.click();
+    await expect(xlLabel).toHaveClass(/bg-amber-500/);
   });
 
   test('can select different adventure lengths', async ({ page }) => {

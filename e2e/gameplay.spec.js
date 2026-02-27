@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import {
   mockAllApiCalls,
   buildTestGameState,
+  buildMultiFloorTestGameState,
   injectGameStateAndNavigate,
   navigateToHome,
   dismissMazeModals,
@@ -698,5 +699,163 @@ test.describe('Gameplay – Stats tracking', () => {
 
     expect(newMazes).toBe(initialMazes + 1);
     expect(newFriends).toBe(initialFriends); // No friends collected
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Multi-floor (XL) gameplay tests
+// ──────────────────────────────────────────────────────────────────────────────
+
+test.describe('Gameplay – Multi-floor (XL)', () => {
+  test('floor indicator shows "Beneden" on ground floor', async ({ page }) => {
+    const state = buildMultiFloorTestGameState({ currentFloor: 0 });
+    await injectGameStateAndNavigate(page, state);
+
+    // Floor indicator should show ground floor
+    await expect(page.getByText('🪜 Beneden')).toBeVisible({ timeout: 5000 });
+  });
+
+  test('floor indicator shows "Boven" on upper floor', async ({ page }) => {
+    const state = buildMultiFloorTestGameState({ currentFloor: 1 });
+    await injectGameStateAndNavigate(page, state);
+
+    // Floor indicator should show upper floor
+    await expect(page.getByText('🪜 Boven')).toBeVisible({ timeout: 5000 });
+  });
+
+  test('help modal shows floor explanation in XL mode', async ({ page }) => {
+    const state = buildMultiFloorTestGameState();
+    await injectGameStateAndNavigate(page, state);
+
+    // Open help modal
+    await page.getByRole('button', { name: /❓/ }).click();
+    await page.waitForTimeout(300);
+
+    // Should show the floor/stairs explanation
+    await expect(page.getByText('Verdiepingen & Trappen')).toBeVisible();
+    await expect(page.getByText(/benedenverdieping/)).toBeVisible();
+    await expect(page.getByText(/bovenverdieping/)).toBeVisible();
+  });
+
+  test('minimap shows floor tabs in XL mode', async ({ page }) => {
+    const state = buildMultiFloorTestGameState();
+    await injectGameStateAndNavigate(page, state);
+
+    // Open minimap
+    await page.getByRole('button', { name: /🗺/ }).click();
+    await page.waitForTimeout(300);
+
+    // Should show floor tabs
+    await expect(page.getByText('🪜 Beneden').first()).toBeVisible();
+    await expect(page.getByText('🪜 Boven').first()).toBeVisible();
+
+    // Should show "Trap" in the legend
+    await expect(page.getByText('Trap')).toBeVisible();
+  });
+
+  test('minimap can switch between floor tabs', async ({ page }) => {
+    const state = buildMultiFloorTestGameState({ currentFloor: 0 });
+    await injectGameStateAndNavigate(page, state);
+
+    // Open minimap
+    await page.getByRole('button', { name: /🗺/ }).click();
+    await page.waitForTimeout(300);
+
+    // Click on "Boven" tab
+    const bovenTab = page.locator('button').filter({ hasText: '🪜 Boven' });
+    await bovenTab.click();
+    await page.waitForTimeout(200);
+
+    // Click on "Beneden" tab to switch back
+    const benedenTab = page.locator('button').filter({ hasText: '🪜 Beneden' });
+    await benedenTab.click();
+    await page.waitForTimeout(200);
+
+    // Map should still be visible
+    await expect(page.locator('svg').first()).toBeVisible();
+  });
+
+  test('walking onto a portal triggers floor transition', async ({ page }) => {
+    // Player at (1,3), portal at (3,3) on floor 0 — walk right twice
+    const state = buildMultiFloorTestGameState({
+      currentFloor: 0,
+      playerPos: { x: 1, y: 3 },
+    });
+    await injectGameStateAndNavigate(page, state);
+
+    // Verify we start on ground floor
+    await expect(page.getByText('🪜 Beneden')).toBeVisible({ timeout: 5000 });
+
+    // Walk right to the portal at (3,3)
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(150);
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(1000); // Wait for portal animation
+
+    // Should now be on upper floor
+    await expect(page.getByText('🪜 Boven')).toBeVisible({ timeout: 5000 });
+  });
+
+  test('continue modal shows correct XL progress', async ({ page }) => {
+    // Start an XL game with some progress
+    const state = buildMultiFloorTestGameState({
+      completedChallenges: 3,
+      collectedFriendIds: ['f1'],
+    });
+    await injectGameStateAndNavigate(page, state);
+
+    // Move a bit to trigger a save
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(200);
+
+    // Go back to home
+    await page.locator('button').filter({ hasText: 'Terug' }).click();
+    await page.waitForTimeout(500);
+
+    // Continue modal should appear with XL totals
+    await expect(page.getByText('Welkom terug!')).toBeVisible({
+      timeout: 5000,
+    });
+    // XL has 16 total challenges, 10 total friends
+    await expect(page.getByText('3/16')).toBeVisible();
+    await expect(page.getByText('1/10')).toBeVisible();
+  });
+
+  test('player settings modal shows adventure length XL', async ({ page }) => {
+    const state = buildMultiFloorTestGameState();
+    await injectGameStateAndNavigate(page, state);
+
+    // Open player settings modal
+    await page.getByRole('button', { name: /🤖/ }).click();
+    await page.waitForTimeout(300);
+
+    // Should show XL-related info
+    await expect(page.getByText('Speler Keuzes')).toBeVisible();
+  });
+
+  test('exit is only on ground floor — no exit on upper floor', async ({
+    page,
+  }) => {
+    // Player on upper floor near where exit would be
+    const state = buildMultiFloorTestGameState({
+      completedChallenges: 8,
+      collectedFriendIds: ['f1', 'f2', 'f3', 'f4'],
+      currentFloor: 1,
+      playerPos: { x: 3, y: 5 },
+    });
+    await injectGameStateAndNavigate(page, state);
+
+    // Walk right twice — on upper floor (5,5) should NOT trigger exit
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(150);
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(500);
+
+    // Exit modal should NOT appear (exit only on floor 0)
+    await expect(page.getByText('Bijna bij de deur!')).not.toBeVisible();
+    await expect(page.getByText('Wacht even!')).not.toBeVisible();
+
+    // Floor indicator still shows upper floor
+    await expect(page.getByText('🪜 Boven')).toBeVisible();
   });
 });

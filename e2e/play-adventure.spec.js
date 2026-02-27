@@ -442,6 +442,20 @@ test.describe('Multiple exercise combinations', () => {
     await expectMazeLoaded(page);
   });
 
+  test('start XL adventure shows floor indicator', async ({ page }) => {
+    test.setTimeout(120_000);
+    await startAdventure(page, {
+      category: 'rekenen',
+      operation: 'add',
+      theme: 'castle',
+      length: 'xl',
+    });
+    await expectMazeLoaded(page);
+
+    // XL mode should show the floor indicator badge
+    await expect(page.getByText('🪜 Beneden')).toBeVisible({ timeout: 5000 });
+  });
+
   test('each theme can be selected and started', async ({ page }) => {
     test.setTimeout(180_000);
     const themes = [

@@ -1100,6 +1100,7 @@ function Home({ disabled = false }) {
                   { key: 'short', label: 'Kort', icon: '⚡', desc: 'Red 2 vriendjes + 4 uitdagingen' },
                   { key: 'medium', label: 'Medium', icon: '🎯', desc: 'Red 4 vriendjes + 7 uitdagingen' },
                   { key: 'long', label: 'Lang', icon: '🏔️', desc: 'Red 6 vriendjes + 10 uitdagingen' },
+                  { key: 'xl', label: 'XL', icon: '🏰', desc: '2 verdiepingen! Red 10 vriendjes + 16 uitdagingen' },
                 ].map(({ key, label, icon, desc }) => (
                   <label
                     key={key}
@@ -1239,6 +1240,8 @@ function Home({ disabled = false }) {
                     totalChallenges = 4; totalFriends = 2; break;
                   case 'long':
                     totalChallenges = 10; totalFriends = 6; break;
+                  case 'xl':
+                    totalChallenges = 16; totalFriends = 10; break;
                   case 'medium':
                   default:
                     totalChallenges = 7; totalFriends = 4;

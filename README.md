@@ -107,6 +107,11 @@ This game aims to be:
 - **Short** – 2 friends to rescue + 4 challenges
 - **Medium** – 4 friends to rescue + 7 challenges
 - **Long** – 6 friends to rescue + 10 challenges
+- **XL** 🏰 – 10 friends to rescue + 16 challenges across **2 floors**
+  - Ground floor (Beneden) and upper floor (Boven) connected by bidirectional staircases (🪜)
+  - Challenges and friends are spread across both floors
+  - The exit is always on the ground floor
+  - Minimap shows floor tabs to inspect both levels
 
 ### Customization & Accessibility
 
@@ -271,7 +276,7 @@ The project has two layers of testing:
 
 ### Unit Tests (Vitest)
 
-~390 unit tests covering math problem generation, language adapters, time awareness/calculation data, and edge cases.
+~420 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, time awareness/calculation data, and edge cases.
 
 ```bash
 # Run all unit tests
@@ -286,7 +291,7 @@ npm run test:ui
 
 ### E2E Tests (Playwright)
 
-~110 end-to-end tests covering settings, adventure flow, gameplay mechanics, and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
+~115 end-to-end tests covering settings, adventure flow, gameplay mechanics (including multi-floor XL mode), and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
 
 ```bash
 # Run all E2E tests (headless)

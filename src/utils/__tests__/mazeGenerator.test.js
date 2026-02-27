@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
   generateMaze,
+  generateMultiFloorMaze,
   getEndPosition,
   getStartPosition,
   placeChallenges,
   placeFriendlies,
+  placePortals,
 } from '../mazeGenerator';
 
 // ============================================
@@ -484,4 +486,189 @@ describe('Full adventure setup (integration)', () => {
       }
     });
   }
+});
+
+// ============================================
+// MULTI-FLOOR MAZE GENERATION
+// ============================================
+
+describe('generateMultiFloorMaze', () => {
+  it('should generate the correct number of floors', () => {
+    const result = generateMultiFloorMaze(31, 31, 2);
+    expect(result.floors.length).toBe(2);
+    expect(Array.isArray(result.portals)).toBe(true);
+  });
+
+  it('should generate valid mazes on each floor', () => {
+    const result = generateMultiFloorMaze(31, 31, 2);
+    for (const floor of result.floors) {
+      expect(floor.length).toBe(31);
+      expect(floor[0].length).toBe(31);
+      // Start and end should be open
+      expect(floor[1][1].wall).toBe(false);
+      expect(floor[29][29].wall).toBe(false);
+    }
+  });
+
+  it('should have a path from start to end on each floor', () => {
+    const result = generateMultiFloorMaze(45, 45, 2);
+    const start = getStartPosition();
+    for (const floor of result.floors) {
+      const end = getEndPosition(floor);
+      expect(hasPath(floor, start, end)).toBe(true);
+    }
+  });
+
+  it('should place at least 2 portals between adjacent floors', () => {
+    const result = generateMultiFloorMaze(45, 45, 2);
+    // Portals are bidirectional so we expect pairs
+    expect(result.portals.length).toBeGreaterThanOrEqual(4); // 2 portals × 2 directions
+  });
+});
+
+// ============================================
+// PORTAL PLACEMENT
+// ============================================
+
+describe('placePortals', () => {
+  it('should place bidirectional portals between floors', () => {
+    const floors = [generateMaze(31, 31), generateMaze(31, 31)];
+    const portals = placePortals(floors);
+
+    // Each portal should have a matching reverse entry
+    for (const p of portals) {
+      const reverse = portals.find(
+        (r) =>
+          r.floor === p.targetFloor &&
+          r.targetFloor === p.floor &&
+          r.x === p.targetX &&
+          r.y === p.targetY,
+      );
+      expect(reverse).toBeDefined();
+    }
+  });
+
+  it('should place portals only on open (non-wall) cells', () => {
+    const floors = [generateMaze(45, 45), generateMaze(45, 45)];
+    const portals = placePortals(floors);
+
+    for (const p of portals) {
+      expect(floors[p.floor][p.y][p.x].wall).toBe(false);
+    }
+  });
+
+  it('should not place portals on start or end positions', () => {
+    const floors = [generateMaze(45, 45), generateMaze(45, 45)];
+    const portals = placePortals(floors);
+    const start = getStartPosition();
+
+    for (const p of portals) {
+      const end = getEndPosition(floors[p.floor]);
+      expect(p.x === start.x && p.y === start.y).toBe(false);
+      expect(p.x === end.x && p.y === end.y).toBe(false);
+    }
+  });
+
+  it('should mark portal cells on the maze with portal property', () => {
+    const floors = [generateMaze(31, 31), generateMaze(31, 31)];
+    placePortals(floors);
+
+    // Check that at least some cells have portal property
+    let portalCount = 0;
+    for (const floor of floors) {
+      for (let y = 0; y < floor.length; y++) {
+        for (let x = 0; x < floor[0].length; x++) {
+          if (floor[y][x].portal) {
+            portalCount++;
+            expect(floor[y][x].portal.targetFloor).toBeDefined();
+            expect(floor[y][x].portal.targetX).toBeDefined();
+            expect(floor[y][x].portal.targetY).toBeDefined();
+            expect(floor[y][x].portal.id).toBeDefined();
+          }
+        }
+      }
+    }
+    expect(portalCount).toBeGreaterThanOrEqual(4); // At least 2 portals × 2 floors
+  });
+
+  it('should maintain minimum distance between portals', () => {
+    const floors = [generateMaze(45, 45), generateMaze(45, 45)];
+    const portals = placePortals(floors);
+
+    // Check portals on the same floor
+    const floor0Portals = portals.filter((p) => p.floor === 0);
+    for (let i = 0; i < floor0Portals.length; i++) {
+      for (let j = i + 1; j < floor0Portals.length; j++) {
+        const dist = manhattan(floor0Portals[i], floor0Portals[j]);
+        expect(dist).toBeGreaterThanOrEqual(10);
+      }
+    }
+  });
+
+  it('should place portals reachable from start on each floor', () => {
+    const floors = [generateMaze(45, 45), generateMaze(45, 45)];
+    const portals = placePortals(floors);
+    const start = getStartPosition();
+
+    for (const p of portals) {
+      expect(hasPath(floors[p.floor], start, { x: p.x, y: p.y })).toBe(true);
+    }
+  });
+});
+
+// ============================================
+// FULL XL ADVENTURE SETUP (INTEGRATION)
+// ============================================
+
+describe('Full XL adventure setup (integration)', () => {
+  it('should set up a complete XL adventure with 2 floors', () => {
+    const result = generateMultiFloorMaze(45, 45, 2);
+    const { floors, portals } = result;
+
+    expect(floors.length).toBe(2);
+    expect(portals.length).toBeGreaterThanOrEqual(4);
+
+    // Place challenges and friendlies across floors (mimicking MazeGame logic)
+    const allChallenges = [];
+    const allFriendlies = [];
+    const emojis = ['🌟', '🎈', '🤖', '🧸', '🐶', '🐱', '🦊', '🐸'];
+    let challengeId = 0;
+
+    for (let fi = 0; fi < floors.length; fi++) {
+      const floorChallenges = placeChallenges(floors[fi], 7);
+      for (const c of floorChallenges) {
+        c.floor = fi;
+        c.id = challengeId++;
+      }
+      allChallenges.push(...floorChallenges);
+
+      const floorFriendlies = placeFriendlies(
+        floors[fi],
+        floorChallenges,
+        emojis,
+        4,
+      );
+      for (const f of floorFriendlies) {
+        f.floor = fi;
+      }
+      allFriendlies.push(...floorFriendlies);
+    }
+
+    expect(allChallenges.length).toBe(14);
+    expect(allFriendlies.length).toBe(8);
+
+    // All items reachable on their floor
+    const start = getStartPosition();
+    for (const c of allChallenges) {
+      expect(hasPath(floors[c.floor], start, { x: c.x, y: c.y })).toBe(true);
+    }
+    for (const f of allFriendlies) {
+      expect(hasPath(floors[f.floor], start, { x: f.x, y: f.y })).toBe(true);
+    }
+
+    // Portals are reachable
+    for (const p of portals) {
+      expect(hasPath(floors[p.floor], start, { x: p.x, y: p.y })).toBe(true);
+    }
+  });
 });

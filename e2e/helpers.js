@@ -195,6 +195,7 @@ export async function startAdventure(
     short: 'Red 2 vriendjes',
     medium: 'Red 4 vriendjes',
     long: 'Red 6 vriendjes',
+    xl: 'Red 10 vriendjes',
   };
   await page
     .locator('label')
@@ -346,6 +347,158 @@ export function buildTestGameState({
     },
     playerEmoji: '🤖',
     adventureLength: 'short',
+  };
+}
+
+/**
+ * Build a minimal but valid multi-floor game state for an "xl" adventure
+ * (2 floors, 16 challenges, 10 friends). Uses the same 7×7 grid layout as
+ * buildTestGameState, duplicated for each floor, with a single portal pair
+ * connecting them.
+ *
+ * Floor 0 (ground / "Beneden"):
+ *   Same as buildTestGameState but with portal at (3,3)
+ *   Exit at (5,5), start at (1,1)
+ *
+ * Floor 1 (upper / "Boven"):
+ *   Same layout, portal at (3,3), no exit, extra challenges
+ *
+ * Portal connects (3,3) on floor 0 ↔ (3,3) on floor 1.
+ */
+export function buildMultiFloorTestGameState({
+  completedChallenges = 0,
+  collectedFriendIds = [],
+  playerPos = { x: 1, y: 1 },
+  currentFloor = 0,
+} = {}) {
+  const SIZE = 7;
+
+  // Build a floor grid (same layout for both floors)
+  const buildFloor = () =>
+    Array.from({ length: SIZE }, (_, y) =>
+      Array.from({ length: SIZE }, (_, x) => {
+        const isPath = x % 2 === 1 && y % 2 === 1;
+        const isHorizontalCorridor =
+          y % 2 === 1 && x % 2 === 0 && x > 0 && x < SIZE - 1;
+        const isVerticalCorridor =
+          x % 2 === 1 && y % 2 === 0 && y > 0 && y < SIZE - 1;
+        return {
+          wall: !(isPath || isHorizontalCorridor || isVerticalCorridor),
+          visited: true,
+        };
+      }),
+    );
+
+  const floor0 = buildFloor();
+  const floor1 = buildFloor();
+
+  // Add portal property to the portal cell on each floor
+  floor0[3][3].portal = { targetFloor: 1, targetX: 3, targetY: 3, id: 'p1' };
+  floor1[3][3].portal = { targetFloor: 0, targetX: 3, targetY: 3, id: 'p1' };
+
+  const floors = [floor0, floor1];
+  const portals = [
+    { id: 'p1', floor: 0, x: 3, y: 3, targetFloor: 1, targetX: 3, targetY: 3 },
+    { id: 'p1', floor: 1, x: 3, y: 3, targetFloor: 0, targetX: 3, targetY: 3 },
+  ];
+
+  // 4 challenges per floor = 8 total (simplified for testing; real XL has 16)
+  const allChallenges = [
+    // Floor 0
+    { id: 'c1', x: 3, y: 1, floor: 0, completed: false },
+    { id: 'c2', x: 1, y: 3, floor: 0, completed: false },
+    { id: 'c3', x: 5, y: 3, floor: 0, completed: false },
+    { id: 'c4', x: 3, y: 5, floor: 0, completed: false },
+    // Floor 1
+    { id: 'c5', x: 3, y: 1, floor: 1, completed: false },
+    { id: 'c6', x: 1, y: 3, floor: 1, completed: false },
+    { id: 'c7', x: 5, y: 3, floor: 1, completed: false },
+    { id: 'c8', x: 3, y: 5, floor: 1, completed: false },
+  ].map((c, i) => ({
+    ...c,
+    completed: i < completedChallenges,
+  }));
+
+  // 2 friends per floor = 4 total (simplified)
+  const allFriendlies = [
+    // Floor 0
+    {
+      id: 'f1',
+      x: 5,
+      y: 1,
+      floor: 0,
+      emoji: '🛸',
+      collected: false,
+      spoken: false,
+      message: 'Hoera!',
+    },
+    {
+      id: 'f2',
+      x: 1,
+      y: 5,
+      floor: 0,
+      emoji: '🌟',
+      collected: false,
+      spoken: false,
+      message: 'Dankjewel!',
+    },
+    // Floor 1
+    {
+      id: 'f3',
+      x: 5,
+      y: 1,
+      floor: 1,
+      emoji: '🎈',
+      collected: false,
+      spoken: false,
+      message: 'Wow!',
+    },
+    {
+      id: 'f4',
+      x: 1,
+      y: 5,
+      floor: 1,
+      emoji: '🧸',
+      collected: false,
+      spoken: false,
+      message: 'Yes!',
+    },
+  ].map((f) => ({
+    ...f,
+    collected: collectedFriendIds.includes(f.id),
+    spoken: collectedFriendIds.includes(f.id),
+  }));
+
+  const collectedFriends = allFriendlies
+    .filter((f) => f.collected)
+    .map((f) => ({ id: f.id, emoji: f.emoji }));
+
+  return {
+    themeId: 'space',
+    maze: floors[currentFloor],
+    floors,
+    portals,
+    currentFloor,
+    challenges: allChallenges,
+    friendlies: allFriendlies,
+    collectedFriends,
+    playerPos,
+    completedCount: completedChallenges,
+    mathSettings: {
+      enabledOperations: {
+        add: true,
+        sub: false,
+        mul: false,
+        placeValue: false,
+        lovingHearts: false,
+        money: false,
+      },
+      maxValue: 100,
+      addSubMode: 'beyond',
+      beyondDigits: 'units',
+    },
+    playerEmoji: '🤖',
+    adventureLength: 'xl',
   };
 }
 

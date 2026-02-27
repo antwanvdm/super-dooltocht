@@ -1,7 +1,7 @@
 // MazeView - ingezoomde view van het doolhof
 import { useState, useEffect } from 'react';
 
-function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFriends = [], theme, playerEmoji }) {
+function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFriends = [], theme, playerEmoji, currentFloor = 0, isMultiFloor = false, totalFloors = 1 }) {
   // Toon 13x13 grid rondom de speler voor betere zichtbaarheid
   const viewSize = 13;
   const halfView = Math.floor(viewSize / 2);
@@ -68,8 +68,9 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
 
     const cell = maze[y][x];
     const isWall = cell.wall;
-    const isEnd = x === maze[0].length - 2 && y === maze.length - 2;
-    const isStart = x === startPos.x && y === startPos.y;
+    const isEnd = x === maze[0].length - 2 && y === maze.length - 2 && (!isMultiFloor || currentFloor === 0);
+    const isStart = x === startPos.x && y === startPos.y && (!isMultiFloor || currentFloor === 0);
+    const isPortal = !isWall && cell.portal;
 
     // Muur styling met thema
     if (isWall) {
@@ -83,7 +84,9 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
     // Pad styling
     let cellClasses = `w-full h-full flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold transition-all`;
     
-    if (isEnd) {
+    if (isPortal) {
+      cellClasses += ' bg-gradient-to-br from-indigo-200 to-purple-300 border-2 border-indigo-400 shadow-md';
+    } else if (isEnd) {
       cellClasses += ' bg-gradient-to-br from-yellow-200 to-amber-300 border-2 border-yellow-500 animate-pulse shadow-lg';
     } else if (isStart) {
       cellClasses += ' bg-gradient-to-br from-sky-100 to-blue-200 border-2 border-sky-400';
@@ -96,6 +99,11 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
       <div className={cellClasses}>
         {isEnd && <span className="drop-shadow-lg">🚪</span>}
         {isStart && !isPlayer && <span className="drop-shadow">🏠</span>}
+        {isPortal && !isPlayer && (
+          <span className="drop-shadow animate-pulse text-lg sm:text-xl md:text-2xl" title={cell.portal.targetFloor === 0 ? 'Naar beneden' : 'Naar boven'}>
+            🪜
+          </span>
+        )}
         {isPlayer && (
           <div className="relative flex items-center justify-center w-full h-full">
             {/* Verzamelde vriendjes achter de speler tonen */}
@@ -135,8 +143,8 @@ function MazeView({ maze, playerPos, challenges, friendlies = [], collectedFrien
         {!isPlayer && !challenge && friendly && (
           <span className="drop-shadow animate-pulse">{friendly.emoji}</span>
         )}
-        {/* Pad karakter voor lege paden (niet speler, niet challenge, niet friendly, niet start/eind) */}
-        {!isPlayer && !challenge && !friendly && !isEnd && !isStart && (
+        {/* Pad karakter voor lege paden (niet speler, niet challenge, niet friendly, niet start/eind/portal) */}
+        {!isPlayer && !challenge && !friendly && !isEnd && !isStart && !isPortal && (
           <span className="text-white/20 text-sm sm:text-base">{theme.pathChar || '·'}</span>
         )}
       </div>
