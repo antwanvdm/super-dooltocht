@@ -612,7 +612,7 @@ function MazeGame() {
           {pieces.map((filled, idx) => (
             <div
               key={idx}
-              className={`h-3 w-4 rounded-sm ${filled ? 'bg-amber-500' : 'bg-gray-200'}`}
+              className={`h-3 w-2.5 sm:w-4 rounded-sm ${filled ? 'bg-amber-500' : 'bg-gray-200'}`}
             />
           ))}
         </div>
@@ -629,7 +629,7 @@ function MazeGame() {
           {Array.from({ length: totalFriendlies }, (_, i) => (
             <div
               key={i}
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-lg
+              className={`w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-lg
                 ${i < collectedFriends.length 
                   ? 'bg-green-100 border-2 border-green-400' 
                   : 'bg-gray-100 border-2 border-gray-300'}`}
