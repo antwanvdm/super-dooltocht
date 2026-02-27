@@ -330,7 +330,7 @@ test.describe('Home – Settings flow', () => {
     page,
   }) => {
     const startBtn = page.getByRole('button', {
-      name: /Kies sommen en wereld/i,
+      name: /Kies oefening en wereld/i,
     });
     await expect(startBtn).toBeDisabled();
   });
