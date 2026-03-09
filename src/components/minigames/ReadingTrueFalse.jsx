@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateReadingTrueFalseProblem } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * ReadingTrueFalse - Lees een tekst en beoordeel 3 stellingen als waar of niet waar.
@@ -59,6 +60,7 @@ function ReadingTrueFalse({ mathSettings, onSuccess, onFailure }) {
       <div className="mb-4 sm:mb-6">
         <p className="text-gray-500 text-xs sm:text-sm mb-2 flex items-center gap-1">
           📖 Lees de tekst:
+          <SpeakButton text={problem.text} lang="nl-NL" />
         </p>
         <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-4 sm:p-6 border-2 border-amber-200">
           <p className="text-base sm:text-lg md:text-xl text-gray-800 leading-relaxed">

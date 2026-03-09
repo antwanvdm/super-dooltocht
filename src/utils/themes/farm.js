@@ -148,4 +148,5 @@ export const FARM = {
     warningLeave:
       'Wacht! Er zijn nog dieren verdwaald op de boerderij! De boer maakt zich zorgen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'farm',
 };

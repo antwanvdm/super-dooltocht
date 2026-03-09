@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { generateSpellingProblem, getMainCategoryId } from '../../utils/languageAdapter';
 import { SPELLING_CATEGORIES } from '../../utils/languageData';
 import SpellingReferenceCard from './SpellingReferenceCard';
+import SpeakButton from './SpeakButton';
 
 /**
  * SpellingTypeWord - Typ het woord en kies de juiste categorie.
@@ -84,8 +85,9 @@ function SpellingTypeWord({ mathSettings, onSuccess, onFailure, theme }) {
           {/* Stap 1: Typ het woord over */}
           <div className="mb-4 sm:mb-6">
             <p className="text-gray-600 text-sm sm:text-lg mb-3">Typ dit woord over:</p>
-            <div className="inline-block bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-amber-200 mb-4">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-amber-200 mb-4">
               <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.word}</p>
+              <SpeakButton text={problem.word} lang="nl-NL" />
             </div>
           </div>
 

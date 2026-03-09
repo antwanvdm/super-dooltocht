@@ -152,4 +152,5 @@ export const SPORTS = {
     warningLeave:
       'Wacht! Er zijn nog teamgenoten in het stadion! Zonder hen is het team niet compleet. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'sports',
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { generateEnglishTypeWord } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * EnglishTypeWord - Toon het Nederlandse woord, typ de Engelse vertaling.
@@ -58,8 +59,9 @@ function EnglishTypeWord({ mathSettings, onSuccess, onFailure }) {
         <p className="text-gray-600 text-sm sm:text-lg mb-2">
           {instructionText}
         </p>
-        <div className="inline-block bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-orange-200">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-orange-200">
           <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.prompt}</p>
+          {problem.promptLang === 'en' && <SpeakButton text={problem.prompt} lang="en-GB" />}
         </div>
       </div>
 

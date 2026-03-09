@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateVocabularyProblem } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * VocabularyMatch - Woord getoond, kies de juiste betekenis uit 4 opties.
@@ -44,8 +45,9 @@ function VocabularyMatch({ mathSettings, onSuccess, onFailure }) {
       {/* Het woord */}
       <div className="mb-4 sm:mb-6">
         <p className="text-gray-600 text-sm sm:text-lg mb-2">Wat betekent dit woord?</p>
-        <div className="inline-block bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-emerald-200">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-emerald-200">
           <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.word}</p>
+          <SpeakButton text={problem.word} lang="nl-NL" />
         </div>
       </div>
 

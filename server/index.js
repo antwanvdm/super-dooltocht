@@ -1,5 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -13,6 +18,15 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Serve audio files with aggressive caching (files rarely change)
+app.use(
+  '/sounds',
+  express.static(join(__dirname, 'public/sounds'), {
+    maxAge: '30d',
+    immutable: true,
+  }),
+);
 
 app.use(express.json({ limit: '1mb' }));
 

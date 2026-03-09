@@ -1,52 +1,55 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { GAME_NAMES } from '../../utils/gameSelection';
+import { useAudio } from '../../context/AudioProvider';
+import { lazyRetry } from '../../utils/lazyRetry';
 import Confetti from '../Confetti';
 
 // Lazy-loaded component registry – components are only fetched when first rendered
 const GAME_COMPONENTS = {
-  'multiple-choice': lazy(() => import('./MultipleChoice')),
-  'memory': lazy(() => import('./MemoryGame')),
-  'puzzle': lazy(() => import('./MathPuzzle')),
-  'darts': lazy(() => import('./DartsGame')),
-  'placeValue': lazy(() => import('./PlaceValueGame')),
-  'lovingHearts': lazy(() => import('./LovingHeartsGame')),
-  'makeAmount': lazy(() => import('./MakeAmountGame')),
-  'countMoney': lazy(() => import('./CountMoneyGame')),
-  'smartPay': lazy(() => import('./SmartPayGame')),
-  'change': lazy(() => import('./ChangeGame')),
-  'clockMultipleChoice': lazy(() => import('./ClockMultipleChoice')),
-  'clockMemory': lazy(() => import('./ClockMemory')),
-  'clockInput': lazy(() => import('./ClockInput')),
-  'clockMatchAnalog': lazy(() => import('./ClockMatchAnalog')),
-  'clock24h': lazy(() => import('./Clock24hGame')),
-  'clockWords': lazy(() => import('./ClockWordsGame')),
-  'spellingCategoryMatch': lazy(() => import('./SpellingCategoryMatch')),
-  'spellingConnect': lazy(() => import('./SpellingConnect')),
-  'spellingTypeWord': lazy(() => import('./SpellingTypeWord')),
-  'vocabularyMatch': lazy(() => import('./VocabularyMatch')),
-  'vocabularyMemory': lazy(() => import('./VocabularyMemory')),
-  'vocabularyFillIn': lazy(() => import('./VocabularyFillIn')),
-  'readingComprehension': lazy(() => import('./ReadingComprehension')),
-  'readingTrueFalse': lazy(() => import('./ReadingTrueFalse')),
-  'englishMultipleChoice': lazy(() => import('./EnglishMultipleChoice')),
-  'englishMemory': lazy(() => import('./EnglishMemory')),
-  'englishTypeWord': lazy(() => import('./EnglishTypeWord')),
-  'englishFillIn': lazy(() => import('./EnglishFillIn')),
-  'englishConnect': lazy(() => import('./EnglishConnect')),
-  'kalenderQuiz': lazy(() => import('./KalenderQuiz')),
-  'volgordeSorteer': lazy(() => import('./VolgordeSorteer')),
-  'seizoenenMatch': lazy(() => import('./SeizoenenMatch')),
-  'kalenderMemory': lazy(() => import('./KalenderMemory')),
-  'klokVooruit': lazy(() => import('./KlokVooruit')),
-  'tijdsduurQuiz': lazy(() => import('./TijdsduurQuiz')),
-  'omrekenMemory': lazy(() => import('./OmrekenMemory')),
-  'tijdRekenen': lazy(() => import('./TijdRekenen')),
-  'klokRekenen': lazy(() => import('./KlokRekenen')),
+  'multiple-choice': lazy(() => lazyRetry(() => import('./MultipleChoice'))),
+  'memory': lazy(() => lazyRetry(() => import('./MemoryGame'))),
+  'puzzle': lazy(() => lazyRetry(() => import('./MathPuzzle'))),
+  'darts': lazy(() => lazyRetry(() => import('./DartsGame'))),
+  'placeValue': lazy(() => lazyRetry(() => import('./PlaceValueGame'))),
+  'lovingHearts': lazy(() => lazyRetry(() => import('./LovingHeartsGame'))),
+  'makeAmount': lazy(() => lazyRetry(() => import('./MakeAmountGame'))),
+  'countMoney': lazy(() => lazyRetry(() => import('./CountMoneyGame'))),
+  'smartPay': lazy(() => lazyRetry(() => import('./SmartPayGame'))),
+  'change': lazy(() => lazyRetry(() => import('./ChangeGame'))),
+  'clockMultipleChoice': lazy(() => lazyRetry(() => import('./ClockMultipleChoice'))),
+  'clockMemory': lazy(() => lazyRetry(() => import('./ClockMemory'))),
+  'clockInput': lazy(() => lazyRetry(() => import('./ClockInput'))),
+  'clockMatchAnalog': lazy(() => lazyRetry(() => import('./ClockMatchAnalog'))),
+  'clock24h': lazy(() => lazyRetry(() => import('./Clock24hGame'))),
+  'clockWords': lazy(() => lazyRetry(() => import('./ClockWordsGame'))),
+  'spellingCategoryMatch': lazy(() => lazyRetry(() => import('./SpellingCategoryMatch'))),
+  'spellingConnect': lazy(() => lazyRetry(() => import('./SpellingConnect'))),
+  'spellingTypeWord': lazy(() => lazyRetry(() => import('./SpellingTypeWord'))),
+  'vocabularyMatch': lazy(() => lazyRetry(() => import('./VocabularyMatch'))),
+  'vocabularyMemory': lazy(() => lazyRetry(() => import('./VocabularyMemory'))),
+  'vocabularyFillIn': lazy(() => lazyRetry(() => import('./VocabularyFillIn'))),
+  'readingComprehension': lazy(() => lazyRetry(() => import('./ReadingComprehension'))),
+  'readingTrueFalse': lazy(() => lazyRetry(() => import('./ReadingTrueFalse'))),
+  'englishMultipleChoice': lazy(() => lazyRetry(() => import('./EnglishMultipleChoice'))),
+  'englishMemory': lazy(() => lazyRetry(() => import('./EnglishMemory'))),
+  'englishTypeWord': lazy(() => lazyRetry(() => import('./EnglishTypeWord'))),
+  'englishFillIn': lazy(() => lazyRetry(() => import('./EnglishFillIn'))),
+  'englishConnect': lazy(() => lazyRetry(() => import('./EnglishConnect'))),
+  'kalenderQuiz': lazy(() => lazyRetry(() => import('./KalenderQuiz'))),
+  'volgordeSorteer': lazy(() => lazyRetry(() => import('./VolgordeSorteer'))),
+  'seizoenenMatch': lazy(() => lazyRetry(() => import('./SeizoenenMatch'))),
+  'kalenderMemory': lazy(() => lazyRetry(() => import('./KalenderMemory'))),
+  'klokVooruit': lazy(() => lazyRetry(() => import('./KlokVooruit'))),
+  'tijdsduurQuiz': lazy(() => lazyRetry(() => import('./TijdsduurQuiz'))),
+  'omrekenMemory': lazy(() => lazyRetry(() => import('./OmrekenMemory'))),
+  'tijdRekenen': lazy(() => lazyRetry(() => import('./TijdRekenen'))),
+  'klokRekenen': lazy(() => lazyRetry(() => import('./KlokRekenen'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {
   const [showConfetti, setShowConfetti] = useState(false);
   const [interactionReady, setInteractionReady] = useState(false);
+  const { playSound } = useAudio();
 
   // Korte delay voordat de modal interactief wordt, zodat een vinger die
   // al op het scherm lag niet per ongeluk meteen een antwoord selecteert.
@@ -56,6 +59,8 @@ function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, 
   }, []);
 
   const handleSuccess = () => {
+    // Speel success geluid direct bij goed antwoord
+    playSound('success');
     // Toon confetti!
     setShowConfetti(true);
     // Wacht even zodat de speler de confetti kan zien
@@ -66,6 +71,7 @@ function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, 
 
   const handleFailure = () => {
     // Bij fout blijven we positief - gewoon nog een keer proberen
+    playSound('wrong');
   };
 
   if (!gameType) {

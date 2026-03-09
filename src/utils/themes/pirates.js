@@ -152,4 +152,5 @@ export const PIRATES = {
     warningLeave:
       'Arrr! Er zijn nog matrozen op het eiland! Een echte kapitein laat zijn crew niet achter. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'pirates',
 };

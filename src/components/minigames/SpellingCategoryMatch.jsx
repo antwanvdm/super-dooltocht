@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { generateSpellingProblem, generateWrongCategories, getMainCategoryId } from '../../utils/languageAdapter';
 import { SPELLING_CATEGORIES } from '../../utils/languageData';
 import SpellingReferenceCard from './SpellingReferenceCard';
+import SpeakButton from './SpeakButton';
 
 /**
  * SpellingCategoryMatch - Woord getoond, kies de juiste spellingcategorie.
@@ -64,8 +65,9 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
       {/* Het woord */}
       <div className="mb-4 sm:mb-6">
         <p className="text-gray-600 text-sm sm:text-lg mb-2">Welke categorie hoort bij dit woord?</p>
-        <div className="inline-block bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-indigo-200">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-indigo-200">
           <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.word}</p>
+          <SpeakButton text={problem.word} lang="nl-NL" />
         </div>
       </div>
 

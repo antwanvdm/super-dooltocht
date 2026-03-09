@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateEnglishMultipleChoice } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * EnglishMultipleChoice - Vertaal het woord, kies uit 4 opties.
@@ -51,8 +52,9 @@ function EnglishMultipleChoice({ mathSettings, onSuccess, onFailure }) {
       {/* Het woord */}
       <div className="mb-4 sm:mb-6">
         <p className="text-gray-600 text-sm sm:text-lg mb-2">{directionLabel}</p>
-        <div className="inline-block bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-blue-200">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-blue-200">
           <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.question}</p>
+          {problem.questionLang === 'en' && <SpeakButton text={problem.question} lang="en-GB" />}
         </div>
       </div>
 
@@ -68,14 +70,16 @@ function EnglishMultipleChoice({ mathSettings, onSuccess, onFailure }) {
           }
 
           return (
-            <button
-              key={index}
-              onClick={() => handleSelect(option, index)}
-              disabled={showFeedback}
-              className={`p-3 sm:p-4 rounded-xl font-medium text-base sm:text-lg transition-all ${btnClass}`}
-            >
-              {option.text}
-            </button>
+            <div key={index} className="flex items-center gap-1">
+              {problem.questionLang === 'nl' && <SpeakButton text={option.text} lang="en-GB" />}
+              <button
+                onClick={() => handleSelect(option, index)}
+                disabled={showFeedback}
+                className={`flex-1 p-3 sm:p-4 rounded-xl font-medium text-base sm:text-lg transition-all ${btnClass}`}
+              >
+                {option.text}
+              </button>
+            </div>
           );
         })}
       </div>

@@ -149,4 +149,5 @@ export const CANDY = {
     warningLeave:
       'Wacht! Er zijn nog vriendjes verdwaald in Snoepland! Het feest is niet compleet zonder hen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'candy',
 };

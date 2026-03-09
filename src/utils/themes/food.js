@@ -149,4 +149,5 @@ export const FOOD = {
     warningLeave:
       'Wacht! Er zijn nog hulpjes verstopt in de keuken! Het kookfeest kan niet zonder hen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'food',
 };

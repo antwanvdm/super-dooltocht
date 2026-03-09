@@ -4,6 +4,7 @@ import { getTheme } from '../../utils/themes';
 import { generateMaze, generateMultiFloorMaze, placeChallenges, placeFriendlies, getStartPosition, getEndPosition } from '../../utils/mazeGenerator';
 import { incrementCompletedMazes, saveGameState, getGameState, clearGameState, addSavedFriends } from '../../utils/localStorage';
 import { useSyncToServer } from '../../hooks/useSyncToServer';
+import { useAudio, AUDIO_FEATURE_ENABLED } from '../../context/AudioProvider';
 import MazeView from './MazeView';
 import DPad from './DPad';
 import ChallengeModal from '../minigames/ChallengeModal';
@@ -23,6 +24,7 @@ function MazeGame() {
   const location = useLocation();
   const theme = getTheme(themeId);
   const { syncProgress } = useSyncToServer();
+  const { playSound, playMusic, stopMusic, pauseMusic, resumeMusic, musicEnabled, setMusicEnabled } = useAudio();
 
   const { mathSettings, playerEmoji, adventureLength } = useMemo(() => {
     const defaults = { enabledOperations: { add: true, sub: true, mul: true }, maxValue: 50 };
@@ -106,6 +108,14 @@ function MazeGame() {
       return () => clearTimeout(timer);
     }
   }, [exitModal, friendsWarningModal, activeFriendly, hasWon]);
+
+  // Start/stop achtergrondmuziek wanneer geluid wordt in-/uitgeschakeld
+  useEffect(() => {
+    if (musicEnabled && maze) {
+      playMusic(theme.music);
+    }
+    return () => stopMusic();
+  }, [musicEnabled, maze, theme.music, playMusic, stopMusic]);
 
   // Genereer maze bij mount OF laad saved state
   useEffect(() => {
@@ -294,6 +304,7 @@ function MazeGame() {
   const handlePortalStep = useCallback((portal) => {
     if (portalTransition) return; // Voorkom dubbele transitie
     setPortalTransition(true);
+    playSound('portal');
     // Markeer de landing-positie zodat de portal op de andere verdieping niet direct opnieuw triggert
     setLastPortalPos({ x: portal.targetX, y: portal.targetY, floor: portal.targetFloor });
     setTimeout(() => {
@@ -480,6 +491,8 @@ function MazeGame() {
         } else {
           // Gewonnen! Sla geredde vriendjes op
           setHasWon(true);
+          pauseMusic();
+          playSound('victory');
           addSavedFriends(collectedFriends.length);
           clearGameState();
           incrementCompletedMazes();
@@ -490,6 +503,7 @@ function MazeGame() {
       } else {
         const remaining = challenges.length - completedCount;
         setExitModal({ remaining });
+        playSound('door-locked');
       }
     }
 
@@ -502,6 +516,8 @@ function MazeGame() {
     if (challenge && !activeChallenge && !isLastCompletedPos) {
       setActiveGameType(pickRandomGameType(mathSettings, playedGameTypesRef.current));
       setActiveChallenge(challenge);
+      playSound('challenge-start');
+      pauseMusic();
       return;
     }
 
@@ -516,6 +532,7 @@ function MazeGame() {
     );
     if (friendly && !activeFriendly) {
       setActiveFriendly(friendly);
+      playSound('friend-found');
     }
   }, [playerPos, maze, challenges, friendlies, completedCount, activeChallenge, activeFriendly, collectedFriends, hasWon, navigate, currentFloor, isMultiFloor, portalTransition, handlePortalStep]);
 
@@ -543,6 +560,8 @@ function MazeGame() {
   const handleLeaveWithoutFriends = () => {
     setFriendsWarningModal(null);
     setHasWon(true);
+    pauseMusic();
+    playSound('victory');
     addSavedFriends(collectedFriends.length);
     clearGameState();
     incrementCompletedMazes();
@@ -562,6 +581,8 @@ function MazeGame() {
     if (activeGameType) {
       playedGameTypesRef.current.push(activeGameType);
     }
+
+    resumeMusic();
 
     // Onthoud waar we waren zodat de challenge niet direct opnieuw triggert
     setLastCompletedPos({ ...playerPos, floor: currentFloor });
@@ -589,6 +610,7 @@ function MazeGame() {
     // Onthoud waar we waren zodat de challenge niet direct opnieuw triggert
     setLastCompletedPos({ ...playerPos });
     setActiveChallenge(null);
+    resumeMusic();
   };
 
   if (!maze) {
@@ -744,6 +766,15 @@ function MazeGame() {
               >
                 🎮 <span className="hidden sm:inline">Besturing (B)</span>
               </button>
+              {AUDIO_FEATURE_ENABLED && (
+                <button
+                  onClick={() => setMusicEnabled(!musicEnabled)}
+                  className={`flex px-3 sm:px-4 py-2.5 sm:py-2 ${musicEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 hover:bg-gray-500'} text-white font-bold rounded-lg transition-colors text-base items-center gap-2`}
+                  aria-label={musicEnabled ? 'Geluid uitzetten' : 'Geluid aanzetten'}
+                >
+                  {musicEnabled ? '🔊' : '🔇'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -845,6 +876,7 @@ function MazeGame() {
           friendlies={friendlies}
           collectedFriends={collectedFriends}
           modalInteractionReady={modalInteractionReady}
+          onNewAdventure={stopMusic}
         />
       )}
     </div>

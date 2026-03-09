@@ -150,4 +150,5 @@ export const OCEAN = {
     warningLeave:
       'Wacht! Er zwemmen nog vriendjes verloren in de oceaan! Ze wachten op hulp. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'ocean',
 };

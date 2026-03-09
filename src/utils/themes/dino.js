@@ -156,4 +156,5 @@ export const DINO = {
     warningLeave:
       'Wacht! Er zijn nog vriendjes in het dinoland! De vulkaan kan elk moment uitbarsten! Weet je zeker dat je ze achterlaat?',
   },
+  music: 'dino',
 };

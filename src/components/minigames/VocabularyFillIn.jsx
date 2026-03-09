@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateVocabularyFillInProblem } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * VocabularyFillIn - Vul het ontbrekende woord in de zin aan.
@@ -69,14 +70,16 @@ function VocabularyFillIn({ mathSettings, onSuccess, onFailure }) {
           }
 
           return (
-            <button
-              key={index}
-              onClick={() => handleSelect(option, index)}
-              disabled={showFeedback}
-              className={`p-3 sm:p-4 rounded-xl font-bold text-base sm:text-lg transition-all ${btnClass}`}
-            >
-              {option.text}
-            </button>
+            <div key={index} className="flex items-center gap-1">
+              <SpeakButton text={displaySentence.replace('____', option.text)} lang="nl-NL" />
+              <button
+                onClick={() => handleSelect(option, index)}
+                disabled={showFeedback}
+                className={`flex-1 p-3 sm:p-4 rounded-xl font-bold text-base sm:text-lg transition-all ${btnClass}`}
+              >
+                {option.text}
+              </button>
+            </div>
           );
         })}
       </div>

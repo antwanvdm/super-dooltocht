@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateEnglishConnectPairs } from '../../utils/languageAdapter';
+import SpeakButton from './SpeakButton';
 
 /**
  * EnglishConnect - Verbind Nederlandse woorden met Engelse vertalingen.
@@ -134,15 +135,17 @@ function EnglishConnect({ mathSettings, onSuccess, onFailure }) {
                 'bg-blue-50 border-2 border-blue-300 text-blue-800 hover:bg-blue-100 cursor-pointer';
 
             return (
-              <button
-                key={enIndex}
-                onClick={() => handleEnClick(enIndex)}
-                disabled={completed || selectedNl === null || isConnected}
-                className={`w-full p-3 sm:p-4 rounded-xl font-bold text-lg sm:text-xl transition-all ${btnClass}`}
-              >
-                {word}
-                {isConnected && <span className="ml-2">✓</span>}
-              </button>
+              <div key={enIndex} className="flex items-center gap-1">
+                <SpeakButton text={word} lang="en-GB" />
+                <button
+                  onClick={() => handleEnClick(enIndex)}
+                  disabled={completed || selectedNl === null || isConnected}
+                  className={`flex-1 p-3 sm:p-4 rounded-xl font-bold text-lg sm:text-xl transition-all ${btnClass}`}
+                >
+                  {word}
+                  {isConnected && <span className="ml-2">✓</span>}
+                </button>
+              </div>
             );
           })}
         </div>

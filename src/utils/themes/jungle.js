@@ -155,4 +155,5 @@ export const JUNGLE = {
     warningLeave:
       'Wacht! Er zitten nog vriendjes verstopt in de jungle! Ze zijn bang en alleen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'jungle',
 };

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Confetti from '../../Confetti';
 
-function WinScreen({ theme, friendlies, collectedFriends, modalInteractionReady }) {
+function WinScreen({ theme, friendlies, collectedFriends, modalInteractionReady, onNewAdventure }) {
   const navigate = useNavigate();
 
   return (
@@ -40,7 +40,7 @@ function WinScreen({ theme, friendlies, collectedFriends, modalInteractionReady 
         )}
 
         <button
-          onClick={() => navigate('/')}
+          onClick={() => { onNewAdventure?.(); navigate('/'); }}
           className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xl font-bold rounded-xl shadow-lg transition-all hover:scale-105"
         >
           🚀 Begin een nieuw avontuur!

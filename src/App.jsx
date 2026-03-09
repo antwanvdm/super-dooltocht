@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './components/Home';
 import MazeGame from './components/maze/MazeGame';
+import MinigamePreview from './components/MinigamePreview';
 import CodeFlowManager from './components/CodeFlowManager';
+import { AudioProvider } from './context/AudioProvider';
 
 // Lightweight background shown while CodeFlowManager is active – no modal logic
 function HomeBackground() {
@@ -18,26 +20,39 @@ function HomeBackground() {
   );
 }
 
-function App() {
+function AppRoutes() {
   const [appReady, setAppReady] = useState(false);
+  const location = useLocation();
 
   const handleReady = () => {
     setAppReady(true);
   };
 
+  // Preview page bypasses the code flow entirely
+  const isPreview = location.pathname === '/preview-minigames';
+
   return (
     <>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={appReady ? <Home /> : <HomeBackground />} />
-          <Route path="/maze/:theme" element={<MazeGame />} />
-        </Routes>
-      </HashRouter>
+      <Routes>
+        <Route path="/" element={appReady || isPreview ? <Home /> : <HomeBackground />} />
+        <Route path="/maze/:theme" element={<MazeGame />} />
+        <Route path="/preview-minigames" element={<MinigamePreview />} />
+      </Routes>
 
-      {!appReady && (
+      {!appReady && !isPreview && (
         <CodeFlowManager onReady={handleReady} />
       )}
     </>
+  );
+}
+
+function App() {
+  return (
+    <AudioProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </AudioProvider>
   );
 }
 

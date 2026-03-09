@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { THEMES, getTheme } from '../utils/themes';
 import { getCompletedMazes, getSavedFriends, getGameState, clearGameState, getUserSettings, saveUserSettings } from '../utils/localStorage';
 import { useSyncToServer } from '../hooks/useSyncToServer';
+import { useAudio, AUDIO_FEATURE_ENABLED } from '../context/AudioProvider';
 
 const PLAYER_EMOJIS = [
   '🤖','🧙','🧚','🧜','🧛','🧞','🧟','🧝','🧞‍♂️','🧚‍♀️','🧜‍♂️','🧙‍♂️',
@@ -38,6 +39,7 @@ const DEFAULT_SETTINGS = {
   englishDirection: 'nl-en',
   adventureLength: 'medium',
   playerEmoji: PLAYER_EMOJIS[0],
+  musicEnabled: false,
 };
 
 // Build initial state from saved settings, using defaults for missing values.
@@ -70,6 +72,7 @@ const buildInitialSettings = (saved) => ({
   englishDirection: saved?.englishDirection || DEFAULT_SETTINGS.englishDirection,
   adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
   playerEmoji: saved?.playerEmoji || DEFAULT_SETTINGS.playerEmoji,
+  musicEnabled: saved?.musicEnabled ?? DEFAULT_SETTINGS.musicEnabled,
 });
 
 function settingsReducer(state, action) {
@@ -99,6 +102,7 @@ function settingsReducer(state, action) {
 function Home({ disabled = false }) {
   const navigate = useNavigate();
   const { syncProgress } = useSyncToServer();
+  const { musicEnabled: audioEnabled, setMusicEnabled: setAudioEnabled } = useAudio();
   const completedMazes = getCompletedMazes();
   const savedFriends = getSavedFriends();
   
@@ -117,6 +121,7 @@ function Home({ disabled = false }) {
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
     readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji,
+    musicEnabled,
   } = settings;
 
   // Shorthand dispatch helpers for the JSX
@@ -129,6 +134,13 @@ function Home({ disabled = false }) {
   useEffect(() => {
     saveUserSettings(settings);
   }, [settings]);
+
+  // Sync musicEnabled setting with AudioProvider
+  useEffect(() => {
+    if (musicEnabled !== audioEnabled) {
+      setAudioEnabled(musicEnabled);
+    }
+  }, [musicEnabled]);
 
   // Check voor opgeslagen spel bij laden
   useEffect(() => {
@@ -1191,6 +1203,24 @@ function Home({ disabled = false }) {
               </p>
             )}
           </div>
+
+          {/* Audio toggle */}
+          {AUDIO_FEATURE_ENABLED && (
+            <div className="flex justify-center mb-6">
+              <button
+                onClick={() => set('musicEnabled', !musicEnabled)}
+                className={`flex items-center gap-2 sm:gap-3 px-5 sm:px-6 py-3 rounded-2xl font-bold text-sm sm:text-base transition-all border-2 ${
+                  musicEnabled
+                    ? 'bg-green-100 border-green-400 text-green-700 hover:bg-green-200'
+                    : 'bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200'
+                }`}
+                aria-label={musicEnabled ? 'Geluid uitzetten' : 'Geluid aanzetten'}
+              >
+                <span className="text-2xl">{musicEnabled ? '🔊' : '🔇'}</span>
+                <span>{musicEnabled ? 'Geluid aan' : 'Geluid uit'}</span>
+              </button>
+            </div>
+          )}
 
           {/* Start Button */}
           <div className="text-center pt-4">

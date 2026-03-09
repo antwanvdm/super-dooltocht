@@ -153,4 +153,5 @@ export const TRAFFIC = {
     warningLeave:
       'Wacht! Er staan nog voertuigen vast in het verkeer! Ze kunnen nergens heen zonder jouw hulp. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'traffic',
 };

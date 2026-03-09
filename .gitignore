@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Playwright
-e2e/test-results/
-e2e/playwright-report/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -26,3 +22,10 @@ e2e/playwright-report/
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright
+e2e/test-results/
+e2e/playwright-report/
+
+# Sounds
+server/public/sounds/

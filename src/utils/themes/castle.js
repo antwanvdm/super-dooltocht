@@ -152,4 +152,5 @@ export const CASTLE = {
     warningLeave:
       'Wacht! Er zitten nog vriendjes gevangen in het kasteel! De tovenaar houdt ze verborgen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'castle',
 };

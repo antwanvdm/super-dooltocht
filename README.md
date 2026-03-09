@@ -122,6 +122,8 @@ This game aims to be:
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
 - 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), Tijdsbesef (time awareness), Rekenen met Tijd (time calculation), and Taal (language)
 - 📱 **Touch Controls** – D-pad overlay for touchscreen devices
+- 🔊 **Read-Aloud (Voorlezen)** – Text-to-speech button on language minigames (Spelling, Vocabulary, Reading, English) using the browser's SpeechSynthesis API. Uses Dutch (`nl-NL`) or English (`en-GB`) voices depending on the context. Works independently of the sound/music toggle.
+- 🎵 **Sound & Music** _(feature-toggled, currently off)_ – Background music per theme with Howler.js, SFX for game events (correct/wrong answer, friend found, victory, etc.). Controlled by a single `AUDIO_FEATURE_ENABLED` constant in `AudioProvider.jsx`.
 - ⌨️ **Keyboard Shortcuts**:
   - Arrow keys: Move through maze
   - **K**: Toggle minimap
@@ -129,6 +131,11 @@ This game aims to be:
   - **H**: Toggle help
   - **B**: Toggle touch controls
   - **ESC**: Close windows
+
+### Developer Tools
+
+- 🎮 **Minigame Preview Page** – Test all ~40 minigames in isolation at `/#/preview-minigames` (bypasses player code authentication). Each category has configurable settings (difficulty, ranges, spelling categories, etc.) so you can test different configurations without starting an adventure.
+- 🔄 **Lazy Import Retry** – Dynamic imports wrapped with `lazyRetry()` to gracefully handle stale chunk references after deployments (auto-reloads once per session on import failure).
 
 ## 🚀 Getting Started
 
@@ -162,16 +169,17 @@ npm run preview
 
 ## 🛠️ Tech Stack
 
-| Technology   | Version | Purpose                 |
-| ------------ | ------- | ----------------------- |
-| React        | 19      | UI Framework            |
-| Vite         | 7       | Build tool & dev server |
-| Tailwind CSS | 4       | Styling                 |
-| React Router | 7       | Navigation              |
-| Express      | 5       | Backend API server      |
-| Mongoose     | 9       | MongoDB ODM             |
-| Vitest       | 4       | Unit testing            |
-| Playwright   | 1.58    | E2E testing             |
+| Technology   | Version | Purpose                      |
+| ------------ | ------- | ---------------------------- |
+| React        | 19      | UI Framework                 |
+| Vite         | 7       | Build tool & dev server      |
+| Tailwind CSS | 4       | Styling                      |
+| React Router | 7       | Navigation                   |
+| Express      | 5       | Backend API server           |
+| Mongoose     | 9       | MongoDB ODM                  |
+| Howler.js    | 2       | Audio playback (music & SFX) |
+| Vitest       | 4       | Unit testing                 |
+| Playwright   | 1.58    | E2E testing                  |
 
 ## 📁 Project Structure
 
@@ -205,10 +213,14 @@ src/
 │   ├── CodeFlowManager.jsx  # Player code auth flow
 │   ├── CodeInputModal.jsx   # Emoji code entry modal
 │   ├── CodeDisplayModal.jsx # New code display modal
+│   ├── MinigamePreview.jsx  # Dev preview page for all minigames
 │   ├── Home.jsx             # Home screen with settings tabs
 │   └── Confetti.jsx         # Victory celebration animation
+├── context/
+│   └── AudioProvider.jsx    # Music & SFX context (feature-toggled)
 ├── hooks/
-│   └── useSyncToServer.js   # Server sync hook
+│   ├── useSyncToServer.js   # Server sync hook
+│   └── useSpeech.js         # SpeechSynthesis TTS hook
 ├── utils/
 │   ├── difficultyAdapter.js     # Math problem generation
 │   ├── languageAdapter.js       # Language problem generation
@@ -216,6 +228,8 @@ src/
 │   ├── mazeGenerator.js         # Procedural maze generation
 │   ├── serverSync.js            # Server sync utilities
 │   ├── emojiCode.js             # Emoji ↔ slug conversion
+│   ├── gameSelection.js         # Minigame type selection (round-robin)
+│   ├── lazyRetry.js             # Resilient dynamic import wrapper
 │   ├── themes.js                # Theme registry & exports
 │   ├── languageData.js          # Language data registry
 │   ├── timeAwarenessData.js     # Calendar/season quiz generation
@@ -239,6 +253,9 @@ e2e/
 server/
 ├── index.js            # Express API server
 ├── cleanup.js          # Stale player cleanup script
+├── scripts/
+│   └── generate-sounds.js  # jsfxr SFX generator
+├── public/sounds/      # Audio files (SFX + music)
 └── package.json
 ```
 

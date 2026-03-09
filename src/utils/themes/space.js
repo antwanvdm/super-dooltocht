@@ -143,4 +143,5 @@ export const SPACE = {
     warningLeave:
       'Wacht! Er zweven nog vriendjes verloren in de ruimte! Ze rekenen op jou om ze te vinden. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'space',
 };

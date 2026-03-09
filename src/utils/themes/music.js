@@ -160,4 +160,5 @@ export const MUSIC = {
     warningLeave:
       'Wacht! Er zijn nog instrumenten zoek in het muziekgebouw! Het concert kan niet zonder hen. Weet je zeker dat je ze achterlaat?',
   },
+  music: 'music',
 };
