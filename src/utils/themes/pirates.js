@@ -74,11 +74,11 @@ export const PIRATES = {
     },
     {
       emoji: '🗺️',
-      fact: 'Wist je dat piraten met de sterren navigeerden omdat er nog geen GPS bestond?',
+      fact: 'Wist je dat piraten met de sterren de weg vonden op zee? Er was nog geen GPS!',
     },
     {
       emoji: '💰',
-      fact: 'Wist je dat piraten hun buit eerlijk verdeelden volgens vaste regels?',
+      fact: 'Wist je dat piraten hun gestolen spullen eerlijk deelden met de hele groep?',
     },
     {
       emoji: '⚓',
@@ -94,15 +94,15 @@ export const PIRATES = {
     },
     {
       emoji: '🏝️',
-      fact: 'Wist je dat piraten soms schatten begroeven op onbewoonde eilanden?',
+      fact: 'Wist je dat piraten soms schatten begroeven op lege eilanden waar niemand woonde?',
     },
     {
       emoji: '👁️',
-      fact: 'Wist je dat piraten een ooglap droegen zodat één oog altijd aan het donker gewend was?',
+      fact: 'Wist je dat piraten een ooglap droegen? Zo kon één oog altijd goed in het donker kijken!',
     },
     {
       emoji: '🌊',
-      fact: 'Wist je dat piraten overal ter wereld voeren, van de Caraïben tot Azië?',
+      fact: 'Wist je dat piraten over de hele wereld voeren, van warme eilanden tot verre landen?',
     },
   ],
   readingTexts: [

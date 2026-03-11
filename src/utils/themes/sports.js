@@ -60,7 +60,7 @@ export const SPORTS = {
   facts: [
     {
       emoji: '⚽',
-      fact: 'Wist je dat voetbal de populairste sport ter wereld is?',
+      fact: 'Wist je dat voetbal de sport is waar de meeste mensen op de wereld van houden?',
     },
     {
       emoji: '🏅',
@@ -72,7 +72,7 @@ export const SPORTS = {
     },
     {
       emoji: '🚴',
-      fact: 'Wist je dat Nederland een van de beste wielerlanden ter wereld is?',
+      fact: 'Wist je dat Nederland een van de beste fietslanden van de wereld is?',
     },
     {
       emoji: '🏃',
@@ -96,7 +96,7 @@ export const SPORTS = {
     },
     {
       emoji: '🏋️',
-      fact: 'Wist je dat je botten sterker worden als je regelmatig sport?',
+      fact: 'Wist je dat je botten sterker worden als je vaak sport?',
     },
   ],
   readingTexts: [

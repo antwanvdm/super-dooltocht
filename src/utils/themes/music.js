@@ -73,11 +73,11 @@ export const MUSIC = {
     },
     {
       emoji: '🎵',
-      fact: 'Wist je dat muziek je blij kan maken doordat je hersenen er gelukstoffen van aanmaken?',
+      fact: 'Wist je dat muziek je blij kan maken? Je hoofd maakt er een stofje van aan waardoor je je goed voelt!',
     },
     {
       emoji: '🎤',
-      fact: 'Wist je dat je stem geluid maakt door trillingen van je stembanden?',
+      fact: 'Wist je dat je stem geluid maakt door twee flapjes in je keel die heel snel trillen?',
     },
     {
       emoji: '🎻',
@@ -85,7 +85,7 @@ export const MUSIC = {
     },
     {
       emoji: '🎺',
-      fact: 'Wist je dat een trompet ruim twee meter buis is die is opgerold?',
+      fact: 'Wist je dat als je een trompet helemaal recht zou trekken, hij meer dan twee meter lang is?',
     },
     {
       emoji: '🎶',

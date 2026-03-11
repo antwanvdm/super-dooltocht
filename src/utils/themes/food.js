@@ -64,11 +64,11 @@ export const FOOD = {
     },
     {
       emoji: '🥕',
-      fact: 'Wist je dat wortels oranje werden gekweekt als eerbetoon aan de Nederlandse koning Willem van Oranje?',
+      fact: 'Wist je dat wortels vroeger niet oranje waren? Ze werden oranje gemaakt voor de Nederlandse koning Willem van Oranje!',
     },
     {
       emoji: '🍌',
-      fact: 'Wist je dat bananen eigenlijk bessen zijn volgens de wetenschap?',
+      fact: 'Wist je dat bananen eigenlijk bessen zijn? Dat klinkt raar, maar het is echt zo!',
     },
     {
       emoji: '🌶️',
@@ -76,7 +76,7 @@ export const FOOD = {
     },
     {
       emoji: '🧀',
-      fact: 'Wist je dat Nederland een van de grootste kaasexporteurs ter wereld is?',
+      fact: 'Wist je dat Nederland heel veel kaas maakt en naar andere landen stuurt?',
     },
     {
       emoji: '🍝',
@@ -96,7 +96,7 @@ export const FOOD = {
     },
     {
       emoji: '🫘',
-      fact: 'Wist je dat bonen heel gezond zijn en vol eiwitten zitten, net als vlees?',
+      fact: 'Wist je dat bonen heel gezond zijn? Ze zijn net zo goed voor je als vlees!',
     },
   ],
   readingTexts: [

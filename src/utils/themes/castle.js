@@ -86,7 +86,7 @@ export const CASTLE = {
     },
     {
       emoji: '🏹',
-      fact: 'Wist je dat boogschutters door smalle spleten in de kasteelmuur konden schieten?',
+      fact: 'Wist je dat boogschutters door smalle gaatjes in de kasteelmuur konden schieten?',
     },
     {
       emoji: '🐴',

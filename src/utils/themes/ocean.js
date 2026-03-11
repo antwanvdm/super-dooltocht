@@ -69,7 +69,7 @@ export const OCEAN = {
     },
     {
       emoji: '🐠',
-      fact: 'Wist je dat clownvissen tussen de giftige tentakels van een zeeanemoon wonen zonder pijn te voelen?',
+      fact: 'Wist je dat clownvissen wonen tussen de armen van een zeedier en daar veilig zijn?',
     },
     {
       emoji: '🌊',
@@ -93,7 +93,7 @@ export const OCEAN = {
     },
     {
       emoji: '🐬',
-      fact: 'Wist je dat dolfijnen slapen met één oog open en maar half hun brein laten rusten?',
+      fact: 'Wist je dat dolfijnen slapen met één oog open? Ze laten maar de helft van hun hoofd rusten!',
     },
     {
       emoji: '🦑',

@@ -68,7 +68,7 @@ export const CANDY = {
     },
     {
       emoji: '🍬',
-      fact: 'Wist je dat kauwgom niet verteerd wordt als je het inslikt, maar gewoon je lichaam verlaat?',
+      fact: 'Wist je dat kauwgom niet oplost in je buik als je het inslikt? Het komt er gewoon weer uit!',
     },
     {
       emoji: '🧁',
@@ -76,7 +76,7 @@ export const CANDY = {
     },
     {
       emoji: '🍯',
-      fact: 'Wist je dat honing nooit bederft? Honing van duizenden jaren oud is nog steeds eetbaar!',
+      fact: 'Wist je dat honing nooit slecht wordt? Honing van duizenden jaren oud kun je nog steeds eten!',
     },
     {
       emoji: '🎂',
@@ -84,7 +84,7 @@ export const CANDY = {
     },
     {
       emoji: '🍩',
-      fact: 'Wist je dat donuts hun gat in het midden kregen zodat ze gelijkmatig konden bakken?',
+      fact: 'Wist je dat donuts hun gat in het midden kregen zodat ze overal even goed doorbakken?',
     },
     {
       emoji: '🍦',
@@ -92,7 +92,7 @@ export const CANDY = {
     },
     {
       emoji: '🫧',
-      fact: 'Wist je dat er bubbels in frisdrank zitten door er koolzuurgas in te persen?',
+      fact: 'Wist je dat de bubbels in frisdrank komen van een soort gas dat erin wordt gestopt?',
     },
     {
       emoji: '🤩',

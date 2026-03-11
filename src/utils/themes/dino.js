@@ -75,11 +75,11 @@ export const DINO = {
     },
     {
       emoji: '🦴',
-      fact: 'Wist je dat we over dinosaurussen leren door fossielen te bestuderen die miljoenen jaren oud zijn?',
+      fact: 'Wist je dat we over dinosaurussen leren door botten en afdrukken te vinden die miljoenen jaren oud zijn?',
     },
     {
       emoji: '☄️',
-      fact: 'Wist je dat de dinosaurussen waarschijnlijk zijn uitgestorven door een enorme meteoriet?',
+      fact: 'Wist je dat de dinosaurussen zijn verdwenen door een enorme steen uit de ruimte?',
     },
     {
       emoji: '🌿',
@@ -87,7 +87,7 @@ export const DINO = {
     },
     {
       emoji: '🐊',
-      fact: 'Wist je dat krokodillen al bestonden in de tijd van de dinosaurussen en bijna niet veranderd zijn?',
+      fact: 'Wist je dat krokodillen al leefden in de tijd van de dinosaurussen? Ze zien er nog bijna hetzelfde uit!',
     },
     {
       emoji: '🪶',

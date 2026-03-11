@@ -65,7 +65,7 @@ export const JUNGLE = {
   facts: [
     {
       emoji: '🐒',
-      fact: 'Wist je dat apen elkaar vlooien om vriendschap te sluiten?',
+      fact: 'Wist je dat apen elkaar vlooien om te laten zien dat ze vriendjes zijn?',
     },
     {
       emoji: '🦜',
@@ -73,23 +73,23 @@ export const JUNGLE = {
     },
     {
       emoji: '🌳',
-      fact: 'Wist je dat het regenwoud zo dicht is dat regen er 10 minuten over doet om de grond te bereiken?',
+      fact: 'Wist je dat het regenwoud zo vol bomen is dat regen er 10 minuten over doet om de grond te raken?',
     },
     {
       emoji: '🐸',
-      fact: 'Wist je dat sommige kikkers in het regenwoud zo giftig zijn dat ze felgekleurd zijn als waarschuwing?',
+      fact: 'Wist je dat sommige kikkers in het regenwoud giftig zijn? Ze hebben felle kleuren zodat andere dieren wegblijven!',
     },
     {
       emoji: '🦥',
-      fact: 'Wist je dat luiaards zo langzaam bewegen dat er algen op hun vacht groeien?',
+      fact: 'Wist je dat luiaards zo langzaam bewegen dat er groene plantjes op hun vacht groeien?',
     },
     {
       emoji: '🌿',
-      fact: 'Wist je dat de helft van alle dier- en plantensoorten ter wereld in het regenwoud leeft?',
+      fact: 'Wist je dat meer dan de helft van alle dieren en planten op aarde in het regenwoud woont?',
     },
     {
       emoji: '🐆',
-      fact: 'Wist je dat jaguars als een van de weinige grote katten graag zwemmen?',
+      fact: 'Wist je dat jaguars heel graag zwemmen? De meeste andere grote katten houden niet van water!',
     },
     {
       emoji: '🦎',
@@ -97,7 +97,7 @@ export const JUNGLE = {
     },
     {
       emoji: '🐜',
-      fact: 'Wist je dat bladsnijdermieren stukjes blad knippen om er schimmeltuintjes mee te kweken?',
+      fact: 'Wist je dat bladsnijdermieren stukjes blad knippen en die gebruiken om er een eigen tuintje mee te maken?',
     },
     {
       emoji: '🍫',

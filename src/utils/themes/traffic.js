@@ -84,7 +84,7 @@ export const TRAFFIC = {
     },
     {
       emoji: '🛑',
-      fact: 'Wist je dat het stopbord in bijna alle landen ter wereld achthoekig is?',
+      fact: 'Wist je dat het stopbord in bijna alle landen van de wereld dezelfde vorm heeft? Het heeft acht zijden!',
     },
     {
       emoji: '🚢',

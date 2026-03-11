@@ -76,11 +76,11 @@ export const FARM = {
     },
     {
       emoji: '🥛',
-      fact: 'Wist je dat melk calcium bevat, wat je botten sterk maakt?',
+      fact: 'Wist je dat melk goed is voor je botten? Daar worden ze sterk van!',
     },
     {
       emoji: '🐝',
-      fact: 'Wist je dat bijen bloemen bestuiven, waardoor er fruit en groenten kunnen groeien?',
+      fact: 'Wist je dat bijen van bloem naar bloem vliegen en zo helpen dat er fruit en groenten groeien?',
     },
     {
       emoji: '🌻',
@@ -92,7 +92,7 @@ export const FARM = {
     },
     {
       emoji: '🥚',
-      fact: 'Wist je dat bruine en witte eieren even gezond zijn? De kleur hangt af van het kippenras!',
+      fact: 'Wist je dat bruine en witte eieren even gezond zijn? De kleur komt door het soort kip!',
     },
   ],
   readingTexts: [

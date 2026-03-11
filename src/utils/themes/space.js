@@ -81,7 +81,7 @@ export const SPACE = {
     },
     {
       emoji: '🔴',
-      fact: 'Wist je dat Mars de "rode planeet" wordt genoemd vanwege het roestige stof op het oppervlak?',
+      fact: 'Wist je dat Mars de "rode planeet" wordt genoemd? Dat komt door het rode stof op de grond!',
     },
     {
       emoji: '🌌',
@@ -162,7 +162,7 @@ export const SPACE = {
   friendlies: ['🛸', '🌟', '🌍', '🚀', '☄️', '🌌', '👾', '🛰️', '🪐', '🌠'],
   story: {
     intro:
-      'NOODOPROEP uit de ruimte! Een meteorietenregen heeft het ruimteschip geraakt en je vriendjes zijn door het heelal verspreid! Ze zweven verloren tussen de sterren en wachten tot iemand ze vindt. Kun jij door het ruimtestation navigeren en al je vriendjes veilig terugbrengen?',
+      'NOODOPROEP uit de ruimte! Een meteorietenregen heeft het ruimteschip geraakt en je vriendjes zijn door het heelal verspreid! Ze zweven verloren tussen de sterren en wachten tot iemand ze vindt. Kun jij de weg vinden door het ruimtestation en al je vriendjes veilig terugbrengen?',
     friendTexts: [
       'Hoera, je hebt me gevonden! Ik dreef al uren rond tussen de sterren!',
       'Eindelijk! Ik was zo bang dat niemand me zou vinden in deze donkere ruimte!',
