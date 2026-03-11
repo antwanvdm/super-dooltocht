@@ -6,10 +6,23 @@ import {
 } from '../../utils/chessGenerator';
 import PuzzleRulesCard from './PuzzleRulesCard';
 
-// Use filled Unicode glyphs for all pieces (better rendering on mobile)
-// White pieces are styled with CSS (white fill + black stroke)
-const PIECE_SYMBOLS = {
-  p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚',
+// SVG chess pieces (cburnett set, CC BY-SA) for cross-platform consistency
+import wpSvg from '../chess-pieces/pawn-w.svg';
+import wnSvg from '../chess-pieces/knight-w.svg';
+import wbSvg from '../chess-pieces/bishop-w.svg';
+import wrSvg from '../chess-pieces/rook-w.svg';
+import wqSvg from '../chess-pieces/queen-w.svg';
+import wkSvg from '../chess-pieces/king-w.svg';
+import bpSvg from '../chess-pieces/pawn-b.svg';
+import bnSvg from '../chess-pieces/knight-b.svg';
+import bbSvg from '../chess-pieces/bishop-b.svg';
+import brSvg from '../chess-pieces/rook-b.svg';
+import bqSvg from '../chess-pieces/queen-b.svg';
+import bkSvg from '../chess-pieces/king-b.svg';
+
+const PIECE_IMAGES = {
+  wp: wpSvg, wn: wnSvg, wb: wbSvg, wr: wrSvg, wq: wqSvg, wk: wkSvg,
+  bp: bpSvg, bn: bnSvg, bb: bbSvg, br: brSvg, bq: bqSvg, bk: bkSvg,
 };
 
 function ChessGame({ mathSettings, onSuccess, theme }) {
@@ -130,7 +143,7 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
       </div>
 
       {/* Chess board */}
-      <div className="relative w-full max-w-[min(90vw,360px)] aspect-square" style={{ containerType: 'inline-size' }}>
+      <div className="relative w-full max-w-[min(90vw,360px)] aspect-square">
         <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-lg overflow-hidden border-2 border-gray-800 shadow-lg">
           {board.map((row, r) =>
             row.map((piece, c) => {
@@ -166,19 +179,12 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
                   )}
                   {/* Piece */}
                   {piece && (
-                    <span
-                      className="absolute inset-0 flex items-center justify-center select-none"
-                      style={{
-                        fontSize: piece.type === 'k' ? '16cqw' : piece.type === 'q' ? '14cqw' : '13cqw',
-                        lineHeight: 1,
-                        transform: piece.type === 'k' ? 'translateY(-15%)' : 'translateY(-4%)',
-                        ...(piece.color === 'w'
-                          ? { color: '#fff', WebkitTextStroke: '1.2px #000', paintOrder: 'stroke fill' }
-                          : { color: '#000', WebkitTextStroke: '0.5px #333' }),
-                      }}
-                    >
-                      {PIECE_SYMBOLS[piece.type]}
-                    </span>
+                    <img
+                      src={PIECE_IMAGES[piece.color + piece.type]}
+                      alt={`${piece.color === 'w' ? 'wit' : 'zwart'} ${piece.type}`}
+                      className="absolute inset-0 w-[85%] h-[85%] m-auto select-none pointer-events-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]"
+                      draggable={false}
+                    />
                   )}
                   {/* Coordinate labels */}
                   {c === 0 && (
