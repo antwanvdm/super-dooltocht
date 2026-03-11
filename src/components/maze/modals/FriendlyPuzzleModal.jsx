@@ -83,7 +83,7 @@ function FriendlyPuzzleModal({ activeFriendly, theme, modalInteractionReady, onC
         </div>
 
         {/* Puzzle content */}
-        <div className="overflow-y-auto flex-1 bg-gray-50">
+        <div className="overflow-y-auto flex-1 bg-white p-4 sm:p-8">
           <Suspense fallback={
             <div className="flex items-center justify-center p-12">
               <span className="text-4xl animate-spin">🧠</span>
