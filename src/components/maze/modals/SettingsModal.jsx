@@ -222,7 +222,8 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 <p className="text-sm text-violet-700">
                   Niveau: <strong>
                     {mathSettings.puzzleLevel?.tectonic === 'easy' && 'Makkelijk (4×4)'}
-                    {mathSettings.puzzleLevel?.tectonic === 'medium' && 'Moeilijk (5×5)'}
+                    {mathSettings.puzzleLevel?.tectonic === 'medium' && 'Gemiddeld (5×5)'}
+                    {mathSettings.puzzleLevel?.tectonic === 'hard' && 'Moeilijk (6×6)'}
                   </strong>
                 </p>
               </div>

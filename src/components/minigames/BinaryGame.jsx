@@ -81,12 +81,12 @@ function BinaryGame({ mathSettings, onSuccess }) {
     }
   };
 
-  const cellSize = size <= 6 ? 'w-12 h-12 sm:w-14 sm:h-14 text-xl sm:text-2xl' :
-    size <= 8 ? 'w-10 h-10 sm:w-12 sm:h-12 text-lg sm:text-xl' :
-      'w-9 h-9 sm:w-10 sm:h-10 text-base sm:text-lg';
+  const cellSize = size <= 6 ? 'w-11 h-11 sm:w-14 sm:h-14 text-xl sm:text-2xl' :
+    size <= 8 ? 'w-9 h-9 sm:w-12 sm:h-12 text-lg sm:text-xl' :
+      'w-7 h-7 sm:w-10 sm:h-10 text-sm sm:text-lg';
 
   return (
-    <div className="bg-white rounded-2xl p-3 sm:p-6 text-center">
+    <div className="text-center">
       <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
         Vul het raster met nullen en enen. Gebruik de uitlegknop als je het spel nog niet kent.
       </p>

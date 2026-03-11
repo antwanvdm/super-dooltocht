@@ -97,6 +97,21 @@ function isValidBinary(grid, row, col, num, size) {
   return true;
 }
 
+function isRowComplete(grid, row, size) {
+  for (let c = 0; c < size; c++) {
+    if (grid[row][c] === -1) return false;
+  }
+  return true;
+}
+
+function isRowDuplicate(grid, row, size) {
+  const rowStr = grid[row].join('');
+  for (let r = 0; r < row; r++) {
+    if (isRowComplete(grid, r, size) && grid[r].join('') === rowStr) return true;
+  }
+  return false;
+}
+
 function fillBinary(grid, size) {
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
@@ -105,8 +120,12 @@ function fillBinary(grid, size) {
         for (const n of nums) {
           if (isValidBinary(grid, r, c, n, size)) {
             grid[r][c] = n;
+            // Early reject: if this completes the row, check uniqueness now
+            if (c === size - 1 && isRowDuplicate(grid, r, size)) {
+              grid[r][c] = -1;
+              continue;
+            }
             if (fillBinary(grid, size)) {
-              // After complete fill, check row/col uniqueness
               if (r === size - 1 && c === size - 1) {
                 return hasUniqueRowsAndCols(grid, size);
               }

@@ -1211,7 +1211,8 @@ function Home({ disabled = false }) {
                   <div className="space-y-1.5 mb-4">
                     {[
                       { key: 'easy', label: 'Makkelijk', desc: '4×4 rooster' },
-                      { key: 'medium', label: 'Moeilijk', desc: '5×5 rooster' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '5×5 rooster' },
+                      { key: 'hard', label: 'Moeilijk', desc: '6×6 rooster' },
                     ].map(({ key, label, desc }) => (
                       <label
                         key={key}

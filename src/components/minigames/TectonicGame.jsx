@@ -127,7 +127,7 @@ function TectonicGame({ mathSettings, onSuccess, theme }) {
       'w-10 h-10 sm:w-12 sm:h-12 text-base sm:text-lg';
 
   return (
-    <div className="bg-white rounded-2xl p-3 sm:p-6 text-center">
+    <div className="text-center">
       <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
         Vul elke kleur aan met getallen. Gebruik de uitlegknop als je het spel nog niet kent.
       </p>

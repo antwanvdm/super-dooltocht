@@ -91,10 +91,10 @@ function SudokuGame({ mathSettings, onSuccess, theme }) {
 
   const cellSize = size <= 4 ? 'w-14 h-14 sm:w-16 sm:h-16 text-xl sm:text-2xl' :
     size <= 6 ? 'w-11 h-11 sm:w-13 sm:h-13 text-lg sm:text-xl' :
-      'w-9 h-9 sm:w-11 sm:h-11 text-base sm:text-lg';
+      'w-8 h-8 sm:w-9 sm:h-9 text-sm sm:text-base';
 
   return (
-    <div className="bg-white rounded-2xl p-3 sm:p-6 text-center">
+    <div className="text-center">
       <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
         Vul de getallen 1-{size} in. Gebruik de uitlegknop als je het spel nog niet kent.
       </p>
@@ -135,12 +135,12 @@ function SudokuGame({ mathSettings, onSuccess, theme }) {
       </div>
 
       {/* Number input buttons */}
-      <div className="flex justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div className="flex justify-center flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
         {Array.from({ length: size }, (_, i) => i + 1).map(num => (
           <button
             key={num}
             onClick={() => handleNumberInput(num)}
-            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl font-bold text-lg sm:text-xl transition-all ${
+            className={`w-9 h-9 sm:w-12 sm:h-12 rounded-xl font-bold text-base sm:text-xl transition-all ${
               theme?.colors?.primary || 'bg-indigo-600'
             } text-white hover:scale-110 shadow-md active:scale-95`}
             aria-label={`Getal ${num}`}

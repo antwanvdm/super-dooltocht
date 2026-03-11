@@ -11,22 +11,58 @@ export function generateTectonic(level = 'easy') {
   const config = {
     easy: { size: 4, minRegion: 2, maxRegion: 4, givens: 7 },
     medium: { size: 5, minRegion: 2, maxRegion: 5, givens: 10 },
+    hard: { size: 6, minRegion: 2, maxRegion: 5, givens: 13 },
   };
   const { size, minRegion, maxRegion, givens } = config[level] || config.easy;
 
-  let regions, solution;
-  let attempts = 0;
-  // Retry if we can't fill the grid (rare but possible with unlucky regions)
-  do {
-    regions = generateRegions(size, minRegion, maxRegion);
+  // For hard (6×6), use a step limit per solve attempt to bail on slow layouts
+  const stepLimit = size >= 6 ? 10000 : 0;
+
+  let regions = null;
+  let solution = null;
+  for (let attempt = 0; attempt < 500; attempt++) {
+    const r = generateRegions(size, minRegion, maxRegion);
+    if (!r) continue; // Invalid region layout, try again
+    const s = createEmptyGrid(size);
+    const steps = stepLimit ? { count: 0, limit: stepLimit } : null;
+    if (fillTectonic(s, r, size, buildRegionMaps(r, size), steps)) {
+      regions = r;
+      solution = s;
+      break;
+    }
+  }
+
+  // Should never happen, but guard: use a trivial 2×2-block region layout
+  if (!solution || !regions) {
+    regions = createFallbackRegions(size);
     solution = createEmptyGrid(size);
-    attempts++;
-  } while (!fillTectonic(solution, regions, size) && attempts < 100);
+    fillTectonic(solution, regions, size, buildRegionMaps(regions, size), null);
+  }
 
   const grid = solution.map((row) => [...row]);
   removeCells(grid, size, size * size - givens);
 
   return { grid, solution, regions, size };
+}
+
+/**
+ * Fallback: create a region layout of 2×2 blocks.
+ * These are always solvable because each 4-cell region has values 1-4,
+ * giving the solver enough room to satisfy 8-connected adjacency.
+ */
+function createFallbackRegions(size) {
+  const regions = Array.from({ length: size }, () => Array(size).fill(0));
+  let id = 0;
+  for (let r = 0; r < size; r += 2) {
+    for (let c = 0; c < size; c += 2) {
+      regions[r][c] = id;
+      if (c + 1 < size) regions[r][c + 1] = id;
+      if (r + 1 < size) regions[r + 1][c] = id;
+      if (r + 1 < size && c + 1 < size) regions[r + 1][c + 1] = id;
+      id++;
+    }
+  }
+  return regions;
 }
 
 function createEmptyGrid(size) {
@@ -43,7 +79,8 @@ function shuffle(arr) {
 
 /**
  * Generate irregular regions using a flood-fill approach.
- * Returns a 2D array where regions[r][c] is the region ID (0-based).
+ * Returns a 2D array where regions[r][c] is the region ID (0-based),
+ * or null if a valid layout could not be produced.
  */
 function generateRegions(size, minRegion, maxRegion) {
   const regions = Array.from({ length: size }, () => Array(size).fill(-1));
@@ -89,33 +126,53 @@ function generateRegions(size, minRegion, maxRegion) {
   }
 
   // Merge regions smaller than minRegion into an adjacent region
+  // (prefer the smallest neighbor to maximise merge success)
   const regionSizes = {};
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
       regionSizes[regions[r][c]] = (regionSizes[regions[r][c]] || 0) + 1;
     }
   }
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if (regionSizes[regions[r][c]] < minRegion) {
-        const oldId = regions[r][c];
-        // Find adjacent region to merge into
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        const curId = regions[r][c];
+        if (regionSizes[curId] >= minRegion) continue;
+
+        // Collect unique neighbor region IDs with their sizes
+        const neighbors = [];
         for (const [nr, nc] of getNeighbors4(r, c, size)) {
-          if (regions[nr][nc] !== oldId) {
-            const newId = regions[nr][nc];
-            // Reassign all cells of oldId to newId
+          const nId = regions[nr][nc];
+          if (nId !== curId && !neighbors.some(n => n.id === nId)) {
+            neighbors.push({ id: nId, size: regionSizes[nId] });
+          }
+        }
+        // Sort: prefer smallest neighbor (best chance of staying under maxRegion)
+        neighbors.sort((a, b) => a.size - b.size);
+
+        for (const { id: newId, size: nSize } of neighbors) {
+          if (nSize + regionSizes[curId] <= maxRegion) {
             for (let row = 0; row < size; row++) {
               for (let col = 0; col < size; col++) {
-                if (regions[row][col] === oldId) regions[row][col] = newId;
+                if (regions[row][col] === curId) regions[row][col] = newId;
               }
             }
-            regionSizes[newId] += regionSizes[oldId];
-            regionSizes[oldId] = 0;
+            regionSizes[newId] += regionSizes[curId];
+            regionSizes[curId] = 0;
+            changed = true;
             break;
           }
         }
       }
     }
+  }
+
+  // Validate: all regions must be within [minRegion, maxRegion]
+  for (const sz of Object.values(regionSizes)) {
+    if (sz > 0 && (sz < minRegion || sz > maxRegion)) return null;
   }
 
   return regions;
@@ -158,47 +215,93 @@ function getRegionSize(regions, regionId, size) {
   return count;
 }
 
-function isValidTectonic(grid, regions, r, c, num, size) {
+/**
+ * Precompute lookup maps for region sizes and region cell lists.
+ * Avoids O(n²) scans on every backtracking call.
+ */
+function buildRegionMaps(regions, size) {
+  const regionSizeMap = {};
+  const regionCellsMap = {};
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const id = regions[r][c];
+      regionSizeMap[id] = (regionSizeMap[id] || 0) + 1;
+      if (!regionCellsMap[id]) regionCellsMap[id] = [];
+      regionCellsMap[id].push([r, c]);
+    }
+  }
+  return { regionSizeMap, regionCellsMap };
+}
+
+function isValidTectonic(grid, regions, r, c, num, size, regionMaps) {
   // Check: no same number in adjacent cells (8-connected)
   for (const [nr, nc] of getNeighbors8(r, c, size)) {
     if (grid[nr][nc] === num) return false;
   }
   // Check: no duplicate in same region
   const regionId = regions[r][c];
-  for (let row = 0; row < size; row++) {
-    for (let col = 0; col < size; col++) {
-      if (
-        regions[row][col] === regionId &&
-        grid[row][col] === num &&
-        (row !== r || col !== c)
-      ) {
+  if (regionMaps) {
+    for (const [row, col] of regionMaps.regionCellsMap[regionId]) {
+      if (grid[row][col] === num && (row !== r || col !== c)) {
         return false;
+      }
+    }
+  } else {
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        if (regions[row][col] === regionId && grid[row][col] === num && (row !== r || col !== c)) {
+          return false;
+        }
       }
     }
   }
   return true;
 }
 
-function fillTectonic(grid, regions, size) {
+/**
+ * Get valid candidates for a cell.
+ */
+function getCandidates(grid, regions, r, c, size, regionMaps) {
+  const regionSize = regionMaps.regionSizeMap[regions[r][c]];
+  const candidates = [];
+  for (let n = 1; n <= regionSize; n++) {
+    if (isValidTectonic(grid, regions, r, c, n, size, regionMaps)) {
+      candidates.push(n);
+    }
+  }
+  return candidates;
+}
+
+function fillTectonic(grid, regions, size, regionMaps, steps) {
+  // MRV heuristic: pick empty cell with fewest valid candidates
+  let bestR = -1, bestC = -1, bestCandidates = null;
+  let minCount = Infinity;
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
       if (grid[r][c] === 0) {
-        const regionSize = getRegionSize(regions, regions[r][c], size);
-        const nums = shuffle(
-          Array.from({ length: regionSize }, (_, i) => i + 1),
-        );
-        for (const n of nums) {
-          if (isValidTectonic(grid, regions, r, c, n, size)) {
-            grid[r][c] = n;
-            if (fillTectonic(grid, regions, size)) return true;
-            grid[r][c] = 0;
-          }
+        const cands = getCandidates(grid, regions, r, c, size, regionMaps);
+        if (cands.length === 0) return false; // Dead end: no valid values
+        if (cands.length < minCount) {
+          minCount = cands.length;
+          bestR = r;
+          bestC = c;
+          bestCandidates = cands;
+          if (minCount === 1) break; // Can't do better than 1
         }
-        return false;
       }
     }
+    if (minCount === 1) break;
   }
-  return true;
+  if (bestR === -1) return true; // All cells filled
+
+  shuffle(bestCandidates);
+  for (const n of bestCandidates) {
+    if (steps && ++steps.count > steps.limit) return false; // Bail on slow region layout
+    grid[bestR][bestC] = n;
+    if (fillTectonic(grid, regions, size, regionMaps, steps)) return true;
+    grid[bestR][bestC] = 0;
+  }
+  return false;
 }
 
 function removeCells(grid, size, toRemove) {

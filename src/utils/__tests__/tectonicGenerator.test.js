@@ -7,7 +7,7 @@ import {
 } from '../tectonicGenerator';
 
 describe('generateTectonic', () => {
-  it.each(['easy', 'medium'])(
+  it.each(['easy', 'medium', 'hard'])(
     'generates a valid puzzle for level=%s',
     (level) => {
       const { grid, solution, regions, size } = generateTectonic(level);
@@ -44,11 +44,90 @@ describe('generateTectonic', () => {
   it('returns correct dimensions per level', () => {
     expect(generateTectonic('easy').size).toBe(4);
     expect(generateTectonic('medium').size).toBe(5);
+    expect(generateTectonic('hard').size).toBe(6);
   });
 
   it('defaults to easy', () => {
     expect(generateTectonic().size).toBe(4);
   });
+
+  it.each(['easy', 'medium', 'hard'])(
+    'regions are valid for level=%s (50 puzzles)',
+    (level) => {
+      for (let i = 0; i < 50; i++) {
+        const { solution, regions, size } = generateTectonic(level);
+
+        const regionSizes = {};
+        const regionCells = {};
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            const id = regions[r][c];
+            regionSizes[id] = (regionSizes[id] || 0) + 1;
+            if (!regionCells[id]) regionCells[id] = [];
+            regionCells[id].push([r, c]);
+          }
+        }
+
+        for (const [id, count] of Object.entries(regionSizes)) {
+          expect(count, `region ${id} has ${count} cells (too big)`).toBeLessThanOrEqual(5);
+          expect(count, `region ${id} has ${count} cells (too small)`).toBeGreaterThanOrEqual(2);
+        }
+
+        // No duplicate values within a region
+        for (const [id, cells] of Object.entries(regionCells)) {
+          const vals = cells.map(([r, c]) => solution[r][c]);
+          expect(new Set(vals).size, `region ${id} has duplicate values: [${vals}]`).toBe(vals.length);
+        }
+
+        // Values must be in range 1..regionSize
+        for (const [id, cells] of Object.entries(regionCells)) {
+          for (const [r, c] of cells) {
+            expect(solution[r][c], `(${r},${c}) value ${solution[r][c]} out of range for region size ${cells.length}`)
+              .toBeGreaterThanOrEqual(1);
+            expect(solution[r][c]).toBeLessThanOrEqual(cells.length);
+          }
+        }
+
+        // No adjacent cells (8-connected) with same value
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+                  expect(
+                    solution[r][c] !== solution[nr][nc],
+                    `adjacent (${r},${c}) and (${nr},${nc}) both have ${solution[r][c]}`
+                  ).toBe(true);
+                }
+              }
+            }
+          }
+        }
+
+        // Regions must be contiguous (4-connected)
+        for (const [id, cells] of Object.entries(regionCells)) {
+          const visited = new Set();
+          const queue = [cells[0]];
+          visited.add(`${cells[0][0]},${cells[0][1]}`);
+          while (queue.length > 0) {
+            const [cr, cc] = queue.shift();
+            for (const [dr, dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+              const nr = cr + dr, nc = cc + dc;
+              const key = `${nr},${nc}`;
+              if (nr >= 0 && nr < size && nc >= 0 && nc < size && !visited.has(key) && regions[nr][nc] == id) {
+                visited.add(key);
+                queue.push([nr, nc]);
+              }
+            }
+          }
+          expect(visited.size, `region ${id} is disconnected`).toBe(cells.length);
+        }
+      }
+    },
+    30000,
+  );
 });
 
 describe('getRegionCells', () => {
