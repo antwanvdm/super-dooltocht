@@ -4,16 +4,14 @@ import { lazyRetry } from '../../../utils/lazyRetry';
 const PUZZLE_COMPONENTS = {
   sudoku: lazy(() => lazyRetry(() => import('../../minigames/SudokuGame'))),
   tectonic: lazy(() => lazyRetry(() => import('../../minigames/TectonicGame'))),
-  binary: lazy(() => lazyRetry(() => import('../../minigames/BinaryGame'))),
 };
 
 const PUZZLE_NAMES = {
   sudoku: 'Sudoku',
   tectonic: 'Tectonic',
-  binary: 'Binair',
 };
 
-const PUZZLE_TYPES = ['sudoku', 'tectonic', 'binary'];
+const PUZZLE_TYPES = ['sudoku', 'tectonic'];
 
 const COMPLIMENTS = [
   'Wauw, je bent een echte puzzelkampioen!',
