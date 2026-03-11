@@ -55,6 +55,18 @@ This game aims to be:
   - Math Puzzle (Sommenblad) – Fill in answers for multiple problems
   - Darts Game – Throw darts to add up to the target number
 
+### Puzzles (Puzzels)
+
+- **Sudoku** – Classic number puzzles in 4×4 (easy), 6×6 (medium), and 9×9 (hard) grids
+- **Tectonic** – Fill regions with numbers where no adjacent cells share the same value
+- **Binary (Binair)** – Fill a grid with 0s and 1s following row/column balance and no-triple rules
+- **Chess (Schaken)** – Tactical checkmate puzzles sourced from the [Lichess puzzle database](https://database.lichess.org/#puzzles) (CC0):
+  - Schaakmat in 1 – Find the single move that delivers checkmate
+  - Schaakmat in 2 – Two-move checkmate sequences (opponent responds automatically)
+  - Schaakmat in 3 – Three-move checkmate sequences
+- **Difficulty levels** per puzzle type (easy/medium/hard), configurable in settings
+- **Friend encounters** – When rescuing friends, a random puzzle (sudoku, tectonic, or binary) must be solved at easy difficulty
+
 ### Clock Reading (Klokkijken)
 
 - **Difficulty levels:** Whole hours → half hours → quarters → 5 minutes → 1 minute
@@ -169,17 +181,18 @@ npm run preview
 
 ## 🛠️ Tech Stack
 
-| Technology   | Version | Purpose                      |
-| ------------ | ------- | ---------------------------- |
-| React        | 19      | UI Framework                 |
-| Vite         | 7       | Build tool & dev server      |
-| Tailwind CSS | 4       | Styling                      |
-| React Router | 7       | Navigation                   |
-| Express      | 5       | Backend API server           |
-| Mongoose     | 9       | MongoDB ODM                  |
-| Howler.js    | 2       | Audio playback (music & SFX) |
-| Vitest       | 4       | Unit testing                 |
-| Playwright   | 1.58    | E2E testing                  |
+| Technology   | Version | Purpose                       |
+| ------------ | ------- | ----------------------------- |
+| React        | 19      | UI Framework                  |
+| Vite         | 7       | Build tool & dev server       |
+| Tailwind CSS | 4       | Styling                       |
+| React Router | 7       | Navigation                    |
+| Express      | 5       | Backend API server            |
+| Mongoose     | 9       | MongoDB ODM                   |
+| Howler.js    | 2       | Audio playback (music & SFX)  |
+| chess.js     | 1       | Chess move validation & rules |
+| Vitest       | 4       | Unit testing                  |
+| Playwright   | 1.58    | E2E testing                   |
 
 ## 📁 Project Structure
 
@@ -209,6 +222,8 @@ src/
 │   │   ├── English*.jsx          # English language minigames
 │   │   ├── Reading*.jsx          # Reading comprehension minigames
 │   │   ├── *Money*.jsx / *Pay*.jsx / *Change*.jsx  # Money minigames
+│   │   ├── ChessGame.jsx         # Checkmate puzzles (Lichess DB)
+│   │   ├── PuzzleRulesCard.jsx   # Shared puzzle rules overlay
 │   │   └── PlaceValueGame.jsx, LovingHeartsGame.jsx, ...
 │   ├── CodeFlowManager.jsx  # Player code auth flow
 │   ├── CodeInputModal.jsx   # Emoji code entry modal
@@ -229,6 +244,11 @@ src/
 │   ├── serverSync.js            # Server sync utilities
 │   ├── emojiCode.js             # Emoji ↔ slug conversion
 │   ├── gameSelection.js         # Minigame type selection (round-robin)
+│   ├── chessData.js             # 90 Lichess checkmate puzzles (CC0)
+│   ├── chessGenerator.js        # Chess game logic (wraps chess.js)
+│   ├── sudokuGenerator.js       # Sudoku puzzle generation & validation
+│   ├── tectonicGenerator.js     # Tectonic puzzle generation & validation
+│   ├── binaryGenerator.js       # Binary puzzle generation & validation
 │   ├── lazyRetry.js             # Resilient dynamic import wrapper
 │   ├── themes.js                # Theme registry & exports
 │   ├── languageData.js          # Language data registry
@@ -293,7 +313,7 @@ The project has two layers of testing:
 
 ### Unit Tests (Vitest)
 
-~420 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, time awareness/calculation data, and edge cases.
+~470 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, time awareness/calculation data, puzzle generators (sudoku, tectonic, binary, chess), and edge cases.
 
 ```bash
 # Run all unit tests

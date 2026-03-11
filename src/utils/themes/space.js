@@ -57,6 +57,45 @@ export const SPACE = {
       exampleSentence: 'Ons zonnestelsel is een klein deel van de melkweg.',
     },
   ],
+  facts: [
+    {
+      emoji: '🪐',
+      fact: 'Wist je dat Saturnus ringen heeft die gemaakt zijn van ijs en stenen?',
+    },
+    {
+      emoji: '🌍',
+      fact: 'Wist je dat de aarde er 365 dagen over doet om één rondje om de zon te draaien?',
+    },
+    {
+      emoji: '🌙',
+      fact: 'Wist je dat er op de maan geen wind is, waardoor voetstappen daar voor altijd blijven staan?',
+    },
+    { emoji: '☀️', fact: 'Wist je dat de zon eigenlijk een enorme ster is?' },
+    {
+      emoji: '🚀',
+      fact: 'Wist je dat astronauten in de ruimte een paar centimeter langer worden?',
+    },
+    {
+      emoji: '⭐',
+      fact: 'Wist je dat er meer sterren in het heelal zijn dan zandkorrels op alle stranden van de wereld?',
+    },
+    {
+      emoji: '🔴',
+      fact: 'Wist je dat Mars de "rode planeet" wordt genoemd vanwege het roestige stof op het oppervlak?',
+    },
+    {
+      emoji: '🌌',
+      fact: 'Wist je dat een dag op Venus langer duurt dan een jaar op Venus?',
+    },
+    {
+      emoji: '🧑‍🚀',
+      fact: 'Wist je dat André Kuipers twee keer in de ruimte is geweest?',
+    },
+    {
+      emoji: '🌕',
+      fact: 'Wist je dat Jupiter de grootste planeet van ons zonnestelsel is? Er passen wel 1.300 aardes in!',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

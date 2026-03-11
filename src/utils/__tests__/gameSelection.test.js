@@ -369,6 +369,82 @@ describe('getAvailableGameTypes', () => {
   });
 
   // ============================================
+  // PUZZLE GAMES
+  // ============================================
+
+  describe('Puzzle games', () => {
+    it('should include sudoku when enabled', () => {
+      const settings = { enabledOperations: { sudoku: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('sudoku');
+    });
+
+    it('should include tectonic when enabled', () => {
+      const settings = { enabledOperations: { tectonic: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('tectonic');
+    });
+
+    it('should include binary when enabled', () => {
+      const settings = { enabledOperations: { binary: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('binary');
+    });
+
+    it('should include chess when enabled', () => {
+      const settings = { enabledOperations: { chess: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('chess');
+    });
+
+    it('should NOT include puzzle games when disabled', () => {
+      const settings = {
+        enabledOperations: {
+          sudoku: false,
+          tectonic: false,
+          binary: false,
+          chess: false,
+          add: true,
+        },
+      };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).not.toContain('sudoku');
+      expect(types).not.toContain('tectonic');
+      expect(types).not.toContain('binary');
+      expect(types).not.toContain('chess');
+    });
+
+    it('should include multiple puzzle types when multiple enabled', () => {
+      const settings = {
+        enabledOperations: { sudoku: true, binary: true, chess: true },
+      };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('sudoku');
+      expect(types).toContain('binary');
+      expect(types).toContain('chess');
+      expect(types).not.toContain('tectonic');
+      expect(types.length).toBe(3);
+    });
+
+    it('should combine puzzle games with other categories', () => {
+      const settings = {
+        enabledOperations: { add: true, sudoku: true },
+      };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('multiple-choice');
+      expect(types).toContain('sudoku');
+      expect(types.length).toBe(5); // 4 standard + 1 sudoku
+    });
+  });
+
+  // ============================================
   // FALLBACK
   // ============================================
 
@@ -438,6 +514,10 @@ describe('getAvailableGameTypes', () => {
           english: true,
           timeAwareness: true,
           timeCalculation: true,
+          sudoku: true,
+          tectonic: true,
+          binary: true,
+          chess: true,
         },
         clock24h: true,
         clockWords: true,
@@ -464,6 +544,10 @@ describe('getAvailableGameTypes', () => {
       expect(types).toContain('kalenderQuiz');
       expect(types).toContain('seizoenenMatch');
       expect(types).toContain('klokRekenen');
+      expect(types).toContain('sudoku');
+      expect(types).toContain('tectonic');
+      expect(types).toContain('binary');
+      expect(types).toContain('chess');
     });
   });
 });
@@ -513,6 +597,10 @@ describe('GAME_NAMES', () => {
       'omrekenMemory',
       'tijdRekenen',
       'klokRekenen',
+      'sudoku',
+      'tectonic',
+      'binary',
+      'chess',
     ];
 
     for (const type of allGameTypes) {

@@ -55,6 +55,9 @@ export const TIME_CALCULATION_GAMES = [
   'klokRekenen',
 ];
 
+// Puzzle minigames
+export const PUZZLE_GAMES = ['sudoku', 'tectonic', 'binary', 'chess'];
+
 export const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
   memory: 'Memory',
@@ -94,6 +97,10 @@ export const GAME_NAMES = {
   omrekenMemory: 'Omreken Memory',
   tijdRekenen: 'Rekenen met tijd',
   klokRekenen: 'Klok rekenen',
+  sudoku: 'Sudoku',
+  tectonic: 'Tectonic',
+  binary: 'Binair',
+  chess: 'Schaken',
 };
 
 /**
@@ -189,6 +196,16 @@ export const getAvailableGameTypes = (mathSettings) => {
       availableTypes.push(...TIME_CALCULATION_GAMES);
     }
   }
+
+  // Puzzles
+  const hasSudoku = enabled.sudoku;
+  const hasTectonic = enabled.tectonic;
+  const hasBinary = enabled.binary;
+  const hasChess = enabled.chess;
+  if (hasSudoku) availableTypes.push('sudoku');
+  if (hasTectonic) availableTypes.push('tectonic');
+  if (hasBinary) availableTypes.push('binary');
+  if (hasChess) availableTypes.push('chess');
 
   // Fallback naar multiple-choice als niets beschikbaar
   if (availableTypes.length === 0) {

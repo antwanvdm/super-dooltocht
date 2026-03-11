@@ -57,6 +57,48 @@ export const CANDY = {
       exampleSentence: 'We gingen lekker smullen van de pannenkoeken.',
     },
   ],
+  facts: [
+    {
+      emoji: '🍫',
+      fact: 'Wist je dat chocolade gemaakt wordt van cacaobonen die aan bomen groeien?',
+    },
+    {
+      emoji: '🍭',
+      fact: 'Wist je dat de lolly al meer dan honderd jaar bestaat?',
+    },
+    {
+      emoji: '🍬',
+      fact: 'Wist je dat kauwgom niet verteerd wordt als je het inslikt, maar gewoon je lichaam verlaat?',
+    },
+    {
+      emoji: '🧁',
+      fact: 'Wist je dat de eerste cupcakes zo heetten omdat ze in kopjes werden gebakken?',
+    },
+    {
+      emoji: '🍯',
+      fact: 'Wist je dat honing nooit bederft? Honing van duizenden jaren oud is nog steeds eetbaar!',
+    },
+    {
+      emoji: '🎂',
+      fact: 'Wist je dat de eerste verjaardagstaarten uit Duitsland kwamen?',
+    },
+    {
+      emoji: '🍩',
+      fact: 'Wist je dat donuts hun gat in het midden kregen zodat ze gelijkmatig konden bakken?',
+    },
+    {
+      emoji: '🍦',
+      fact: 'Wist je dat ijsjes al in het oude China werden gemaakt van sneeuw en fruit?',
+    },
+    {
+      emoji: '🫧',
+      fact: 'Wist je dat er bubbels in frisdrank zitten door er koolzuurgas in te persen?',
+    },
+    {
+      emoji: '🤩',
+      fact: 'Wist je dat suikerspinnen zijn uitgevonden door een tandarts?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

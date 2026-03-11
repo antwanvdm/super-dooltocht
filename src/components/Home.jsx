@@ -37,6 +37,8 @@ const DEFAULT_SETTINGS = {
   readingLevel: 'short',
   englishLevel: 'easy',
   englishDirection: 'nl-en',
+  puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
+  puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
   adventureLength: 'medium',
   playerEmoji: PLAYER_EMOJIS[0],
   musicEnabled: false,
@@ -70,6 +72,8 @@ const buildInitialSettings = (saved) => ({
   readingLevel: saved?.readingLevel || DEFAULT_SETTINGS.readingLevel,
   englishLevel: saved?.englishLevel || DEFAULT_SETTINGS.englishLevel,
   englishDirection: saved?.englishDirection || DEFAULT_SETTINGS.englishDirection,
+  puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
+  puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
   adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
   playerEmoji: saved?.playerEmoji || DEFAULT_SETTINGS.playerEmoji,
   musicEnabled: saved?.musicEnabled ?? DEFAULT_SETTINGS.musicEnabled,
@@ -85,6 +89,10 @@ function settingsReducer(state, action) {
       return { ...state, tijdOps: { ...state.tijdOps, [action.key]: !state.tijdOps[action.key] } };
     case 'TOGGLE_TAAL_OPS':
       return { ...state, taalOps: { ...state.taalOps, [action.key]: !state.taalOps[action.key] } };
+    case 'TOGGLE_PUZZEL_OPS':
+      return { ...state, puzzelOps: { ...state.puzzelOps, [action.key]: !state.puzzelOps[action.key] } };
+    case 'SET_PUZZLE_LEVEL':
+      return { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
     case 'TOGGLE_SPELLING_CATEGORY': {
       const active = state.spellingCategories.includes(action.id);
       return {
@@ -120,7 +128,8 @@ function Home({ disabled = false }) {
     clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden,
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
-    readingLevel, englishLevel, englishDirection, adventureLength, playerEmoji,
+    readingLevel, englishLevel, englishDirection, puzzelOps, puzzleLevel,
+    adventureLength, playerEmoji,
     musicEnabled,
   } = settings;
 
@@ -217,6 +226,11 @@ function Home({ disabled = false }) {
         englishDirection,
         themeId: selectedTheme,
       };
+    } else if (exerciseCategory === 'puzzel') {
+      mathSettings = {
+        enabledOperations: { ...puzzelOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+        puzzleLevel,
+      };
     } else {
       mathSettings = {
         enabledOperations: ops,
@@ -241,6 +255,7 @@ function Home({ disabled = false }) {
 
   const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
+    || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money);
   const canLaunch = canStart && selectedTheme;
 
@@ -272,7 +287,7 @@ function Home({ disabled = false }) {
             <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
               <span className="text-2xl sm:text-3xl">🏆</span>
               <span className="text-base sm:text-lg md:text-xl text-white font-bold">
-                {completedMazes} doolhof{completedMazes !== 1 ? 'hoven' : ''} voltooid
+                {completedMazes} {completedMazes === 1 ? 'doolhof' : 'doolhoven'} voltooid
               </span>
             </div>
             <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 border border-white/30">
@@ -292,11 +307,12 @@ function Home({ disabled = false }) {
           </div>
 
           {/* Category Tabs */}
-          <div className="grid grid-cols-3 gap-2 sm:flex sm:justify-center sm:gap-3 mb-6 sm:mb-8">
+          <div className="grid grid-cols-4 gap-2 sm:flex sm:justify-center sm:gap-3 mb-6 sm:mb-8">
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'tijd', label: 'Tijd', icon: '⏰', disabled: false },
               { key: 'taal', label: 'Taal', icon: '📝', disabled: false },
+              { key: 'puzzel', label: 'Puzzels', icon: '🧩', disabled: false },
             ].map(({ key, label, icon, disabled }) => (
               <button
                 key={key}
@@ -1098,6 +1114,206 @@ function Home({ disabled = false }) {
               {/* Geen opties geselecteerd */}
               {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
+              )}
+            </div>
+            )}
+
+            {/* Soort oefening - Puzzel */}
+            {exerciseCategory === 'puzzel' && (
+            <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-2xl p-4 sm:p-7 border-2 border-violet-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">🧩</span> Soort puzzel
+              </h3>
+              <div className="space-y-3 sm:space-y-4">
+                {[
+                  { key: 'sudoku', label: 'Sudoku', icon: '🔢', desc: 'Vul het rooster met cijfers' },
+                  { key: 'tectonic', label: 'Tectonic', icon: '🧱', desc: 'Vul gebieden zonder herhalingen' },
+                  { key: 'binary', label: 'Binair', icon: '0️⃣', desc: 'Vul rijen met nullen en enen' },
+                  { key: 'chess', label: 'Schaken', icon: '♟️', desc: 'Zet de koning schaakmat' },
+                ].map(({ key, label, icon, desc }) => (
+                  <label
+                    key={key}
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                      puzzelOps[key]
+                        ? 'bg-violet-500 text-white shadow-md'
+                        : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={puzzelOps[key]}
+                      onChange={() => dispatch({ type: 'TOGGLE_PUZZEL_OPS', key })}
+                      className="sr-only"
+                    />
+                    <span className="text-xl">{icon}</span>
+                    <div className="min-w-0">
+                      <span className="font-semibold">{label}</span>
+                      <span className={`block text-xs mt-0.5 ${puzzelOps[key] ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                    </div>
+                    {puzzelOps[key] && <span className="ml-auto text-xl">✓</span>}
+                  </label>
+                ))}
+              </div>
+              {!puzzelOps.sudoku && !puzzelOps.tectonic && !puzzelOps.binary && !puzzelOps.chess && (
+                <p className="mt-4 text-sm text-red-500 font-medium text-center">
+                  ⚠️ Kies minstens één soort puzzel
+                </p>
+              )}
+            </div>
+            )}
+
+            {/* Niveau - Puzzel */}
+            {exerciseCategory === 'puzzel' && (
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-7 border-2 border-green-100">
+              <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
+                <span className="text-xl sm:text-2xl">📊</span> Niveau
+              </h3>
+
+              {puzzelOps.sudoku && (
+                <>
+                  <p className="text-sm font-medium text-gray-600 mb-2">🔢 Sudoku:</p>
+                  <div className="space-y-1.5 mb-4">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: '4×4 rooster' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '6×6 rooster' },
+                      { key: 'hard', label: 'Moeilijk', desc: '9×9 rooster' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          puzzleLevel.sudoku === key
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="sudokuLevel"
+                          value={key}
+                          checked={puzzleLevel.sudoku === key}
+                          onChange={() => dispatch({ type: 'SET_PUZZLE_LEVEL', key: 'sudoku', value: key })}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${puzzleLevel.sudoku === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {puzzleLevel.sudoku === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {puzzelOps.tectonic && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${puzzelOps.sudoku ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🧱 Tectonic:</p>
+                  <div className="space-y-1.5 mb-4">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: '4×4 rooster' },
+                      { key: 'medium', label: 'Moeilijk', desc: '5×5 rooster' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          puzzleLevel.tectonic === key
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="tectonicLevel"
+                          value={key}
+                          checked={puzzleLevel.tectonic === key}
+                          onChange={() => dispatch({ type: 'SET_PUZZLE_LEVEL', key: 'tectonic', value: key })}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${puzzleLevel.tectonic === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {puzzleLevel.tectonic === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {puzzelOps.binary && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${puzzelOps.sudoku || puzzelOps.tectonic ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>0️⃣ Binair:</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: '6×6 rooster' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '8×8 rooster' },
+                      { key: 'hard', label: 'Moeilijk', desc: '10×10 rooster' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          puzzleLevel.binary === key
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="binaryLevel"
+                          value={key}
+                          checked={puzzleLevel.binary === key}
+                          onChange={() => dispatch({ type: 'SET_PUZZLE_LEVEL', key: 'binary', value: key })}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${puzzleLevel.binary === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {puzzleLevel.binary === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {puzzelOps.chess && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>♟️ Schaken:</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { key: 'easy', label: 'Schaakmat in 1', desc: '1 zet' },
+                      { key: 'medium', label: 'Schaakmat in 2', desc: '2 zetten' },
+                      { key: 'hard', label: 'Schaakmat in 3', desc: '3 zetten' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          puzzleLevel.chess === key
+                            ? 'bg-violet-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="chessLevel"
+                          value={key}
+                          checked={puzzleLevel.chess === key}
+                          onChange={() => dispatch({ type: 'SET_PUZZLE_LEVEL', key: 'chess', value: key })}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${puzzleLevel.chess === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {puzzleLevel.chess === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {!puzzelOps.sudoku && !puzzelOps.tectonic && !puzzelOps.binary && !puzzelOps.chess && (
+                <p className="text-sm text-gray-500 italic">Kies eerst een soort puzzel om niveau-opties te zien</p>
               )}
             </div>
             )}

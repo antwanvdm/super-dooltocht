@@ -62,6 +62,48 @@ export const JUNGLE = {
       exampleSentence: 'We gingen het bos in om nieuwe planten te ontdekken.',
     },
   ],
+  facts: [
+    {
+      emoji: '🐒',
+      fact: 'Wist je dat apen elkaar vlooien om vriendschap te sluiten?',
+    },
+    {
+      emoji: '🦜',
+      fact: 'Wist je dat papegaaien woorden kunnen nadoen van mensen?',
+    },
+    {
+      emoji: '🌳',
+      fact: 'Wist je dat het regenwoud zo dicht is dat regen er 10 minuten over doet om de grond te bereiken?',
+    },
+    {
+      emoji: '🐸',
+      fact: 'Wist je dat sommige kikkers in het regenwoud zo giftig zijn dat ze felgekleurd zijn als waarschuwing?',
+    },
+    {
+      emoji: '🦥',
+      fact: 'Wist je dat luiaards zo langzaam bewegen dat er algen op hun vacht groeien?',
+    },
+    {
+      emoji: '🌿',
+      fact: 'Wist je dat de helft van alle dier- en plantensoorten ter wereld in het regenwoud leeft?',
+    },
+    {
+      emoji: '🐆',
+      fact: 'Wist je dat jaguars als een van de weinige grote katten graag zwemmen?',
+    },
+    {
+      emoji: '🦎',
+      fact: 'Wist je dat kameleons van kleur veranderen om te laten zien hoe ze zich voelen?',
+    },
+    {
+      emoji: '🐜',
+      fact: 'Wist je dat bladsnijdermieren stukjes blad knippen om er schimmeltuintjes mee te kweken?',
+    },
+    {
+      emoji: '🍫',
+      fact: 'Wist je dat cacao, waar chocolade van wordt gemaakt, groeit in het regenwoud?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

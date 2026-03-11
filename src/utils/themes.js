@@ -34,3 +34,16 @@ export const THEMES = {
 export const getTheme = (themeId) => {
   return Object.values(THEMES).find((t) => t.id === themeId) || THEMES.SPACE;
 };
+
+/**
+ * Get a specific fact for a theme by index (wraps around).
+ * @param {object} theme - The theme object (must have a `facts` array)
+ * @param {number} index - The fact index (wraps around if >= 10)
+ * @returns {{ emoji: string, fact: string }}
+ */
+export const getThemeFact = (theme, index) => {
+  const facts = theme.facts || [];
+  if (facts.length === 0)
+    return { emoji: '💡', fact: 'Wist je dat dit een super doolhof is?' };
+  return facts[index % facts.length];
+};

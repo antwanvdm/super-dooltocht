@@ -13,6 +13,7 @@ import {
   ENGLISH_GAMES,
   TIME_AWARENESS_GAMES,
   TIME_CALCULATION_GAMES,
+  PUZZLE_GAMES,
 } from '../utils/gameSelection';
 
 // Lazy-loaded minigame components (same as ChallengeModal)
@@ -55,6 +56,10 @@ const GAME_COMPONENTS = {
   'omrekenMemory': lazy(() => lazyRetry(() => import('./minigames/OmrekenMemory'))),
   'tijdRekenen': lazy(() => lazyRetry(() => import('./minigames/TijdRekenen'))),
   'klokRekenen': lazy(() => lazyRetry(() => import('./minigames/KlokRekenen'))),
+  'sudoku': lazy(() => lazyRetry(() => import('./minigames/SudokuGame'))),
+  'tectonic': lazy(() => lazyRetry(() => import('./minigames/TectonicGame'))),
+  'binary': lazy(() => lazyRetry(() => import('./minigames/BinaryGame'))),
+  'chess': lazy(() => lazyRetry(() => import('./minigames/ChessGame'))),
 };
 
 // Categories with their game types, emoji, colour, and configurable settings
@@ -179,6 +184,22 @@ const CATEGORIES = [
       ]},
     ],
   },
+  {
+    name: 'Puzzels',
+    emoji: '🧩',
+    color: 'from-violet-500 to-fuchsia-600',
+    games: PUZZLE_GAMES,
+    settings: [
+      { key: 'puzzleLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
+      ]},
+      { key: 'chessLevel', label: 'Schaakmat in', type: 'select', options: [
+        { value: 'easy', label: '1 zet' }, { value: 'medium', label: '2 zetten' },
+        { value: 'hard', label: '3 zetten' },
+      ]},
+    ],
+  },
 ];
 
 // Full mathSettings that enables everything, so every minigame works
@@ -188,6 +209,7 @@ const PREVIEW_SETTINGS = {
     placeValue: true, lovingHearts: true, money: true, clock: true,
     spelling: true, vocabulary: true, reading: true, english: true,
     timeAwareness: true, timeCalculation: true,
+    sudoku: true, tectonic: true, binary: true, chess: true,
   },
   maxValue: 100,
   mulTables: 'easy',
@@ -215,6 +237,7 @@ const PREVIEW_SETTINGS = {
   timeCalculationDuur: true,
   timeCalculationOmrekenen: true,
   timeCalculationKlok: true,
+  puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
 };
 
 function MinigamePreview() {
@@ -238,10 +261,14 @@ function MinigamePreview() {
   const getSettingValue = (categoryName, settingKey) =>
     overrides[categoryName]?.[settingKey] ?? PREVIEW_SETTINGS[settingKey];
 
-  const getSettings = (categoryName) => ({
-    ...PREVIEW_SETTINGS,
-    ...(overrides[categoryName] || {}),
-  });
+  const getSettings = (categoryName) => {
+    const merged = { ...PREVIEW_SETTINGS, ...(overrides[categoryName] || {}) };
+    // Map chess-specific override into puzzleLevel object
+    if (merged.chessLevel) {
+      merged.puzzleLevel = { ...merged.puzzleLevel, chess: merged.chessLevel };
+    }
+    return merged;
+  };
 
   const openGame = (gameType, categoryName) => {
     setActiveGame(gameType);

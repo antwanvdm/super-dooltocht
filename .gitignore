@@ -29,3 +29,6 @@ e2e/playwright-report/
 
 # Sounds
 server/public/sounds/
+
+# Chess
+lichess_db_puzzle.csv

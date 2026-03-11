@@ -57,6 +57,48 @@ export const SPORTS = {
         'Voor de wedstrijd moeten we altijd eerst goed opwarmen.',
     },
   ],
+  facts: [
+    {
+      emoji: '⚽',
+      fact: 'Wist je dat voetbal de populairste sport ter wereld is?',
+    },
+    {
+      emoji: '🏅',
+      fact: 'Wist je dat de Olympische Spelen al meer dan 2.000 jaar geleden begonnen in Griekenland?',
+    },
+    {
+      emoji: '🏊',
+      fact: 'Wist je dat zwemmen een van de gezondste sporten is omdat je bijna al je spieren gebruikt?',
+    },
+    {
+      emoji: '🚴',
+      fact: 'Wist je dat Nederland een van de beste wielerlanden ter wereld is?',
+    },
+    {
+      emoji: '🏃',
+      fact: 'Wist je dat de snelste mens ter wereld de 100 meter in minder dan 10 seconden kan rennen?',
+    },
+    {
+      emoji: '🎿',
+      fact: 'Wist je dat schaatsen al duizenden jaren bestaat en begon met botjes onder je schoenen?',
+    },
+    {
+      emoji: '🏀',
+      fact: 'Wist je dat basketbal is uitgevonden met een fruitmand als basket?',
+    },
+    {
+      emoji: '🤸',
+      fact: 'Wist je dat turnen een van de oudste sporten ter wereld is?',
+    },
+    {
+      emoji: '🎾',
+      fact: 'Wist je dat tennisballen vroeger wit waren en pas later felgeel werden voor de tv?',
+    },
+    {
+      emoji: '🏋️',
+      fact: 'Wist je dat je botten sterker worden als je regelmatig sport?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

@@ -60,6 +60,48 @@ export const DINO = {
       exampleSentence: 'Een krokodil is een reptiel met harde schubben.',
     },
   ],
+  facts: [
+    {
+      emoji: '🦕',
+      fact: 'Wist je dat de Brachiosaurus zo lang was als vier bussen achter elkaar?',
+    },
+    {
+      emoji: '🦖',
+      fact: 'Wist je dat de T-Rex armpjes had die te kort waren om zijn eigen mond aan te raken?',
+    },
+    {
+      emoji: '🥚',
+      fact: 'Wist je dat dinosaurussen eieren legden, net zoals kippen?',
+    },
+    {
+      emoji: '🦴',
+      fact: 'Wist je dat we over dinosaurussen leren door fossielen te bestuderen die miljoenen jaren oud zijn?',
+    },
+    {
+      emoji: '☄️',
+      fact: 'Wist je dat de dinosaurussen waarschijnlijk zijn uitgestorven door een enorme meteoriet?',
+    },
+    {
+      emoji: '🌿',
+      fact: 'Wist je dat sommige dinosaurussen alleen planten aten en heel rustig waren?',
+    },
+    {
+      emoji: '🐊',
+      fact: 'Wist je dat krokodillen al bestonden in de tijd van de dinosaurussen en bijna niet veranderd zijn?',
+    },
+    {
+      emoji: '🪶',
+      fact: 'Wist je dat veel dinosaurussen veren hadden, net zoals vogels?',
+    },
+    {
+      emoji: '🐔',
+      fact: 'Wist je dat vogels eigenlijk familie zijn van de dinosaurussen?',
+    },
+    {
+      emoji: '👣',
+      fact: 'Wist je dat sommige dino-voetafdrukken nog steeds te zien zijn in stenen?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

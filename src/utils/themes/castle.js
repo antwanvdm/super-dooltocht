@@ -59,6 +59,48 @@ export const CASTLE = {
       exampleSentence: 'De draak spuwde vuur en vloog boven het kasteel.',
     },
   ],
+  facts: [
+    {
+      emoji: '🏰',
+      fact: 'Wist je dat kastelen dikke muren hadden die soms wel 3 meter dik waren?',
+    },
+    {
+      emoji: '⚔️',
+      fact: 'Wist je dat ridders soms al op hun zevende begonnen met trainen?',
+    },
+    {
+      emoji: '🛡️',
+      fact: 'Wist je dat een ridderpantser wel 25 kilo kon wegen?',
+    },
+    {
+      emoji: '🐉',
+      fact: 'Wist je dat draken in veel kasteelverhalen voorkomen, maar nooit echt bestaan hebben?',
+    },
+    {
+      emoji: '🏴',
+      fact: 'Wist je dat kastelen een valhek hadden dat snel naar beneden kon om vijanden tegen te houden?',
+    },
+    {
+      emoji: '👑',
+      fact: 'Wist je dat koningen en koninginnen vroeger op kastelen woonden met soms wel honderden kamers?',
+    },
+    {
+      emoji: '🏹',
+      fact: 'Wist je dat boogschutters door smalle spleten in de kasteelmuur konden schieten?',
+    },
+    {
+      emoji: '🐴',
+      fact: 'Wist je dat ridders hun paarden een eigen pantser gaven voor de strijd?',
+    },
+    {
+      emoji: '🔔',
+      fact: 'Wist je dat de slotgracht rond een kasteel vol water stond om vijanden buiten te houden?',
+    },
+    {
+      emoji: '🍗',
+      fact: 'Wist je dat mensen in de middeleeuwen met hun handen aten, want vorken bestonden nog niet?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

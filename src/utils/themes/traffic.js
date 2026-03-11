@@ -61,6 +61,48 @@ export const TRAFFIC = {
         'Het verkeersbord liet zien dat we maar 30 mochten rijden.',
     },
   ],
+  facts: [
+    {
+      emoji: '🚲',
+      fact: 'Wist je dat er in Nederland meer fietsen zijn dan mensen?',
+    },
+    {
+      emoji: '🚦',
+      fact: 'Wist je dat het eerste verkeerslicht ter wereld in 1868 in Londen stond?',
+    },
+    {
+      emoji: '✈️',
+      fact: 'Wist je dat vliegtuigen soms sneller gaan dan 900 kilometer per uur?',
+    },
+    {
+      emoji: '🚂',
+      fact: 'Wist je dat de eerste treinen op stoom reden en langzamer waren dan een fiets?',
+    },
+    {
+      emoji: '🚗',
+      fact: 'Wist je dat de eerste auto maar 16 kilometer per uur kon rijden?',
+    },
+    {
+      emoji: '🛑',
+      fact: 'Wist je dat het stopbord in bijna alle landen ter wereld achthoekig is?',
+    },
+    {
+      emoji: '🚢',
+      fact: 'Wist je dat de grootste containerschepen zo lang zijn als vier voetbalvelden?',
+    },
+    {
+      emoji: '🛴',
+      fact: 'Wist je dat de step al meer dan honderd jaar geleden is uitgevonden?',
+    },
+    {
+      emoji: '🚁',
+      fact: 'Wist je dat een helikopter stil in de lucht kan blijven hangen?',
+    },
+    {
+      emoji: '🌉',
+      fact: 'Wist je dat Nederland meer dan 2.000 bruggen heeft, meer dan de meeste landen?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

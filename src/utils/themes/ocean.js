@@ -58,6 +58,48 @@ export const OCEAN = {
       exampleSentence: 'Op de zeebodem lagen schelpen en zeesterren.',
     },
   ],
+  facts: [
+    {
+      emoji: '🐋',
+      fact: 'Wist je dat de blauwe vinvis het grootste dier is dat ooit op aarde heeft geleefd?',
+    },
+    {
+      emoji: '🐙',
+      fact: 'Wist je dat een octopus drie harten heeft en blauw bloed?',
+    },
+    {
+      emoji: '🐠',
+      fact: 'Wist je dat clownvissen tussen de giftige tentakels van een zeeanemoon wonen zonder pijn te voelen?',
+    },
+    {
+      emoji: '🌊',
+      fact: 'Wist je dat de oceaan zo diep kan zijn dat de Mount Everest erin zou passen?',
+    },
+    {
+      emoji: '🐢',
+      fact: 'Wist je dat zeeschildpadden duizenden kilometers zwemmen om hun eieren te leggen?',
+    },
+    {
+      emoji: '🦈',
+      fact: 'Wist je dat haaien al bestonden voordat de dinosaurussen er waren?',
+    },
+    {
+      emoji: '🐚',
+      fact: 'Wist je dat je de zee kunt "horen" als je een schelp tegen je oor houdt?',
+    },
+    {
+      emoji: '🪸',
+      fact: 'Wist je dat koraal eigenlijk een dier is en geen plant?',
+    },
+    {
+      emoji: '🐬',
+      fact: 'Wist je dat dolfijnen slapen met één oog open en maar half hun brein laten rusten?',
+    },
+    {
+      emoji: '🦑',
+      fact: 'Wist je dat de reuzeninktvis ogen heeft zo groot als een frisbee?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

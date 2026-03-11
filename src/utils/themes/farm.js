@@ -56,6 +56,45 @@ export const FARM = {
       exampleSentence: 'In het voorjaar gaan we worteltjes zaaien in de tuin.',
     },
   ],
+  facts: [
+    {
+      emoji: '🐄',
+      fact: 'Wist je dat een koe elke dag wel 100 liter water drinkt?',
+    },
+    { emoji: '🐔', fact: 'Wist je dat een kip bijna elke dag een ei legt?' },
+    {
+      emoji: '🐷',
+      fact: 'Wist je dat varkens heel slim zijn en zelfs trucjes kunnen leren?',
+    },
+    {
+      emoji: '🌾',
+      fact: 'Wist je dat het graan voor één brood op een stuk land zo groot als een klaslokaal groeit?',
+    },
+    {
+      emoji: '🐑',
+      fact: 'Wist je dat de wol van één schaap genoeg is voor een paar truien?',
+    },
+    {
+      emoji: '🥛',
+      fact: 'Wist je dat melk calcium bevat, wat je botten sterk maakt?',
+    },
+    {
+      emoji: '🐝',
+      fact: 'Wist je dat bijen bloemen bestuiven, waardoor er fruit en groenten kunnen groeien?',
+    },
+    {
+      emoji: '🌻',
+      fact: 'Wist je dat zonnebloemen altijd naar de zon draaien als ze jong zijn?',
+    },
+    {
+      emoji: '🚜',
+      fact: 'Wist je dat een tractor vroeger niet bestond en boeren alles met paarden deden?',
+    },
+    {
+      emoji: '🥚',
+      fact: 'Wist je dat bruine en witte eieren even gezond zijn? De kleur hangt af van het kippenras!',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

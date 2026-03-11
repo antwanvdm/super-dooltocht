@@ -204,6 +204,53 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 </div>
               </div>
             )}
+            {mathSettings.enabledOperations.sudoku && (
+              <div className="bg-violet-50 rounded-xl p-4">
+                <h4 className="font-bold text-violet-800 mb-2">🔢 Sudoku</h4>
+                <p className="text-sm text-violet-700">
+                  Niveau: <strong>
+                    {mathSettings.puzzleLevel?.sudoku === 'easy' && 'Makkelijk (4×4)'}
+                    {mathSettings.puzzleLevel?.sudoku === 'medium' && 'Gemiddeld (6×6)'}
+                    {mathSettings.puzzleLevel?.sudoku === 'hard' && 'Moeilijk (9×9)'}
+                  </strong>
+                </p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.tectonic && (
+              <div className="bg-violet-50 rounded-xl p-4">
+                <h4 className="font-bold text-violet-800 mb-2">🧱 Tectonic</h4>
+                <p className="text-sm text-violet-700">
+                  Niveau: <strong>
+                    {mathSettings.puzzleLevel?.tectonic === 'easy' && 'Makkelijk (4×4)'}
+                    {mathSettings.puzzleLevel?.tectonic === 'medium' && 'Moeilijk (5×5)'}
+                  </strong>
+                </p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.binary && (
+              <div className="bg-violet-50 rounded-xl p-4">
+                <h4 className="font-bold text-violet-800 mb-2">0️⃣ Binair</h4>
+                <p className="text-sm text-violet-700">
+                  Niveau: <strong>
+                    {mathSettings.puzzleLevel?.binary === 'easy' && 'Makkelijk (6×6)'}
+                    {mathSettings.puzzleLevel?.binary === 'medium' && 'Gemiddeld (8×8)'}
+                    {mathSettings.puzzleLevel?.binary === 'hard' && 'Moeilijk (10×10)'}
+                  </strong>
+                </p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.chess && (
+              <div className="bg-violet-50 rounded-xl p-4">
+                <h4 className="font-bold text-violet-800 mb-2">♟️ Schaken</h4>
+                <p className="text-sm text-violet-700">
+                  Niveau: <strong>
+                    {mathSettings.puzzleLevel?.chess === 'easy' && 'Schaakmat in 1'}
+                    {mathSettings.puzzleLevel?.chess === 'medium' && 'Schaakmat in 2'}
+                    {mathSettings.puzzleLevel?.chess === 'hard' && 'Schaakmat in 3'}
+                  </strong>
+                </p>
+              </div>
+            )}
           </div>
           <button
             onClick={onClose}

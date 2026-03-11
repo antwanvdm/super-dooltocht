@@ -63,6 +63,48 @@ export const PIRATES = {
       exampleSentence: 'De piraten verdeelden de buit na hun avontuur op zee.',
     },
   ],
+  facts: [
+    {
+      emoji: '🏴‍☠️',
+      fact: 'Wist je dat piraten een eigen vlag hadden met een doodshoofd, de Jolly Roger?',
+    },
+    {
+      emoji: '🦜',
+      fact: 'Wist je dat sommige piraten echt papegaaien als huisdier hadden op hun schip?',
+    },
+    {
+      emoji: '🗺️',
+      fact: 'Wist je dat piraten met de sterren navigeerden omdat er nog geen GPS bestond?',
+    },
+    {
+      emoji: '💰',
+      fact: 'Wist je dat piraten hun buit eerlijk verdeelden volgens vaste regels?',
+    },
+    {
+      emoji: '⚓',
+      fact: 'Wist je dat piraten soms maanden op zee waren zonder land te zien?',
+    },
+    {
+      emoji: '🧭',
+      fact: 'Wist je dat het kompas piraten hielp om de juiste richting te varen?',
+    },
+    {
+      emoji: '🚢',
+      fact: 'Wist je dat piratenschepen snel moesten zijn om andere schepen in te halen?',
+    },
+    {
+      emoji: '🏝️',
+      fact: 'Wist je dat piraten soms schatten begroeven op onbewoonde eilanden?',
+    },
+    {
+      emoji: '👁️',
+      fact: 'Wist je dat piraten een ooglap droegen zodat één oog altijd aan het donker gewend was?',
+    },
+    {
+      emoji: '🌊',
+      fact: 'Wist je dat piraten overal ter wereld voeren, van de Caraïben tot Azië?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

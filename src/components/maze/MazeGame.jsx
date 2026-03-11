@@ -15,6 +15,8 @@ import MinimapModal from './modals/MinimapModal';
 import StoryIntroModal from './modals/StoryIntroModal';
 import ExitModal from './modals/ExitModal';
 import FriendlyDialog from './modals/FriendlyDialog';
+import FriendlyFactModal from './modals/FriendlyFactModal';
+import FriendlyPuzzleModal from './modals/FriendlyPuzzleModal';
 import FriendsWarningModal from './modals/FriendsWarningModal';
 import WinScreen from './modals/WinScreen';
 
@@ -73,6 +75,22 @@ function MazeGame() {
   const [playerPos, setPlayerPos] = useState(getStartPosition());
   const [activeChallenge, setActiveChallenge] = useState(null);
   const [activeFriendly, setActiveFriendly] = useState(null);
+  const [friendlyPhase, setFriendlyPhase] = useState('greeting'); // 'greeting' | 'fact' | 'puzzle'
+  const usedFactIndicesRef = useRef(0); // Round-robin counter for theme facts
+  const shuffledFactsRef = useRef(null);
+  if (!shuffledFactsRef.current && theme?.facts?.length) {
+    const arr = [...theme.facts];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    shuffledFactsRef.current = arr;
+  }
+  const getNextFact = () => {
+    const facts = shuffledFactsRef.current || [];
+    if (facts.length === 0) return { emoji: '💡', fact: 'Wist je dat dit een super doolhof is?' };
+    return facts[usedFactIndicesRef.current % facts.length];
+  };
   const [completedCount, setCompletedCount] = useState(0);
   const [showMinimap, setShowMinimap] = useState(false);
   const [hasWon, setHasWon] = useState(false);
@@ -532,11 +550,14 @@ function MazeGame() {
     );
     if (friendly && !activeFriendly) {
       setActiveFriendly(friendly);
+      setFriendlyPhase('greeting');
       playSound('friend-found');
     }
   }, [playerPos, maze, challenges, friendlies, completedCount, activeChallenge, activeFriendly, collectedFriends, hasWon, navigate, currentFloor, isMultiFloor, portalTransition, handlePortalStep]);
 
-  const handleFriendlyClose = () => {
+  const isPuzzleMode = !!(mathSettings?.enabledOperations?.sudoku || mathSettings?.enabledOperations?.tectonic || mathSettings?.enabledOperations?.binary);
+
+  const collectFriendly = () => {
     // Verzamel het vriendje - gaat nu met je mee!
     const friend = activeFriendly;
     const updatedCollected = [...collectedFriends, { id: friend.id, emoji: friend.emoji }];
@@ -544,6 +565,7 @@ function MazeGame() {
     setCollectedFriends(updatedCollected);
     setFriendlies(updatedFriendlies);
     setActiveFriendly(null);
+    setFriendlyPhase('greeting');
     
     // Save bijgewerkte data direct (niet via stale closure)
     if (maze) {
@@ -554,6 +576,28 @@ function MazeGame() {
       });
       syncProgress();
     }
+  };
+
+  const handleChooseFact = () => {
+    setFriendlyPhase('fact');
+  };
+
+  const handleChoosePuzzle = () => {
+    setFriendlyPhase('puzzle');
+  };
+
+  const handleFactClose = () => {
+    usedFactIndicesRef.current++;
+    collectFriendly();
+  };
+
+  const handlePuzzleComplete = () => {
+    collectFriendly();
+  };
+
+  const handlePuzzleClose = () => {
+    // Player closed the puzzle without solving — go back to greeting
+    setFriendlyPhase('greeting');
   };
 
   // Functie voor vertrekken met achtergelaten vriendjes
@@ -836,13 +880,33 @@ function MazeGame() {
         />
       )}
 
-      {/* Friendly NPC Dialog */}
-      {activeFriendly && (
+      {/* Friendly NPC Dialog — multi-phase flow */}
+      {activeFriendly && friendlyPhase === 'greeting' && (
         <FriendlyDialog
           activeFriendly={activeFriendly}
           theme={theme}
           modalInteractionReady={modalInteractionReady}
-          onClose={handleFriendlyClose}
+          onChooseFact={handleChooseFact}
+          onChoosePuzzle={handleChoosePuzzle}
+          isPuzzleMode={isPuzzleMode}
+        />
+      )}
+      {activeFriendly && friendlyPhase === 'fact' && (
+        <FriendlyFactModal
+          activeFriendly={activeFriendly}
+          theme={theme}
+          fact={getNextFact()}
+          modalInteractionReady={modalInteractionReady}
+          onClose={handleFactClose}
+        />
+      )}
+      {activeFriendly && friendlyPhase === 'puzzle' && (
+        <FriendlyPuzzleModal
+          activeFriendly={activeFriendly}
+          theme={theme}
+          modalInteractionReady={modalInteractionReady}
+          onComplete={handlePuzzleComplete}
+          onClose={handlePuzzleClose}
         />
       )}
 

@@ -61,6 +61,45 @@ export const MUSIC = {
         'We gaan morgen optreden op het schoolfeest met ons bandje.',
     },
   ],
+  facts: [
+    { emoji: '🎹', fact: 'Wist je dat een piano 88 toetsen heeft?' },
+    {
+      emoji: '🎸',
+      fact: 'Wist je dat gitaarsnaren vroeger van schapendarmen werden gemaakt?',
+    },
+    {
+      emoji: '🥁',
+      fact: 'Wist je dat trommels een van de oudste muziekinstrumenten ter wereld zijn?',
+    },
+    {
+      emoji: '🎵',
+      fact: 'Wist je dat muziek je blij kan maken doordat je hersenen er gelukstoffen van aanmaken?',
+    },
+    {
+      emoji: '🎤',
+      fact: 'Wist je dat je stem geluid maakt door trillingen van je stembanden?',
+    },
+    {
+      emoji: '🎻',
+      fact: 'Wist je dat een viool meer dan 70 stukjes hout bevat?',
+    },
+    {
+      emoji: '🎺',
+      fact: 'Wist je dat een trompet ruim twee meter buis is die is opgerold?',
+    },
+    {
+      emoji: '🎶',
+      fact: 'Wist je dat walvissen zingen en hun lied soms wekenlang duurt?',
+    },
+    {
+      emoji: '🪈',
+      fact: 'Wist je dat de fluit een van de oudste instrumenten is, al meer dan 40.000 jaar?',
+    },
+    {
+      emoji: '🎼',
+      fact: 'Wist je dat muzieknoten zijn uitgevonden zodat je muziek op papier kunt bewaren?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',

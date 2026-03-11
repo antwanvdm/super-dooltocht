@@ -44,6 +44,10 @@ const GAME_COMPONENTS = {
   'omrekenMemory': lazy(() => lazyRetry(() => import('./OmrekenMemory'))),
   'tijdRekenen': lazy(() => lazyRetry(() => import('./TijdRekenen'))),
   'klokRekenen': lazy(() => lazyRetry(() => import('./KlokRekenen'))),
+  'sudoku': lazy(() => lazyRetry(() => import('./SudokuGame'))),
+  'tectonic': lazy(() => lazyRetry(() => import('./TectonicGame'))),
+  'binary': lazy(() => lazyRetry(() => import('./BinaryGame'))),
+  'chess': lazy(() => lazyRetry(() => import('./ChessGame'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {

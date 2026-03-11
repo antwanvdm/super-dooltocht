@@ -57,6 +57,48 @@ export const FOOD = {
         'De kok deed lekkere kruiden bij het eten voor meer smaak.',
     },
   ],
+  facts: [
+    {
+      emoji: '🍕',
+      fact: 'Wist je dat pizza uit Italië komt en eerst alleen voor arme mensen was?',
+    },
+    {
+      emoji: '🥕',
+      fact: 'Wist je dat wortels oranje werden gekweekt als eerbetoon aan de Nederlandse koning Willem van Oranje?',
+    },
+    {
+      emoji: '🍌',
+      fact: 'Wist je dat bananen eigenlijk bessen zijn volgens de wetenschap?',
+    },
+    {
+      emoji: '🌶️',
+      fact: 'Wist je dat de heetste peper ter wereld zo heet is dat je er handschoenen voor nodig hebt?',
+    },
+    {
+      emoji: '🧀',
+      fact: 'Wist je dat Nederland een van de grootste kaasexporteurs ter wereld is?',
+    },
+    {
+      emoji: '🍝',
+      fact: 'Wist je dat pasta in heel veel vormpjes bestaat, meer dan 300 soorten?',
+    },
+    {
+      emoji: '🥦',
+      fact: 'Wist je dat broccoli eigenlijk een bloem is die we eten voor hij openbloeit?',
+    },
+    {
+      emoji: '🍅',
+      fact: 'Wist je dat een tomaat eigenlijk een vrucht is en geen groente?',
+    },
+    {
+      emoji: '🥞',
+      fact: 'Wist je dat pannenkoeken in bijna elk land ter wereld worden gegeten, maar overal anders zijn?',
+    },
+    {
+      emoji: '🫘',
+      fact: 'Wist je dat bonen heel gezond zijn en vol eiwitten zitten, net als vlees?',
+    },
+  ],
   readingTexts: [
     {
       level: 'short',
