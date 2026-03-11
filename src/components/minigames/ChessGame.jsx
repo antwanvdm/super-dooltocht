@@ -6,10 +6,10 @@ import {
 } from '../../utils/chessGenerator';
 import PuzzleRulesCard from './PuzzleRulesCard';
 
-// Unicode chess pieces
+// Use filled Unicode glyphs for all pieces (better rendering on mobile)
+// White pieces are styled with CSS (white fill + black stroke)
 const PIECE_SYMBOLS = {
-  wp: '♙', wn: '♘', wb: '♗', wr: '♖', wq: '♕', wk: '♔',
-  bp: '♟', bn: '♞', bb: '♝', br: '♜', bq: '♛', bk: '♚',
+  p: '♟', n: '♞', b: '♝', r: '♜', q: '♛', k: '♚',
 };
 
 function ChessGame({ mathSettings, onSuccess, theme }) {
@@ -130,7 +130,7 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
       </div>
 
       {/* Chess board */}
-      <div className="relative w-full max-w-[min(90vw,360px)] aspect-square">
+      <div className="relative w-full max-w-[min(90vw,360px)] aspect-square" style={{ containerType: 'inline-size' }}>
         <div className="grid grid-cols-8 grid-rows-8 w-full h-full rounded-lg overflow-hidden border-2 border-gray-800 shadow-lg">
           {board.map((row, r) =>
             row.map((piece, c) => {
@@ -166,10 +166,18 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
                   )}
                   {/* Piece */}
                   {piece && (
-                    <span className={`text-[clamp(1.2rem,6vw,2.5rem)] leading-none select-none ${
-                      piece.color === 'w' ? 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]' : ''
-                    }`}>
-                      {PIECE_SYMBOLS[piece.color + piece.type]}
+                    <span
+                      className="absolute inset-0 flex items-center justify-center select-none"
+                      style={{
+                        fontSize: piece.type === 'k' ? '16cqw' : piece.type === 'q' ? '14cqw' : '13cqw',
+                        lineHeight: 1,
+                        transform: piece.type === 'k' ? 'translateY(-15%)' : 'translateY(-4%)',
+                        ...(piece.color === 'w'
+                          ? { color: '#fff', WebkitTextStroke: '1.2px #000', paintOrder: 'stroke fill' }
+                          : { color: '#000', WebkitTextStroke: '0.5px #333' }),
+                      }}
+                    >
+                      {PIECE_SYMBOLS[piece.type]}
                     </span>
                   )}
                   {/* Coordinate labels */}

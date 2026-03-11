@@ -32,7 +32,7 @@ function FriendlyDialog({ activeFriendly, theme, modalInteractionReady, onChoose
                   onClick={onChoosePuzzle}
                   className="px-6 sm:px-8 py-2.5 sm:py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105 text-sm sm:text-base"
                 >
-                  🧩 Wil je een puzzel doen?
+                  🧠 Wil je een puzzel doen?
                 </button>
               </>
             )}

@@ -312,7 +312,7 @@ function Home({ disabled = false }) {
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'tijd', label: 'Tijd', icon: '⏰', disabled: false },
               { key: 'taal', label: 'Taal', icon: '📝', disabled: false },
-              { key: 'puzzel', label: 'Puzzels', icon: '🧩', disabled: false },
+              { key: 'puzzel', label: 'Puzzels', icon: '🧠', disabled: false },
             ].map(({ key, label, icon, disabled }) => (
               <button
                 key={key}
@@ -1122,7 +1122,7 @@ function Home({ disabled = false }) {
             {exerciseCategory === 'puzzel' && (
             <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-2xl p-4 sm:p-7 border-2 border-violet-100">
               <h3 className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg font-bold text-gray-700 mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">🧩</span> Soort puzzel
+                <span className="text-xl sm:text-2xl">🧠</span> Soort puzzel
               </h3>
               <div className="space-y-3 sm:space-y-4">
                 {[

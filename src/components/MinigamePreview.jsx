@@ -186,7 +186,7 @@ const CATEGORIES = [
   },
   {
     name: 'Puzzels',
-    emoji: '🧩',
+    emoji: '🧠',
     color: 'from-violet-500 to-fuchsia-600',
     games: PUZZLE_GAMES,
     settings: [
