@@ -207,6 +207,32 @@ describe('getAvailableGameTypes', () => {
       const types = getAvailableGameTypes(settings);
       expect(types).toContain('spellingConnect');
     });
+
+    it('should include spellingTransform only when cat 9 or 10 is active', () => {
+      const settingsWithout = {
+        enabledOperations: { spelling: true },
+        spellingCategories: [1, 2, 3],
+      };
+      expect(getAvailableGameTypes(settingsWithout)).not.toContain(
+        'spellingTransform',
+      );
+
+      const settingsWith10 = {
+        enabledOperations: { spelling: true },
+        spellingCategories: [1, 10],
+      };
+      expect(getAvailableGameTypes(settingsWith10)).toContain(
+        'spellingTransform',
+      );
+
+      const settingsWith9 = {
+        enabledOperations: { spelling: true },
+        spellingCategories: [9],
+      };
+      expect(getAvailableGameTypes(settingsWith9)).toContain(
+        'spellingTransform',
+      );
+    });
   });
 
   // ============================================
@@ -445,6 +471,76 @@ describe('getAvailableGameTypes', () => {
   });
 
   // ============================================
+  // RIJMEN GAMES
+  // ============================================
+
+  describe('Rijmen games', () => {
+    it('should include rijmMatch and rijmMemory when rijmen is enabled', () => {
+      const settings = { enabledOperations: { rijmen: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('rijmMatch');
+      expect(types).toContain('rijmMemory');
+    });
+
+    it('should NOT include rijm games when rijmen is disabled', () => {
+      const settings = { enabledOperations: { add: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).not.toContain('rijmMatch');
+      expect(types).not.toContain('rijmMemory');
+    });
+  });
+
+  // ============================================
+  // WOORDSOORTEN GAMES
+  // ============================================
+
+  describe('Woordsoorten games', () => {
+    it('should include all woordsoorten games when woordsoorten is enabled', () => {
+      const settings = { enabledOperations: { woordsoorten: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('woordsoortKies');
+      expect(types).toContain('woordsoortSorteer');
+      expect(types).toContain('woordsoortMemory');
+    });
+
+    it('should NOT include woordsoorten games when woordsoorten is disabled', () => {
+      const settings = { enabledOperations: { add: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).not.toContain('woordsoortKies');
+      expect(types).not.toContain('woordsoortSorteer');
+      expect(types).not.toContain('woordsoortMemory');
+    });
+  });
+
+  // ============================================
+  // FRACTION GAMES
+  // ============================================
+
+  describe('Fraction games', () => {
+    it('should include fractionIdentify, fractionCompare and fractionMemory when fractions is enabled', () => {
+      const settings = { enabledOperations: { fractions: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).toContain('fractionIdentify');
+      expect(types).toContain('fractionCompare');
+      expect(types).toContain('fractionMemory');
+    });
+
+    it('should NOT include fraction games when fractions is disabled', () => {
+      const settings = { enabledOperations: { add: true } };
+      const types = getAvailableGameTypes(settings);
+
+      expect(types).not.toContain('fractionIdentify');
+      expect(types).not.toContain('fractionCompare');
+      expect(types).not.toContain('fractionMemory');
+    });
+  });
+
+  // ============================================
   // FALLBACK
   // ============================================
 
@@ -518,6 +614,9 @@ describe('getAvailableGameTypes', () => {
           tectonic: true,
           binary: true,
           chess: true,
+          rijmen: true,
+          woordsoorten: true,
+          fractions: true,
         },
         clock24h: true,
         clockWords: true,
@@ -548,6 +647,14 @@ describe('getAvailableGameTypes', () => {
       expect(types).toContain('tectonic');
       expect(types).toContain('binary');
       expect(types).toContain('chess');
+      expect(types).toContain('rijmMatch');
+      expect(types).toContain('rijmMemory');
+      expect(types).toContain('woordsoortKies');
+      expect(types).toContain('woordsoortSorteer');
+      expect(types).toContain('woordsoortMemory');
+      expect(types).toContain('fractionIdentify');
+      expect(types).toContain('fractionCompare');
+      expect(types).toContain('fractionMemory');
     });
   });
 });
@@ -578,6 +685,7 @@ describe('GAME_NAMES', () => {
       'spellingCategoryMatch',
       'spellingConnect',
       'spellingTypeWord',
+      'spellingTransform',
       'vocabularyMatch',
       'vocabularyMemory',
       'vocabularyFillIn',
@@ -601,6 +709,14 @@ describe('GAME_NAMES', () => {
       'tectonic',
       'binary',
       'chess',
+      'rijmMatch',
+      'rijmMemory',
+      'woordsoortKies',
+      'woordsoortSorteer',
+      'woordsoortMemory',
+      'fractionIdentify',
+      'fractionCompare',
+      'fractionMemory',
     ];
 
     for (const type of allGameTypes) {

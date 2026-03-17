@@ -22,6 +22,7 @@ import {
   generateEnglishFillIn,
   generateEnglishTypeWord,
   generateEnglishConnectPairs,
+  generateWrongTransforms,
 } from '../languageAdapter';
 import {
   SPELLING_CATEGORIES,
@@ -29,6 +30,9 @@ import {
   GENERAL_VOCABULARY,
   READING_TEXTS,
   ENGLISH_VOCABULARY,
+  RIJM_SETS,
+  WOORDSOORTEN_DATA,
+  WOORDSOORTEN_LEVEL_TYPES,
 } from '../languageData';
 import { THEMES } from '../themes';
 
@@ -107,7 +111,7 @@ describe('generateSpellingProblem', () => {
       expect(problem.categoryId).toBeTruthy();
       expect(problem.categoryName).toBeTruthy();
       expect(problem.rule).toBeTruthy();
-      expect(problem.allCategories).toHaveLength(8);
+      expect(problem.allCategories).toHaveLength(10);
     }
   });
 
@@ -244,6 +248,65 @@ describe('generateWrongCategories', () => {
   it('should return requested count', () => {
     const wrongs = generateWrongCategories(3, 5);
     expect(wrongs).toHaveLength(5);
+  });
+});
+
+// ============================================
+// WRONG TRANSFORMS (Meervoud & Verkleinwoord)
+// ============================================
+
+describe('generateWrongTransforms', () => {
+  it('should return the requested number of wrong transforms for verkleinwoord (cat 9)', () => {
+    const problem = {
+      word: 'huis',
+      answer: 'huisje',
+      suffix: '-je',
+      mainCategoryId: 9,
+    };
+    const wrongs = generateWrongTransforms(problem, 3);
+    expect(wrongs).toHaveLength(3);
+    wrongs.forEach((w) => {
+      expect(w).not.toBe(problem.answer);
+      expect(typeof w).toBe('string');
+      expect(w.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('should return the requested number of wrong transforms for meervoud (cat 10)', () => {
+    const problem = { word: 'kat', answer: 'katten', mainCategoryId: 10 };
+    const wrongs = generateWrongTransforms(problem, 3);
+    expect(wrongs).toHaveLength(3);
+    wrongs.forEach((w) => {
+      expect(w).not.toBe(problem.answer);
+      expect(typeof w).toBe('string');
+      expect(w.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('should return unique wrong answers', () => {
+    const problem = { word: 'boom', answer: 'bomen', mainCategoryId: 10 };
+    const wrongs = generateWrongTransforms(problem, 3);
+    const unique = new Set(wrongs);
+    expect(unique.size).toBe(wrongs.length);
+  });
+
+  it('should handle missing word/answer gracefully', () => {
+    const wrongs = generateWrongTransforms({}, 3);
+    expect(wrongs).toHaveLength(3);
+  });
+
+  it('should produce plausible verkleinwoord variants', () => {
+    const problem = {
+      word: 'bal',
+      answer: 'balletje',
+      suffix: '-etje',
+      mainCategoryId: 9,
+    };
+    const wrongs = generateWrongTransforms(problem, 3);
+    // All wrongs should contain part of the original word
+    wrongs.forEach((w) => {
+      expect(w.startsWith('bal')).toBe(true);
+    });
   });
 });
 
@@ -696,10 +759,10 @@ describe('Data integrity', () => {
     });
   });
 
-  it('SPELLING_CATEGORIES should have 8 categories', () => {
-    expect(SPELLING_CATEGORIES).toHaveLength(8);
+  it('SPELLING_CATEGORIES should have 10 categories', () => {
+    expect(SPELLING_CATEGORIES).toHaveLength(10);
     expect(SPELLING_CATEGORIES.map((c) => c.id)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     ]);
   });
 
@@ -1076,5 +1139,79 @@ describe('generateLanguageProblem with english', () => {
     }
     expect(types.has('spelling')).toBe(true);
     expect(types.has('englishMultipleChoice')).toBe(true);
+  });
+});
+
+// ============================================
+// RIJM_SETS DATA INTEGRITY
+// ============================================
+
+describe('RIJM_SETS data integrity', () => {
+  it('should have 35 clusters', () => {
+    expect(RIJM_SETS).toHaveLength(35);
+  });
+
+  it('every cluster should have at least 2 words', () => {
+    for (let i = 0; i < RIJM_SETS.length; i++) {
+      expect(RIJM_SETS[i].length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('every word should be a non-empty string', () => {
+    for (const cluster of RIJM_SETS) {
+      for (const word of cluster) {
+        expect(typeof word).toBe('string');
+        expect(word.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('easy clusters should be the first 15', () => {
+    // Easy level uses indices 0-14
+    expect(RIJM_SETS.slice(0, 15)).toHaveLength(15);
+  });
+
+  it('medium clusters should cover 0-24', () => {
+    expect(RIJM_SETS.slice(0, 25)).toHaveLength(25);
+  });
+});
+
+// ============================================
+// WOORDSOORTEN_DATA DATA INTEGRITY
+// ============================================
+
+describe('WOORDSOORTEN_DATA data integrity', () => {
+  it('should have 36 items (12 per type)', () => {
+    expect(WOORDSOORTEN_DATA).toHaveLength(36);
+  });
+
+  it('every item should have sentence, word, and type', () => {
+    for (const item of WOORDSOORTEN_DATA) {
+      expect(item.sentence).toBeTruthy();
+      expect(item.word).toBeTruthy();
+      expect(['zn', 'ww', 'bnw']).toContain(item.type);
+    }
+  });
+
+  it('should have exactly 12 items per type', () => {
+    const counts = { zn: 0, ww: 0, bnw: 0 };
+    for (const item of WOORDSOORTEN_DATA) {
+      counts[item.type]++;
+    }
+    expect(counts.zn).toBe(12);
+    expect(counts.ww).toBe(12);
+    expect(counts.bnw).toBe(12);
+  });
+
+  it('every sentence should contain the marked word between ** **', () => {
+    for (const item of WOORDSOORTEN_DATA) {
+      expect(item.sentence).toContain(`**${item.word}**`);
+    }
+  });
+
+  it('WOORDSOORTEN_LEVEL_TYPES should map levels to valid types', () => {
+    expect(WOORDSOORTEN_LEVEL_TYPES.easy).toEqual(['zn', 'ww']);
+    expect(WOORDSOORTEN_LEVEL_TYPES.medium).toEqual(['zn', 'ww', 'bnw']);
+    expect(WOORDSOORTEN_LEVEL_TYPES.hard).toEqual(['zn', 'ww', 'bnw']);
   });
 });

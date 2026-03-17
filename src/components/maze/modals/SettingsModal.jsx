@@ -91,6 +91,23 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 </p>
               </div>
             )}
+            {mathSettings.enabledOperations.fractions && (
+              <div className="bg-orange-50 rounded-xl p-4">
+                <h4 className="font-bold text-orange-800 mb-2">🍕 Breuken</h4>
+                <p className="text-sm text-orange-700">Niveau: <strong>
+                  {mathSettings.fractionLevel === 'easy' && 'Makkelijk'}
+                  {mathSettings.fractionLevel === 'medium' && 'Gemiddeld'}
+                  {mathSettings.fractionLevel === 'hard' && 'Moeilijk'}
+                  {!mathSettings.fractionLevel && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.lovingHearts && (
+              <div className="bg-pink-50 rounded-xl p-4">
+                <h4 className="font-bold text-pink-800 mb-2">💕 Verliefde Harten</h4>
+                <p className="text-sm text-pink-700">Hart-getallen tot 10</p>
+              </div>
+            )}
             {mathSettings.enabledOperations.placeValue && (
               <div className="bg-amber-50 rounded-xl p-4">
                 <h4 className="font-bold text-amber-800 mb-2">🔢 Getallen begrijpen</h4>
@@ -101,12 +118,6 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                     {mathSettings.placeValueLevel === 'thousands' && 'Duizendtallen'}
                   </strong>
                 </p>
-              </div>
-            )}
-            {mathSettings.enabledOperations.lovingHearts && (
-              <div className="bg-pink-50 rounded-xl p-4">
-                <h4 className="font-bold text-pink-800 mb-2">💕 Verliefde Harten</h4>
-                <p className="text-sm text-pink-700">Hart-getallen tot 10</p>
               </div>
             )}
             {mathSettings.enabledOperations.money && (
@@ -185,6 +196,28 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                   <p>Niveau: <strong>{mathSettings.readingLevel === 'short' ? 'Korte teksten' : 'Langere teksten'}</strong></p>
                   <p>Themateksten: <strong>{mathSettings.includeThemeReading ? 'Aan' : 'Uit'}</strong></p>
                 </div>
+              </div>
+            )}
+            {mathSettings.enabledOperations.woordsoorten && (
+              <div className="bg-green-50 rounded-xl p-4">
+                <h4 className="font-bold text-green-800 mb-2">🏷️ Woordsoorten</h4>
+                <p className="text-sm text-green-700">Niveau: <strong>
+                  {mathSettings.woordsoortenLevel === 'easy' && 'Makkelijk'}
+                  {mathSettings.woordsoortenLevel === 'medium' && 'Gemiddeld'}
+                  {mathSettings.woordsoortenLevel === 'hard' && 'Moeilijk'}
+                  {!mathSettings.woordsoortenLevel && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.rijmen && (
+              <div className="bg-green-50 rounded-xl p-4">
+                <h4 className="font-bold text-green-800 mb-2">🎵 Rijmen</h4>
+                <p className="text-sm text-green-700">Niveau: <strong>
+                  {mathSettings.rijmenLevel === 'easy' && 'Makkelijk'}
+                  {mathSettings.rijmenLevel === 'medium' && 'Gemiddeld'}
+                  {mathSettings.rijmenLevel === 'hard' && 'Moeilijk'}
+                  {!mathSettings.rijmenLevel && 'Makkelijk'}
+                </strong></p>
               </div>
             )}
             {mathSettings.enabledOperations.english && (

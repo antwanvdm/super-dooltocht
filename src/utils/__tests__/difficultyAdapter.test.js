@@ -7,6 +7,8 @@ import {
   findOptimalCombination,
   getCurrencyForLevel,
   generateValidAmount,
+  generateFractionProblem,
+  generateWrongFractions,
 } from '../difficultyAdapter';
 
 // ============================================
@@ -1694,5 +1696,194 @@ describe('generateUniqueMathProblems', () => {
 
     const problems = generateUniqueMathProblems(settings, 4);
     expect(problems).toHaveLength(4);
+  });
+});
+
+// ============================================
+// FRACTION PROBLEM GENERATION
+// ============================================
+
+describe('generateFractionProblem', () => {
+  describe('level-based type selection', () => {
+    it('easy level should only produce identify or compare types', () => {
+      for (let i = 0; i < 50; i++) {
+        const p = generateFractionProblem({ level: 'easy' });
+        expect(['identify', 'compare']).toContain(p.type);
+      }
+    });
+
+    it('medium level should allow simplify type', () => {
+      const types = new Set();
+      for (let i = 0; i < 100; i++) {
+        const p = generateFractionProblem({ level: 'medium' });
+        types.add(p.type);
+      }
+      expect(types.has('simplify')).toBe(true);
+      expect(types.has('equivalent')).toBe(false);
+    });
+
+    it('hard level should allow equivalent type', () => {
+      const types = new Set();
+      for (let i = 0; i < 100; i++) {
+        const p = generateFractionProblem({ level: 'hard' });
+        types.add(p.type);
+      }
+      expect(types.has('equivalent')).toBe(true);
+    });
+  });
+
+  describe('level-based denominator pools', () => {
+    it('easy level should use denominators 2, 3, 4 only', () => {
+      const denoms = new Set();
+      for (let i = 0; i < 50; i++) {
+        const p = generateFractionProblem({
+          level: 'easy',
+          forceType: 'identify',
+        });
+        denoms.add(p.denominator);
+      }
+      for (const d of denoms) {
+        expect([2, 3, 4]).toContain(d);
+      }
+    });
+
+    it('medium level should allow denominators up to 6', () => {
+      const denoms = new Set();
+      for (let i = 0; i < 100; i++) {
+        const p = generateFractionProblem({
+          level: 'medium',
+          forceType: 'identify',
+        });
+        denoms.add(p.denominator);
+      }
+      for (const d of denoms) {
+        expect([2, 3, 4, 5, 6]).toContain(d);
+      }
+    });
+
+    it('hard level should allow denominators up to 8', () => {
+      const denoms = new Set();
+      for (let i = 0; i < 100; i++) {
+        const p = generateFractionProblem({
+          level: 'hard',
+          forceType: 'identify',
+        });
+        denoms.add(p.denominator);
+      }
+      for (const d of denoms) {
+        expect([2, 3, 4, 5, 6, 8]).toContain(d);
+      }
+    });
+  });
+
+  describe('identify type', () => {
+    it('should return valid numerator < denominator', () => {
+      for (let i = 0; i < 30; i++) {
+        const p = generateFractionProblem({ forceType: 'identify' });
+        expect(p.type).toBe('identify');
+        expect(p.numerator).toBeGreaterThanOrEqual(1);
+        expect(p.numerator).toBeLessThan(p.denominator);
+        expect(p.answer.numerator).toBe(p.numerator);
+        expect(p.answer.denominator).toBe(p.denominator);
+      }
+    });
+  });
+
+  describe('compare type', () => {
+    it('should return two different fractions with correct answer', () => {
+      for (let i = 0; i < 30; i++) {
+        const p = generateFractionProblem({ forceType: 'compare' });
+        expect(p.type).toBe('compare');
+        expect(p.left).toBeDefined();
+        expect(p.right).toBeDefined();
+        expect(['left', 'right']).toContain(p.answer);
+        // Verify the answer is correct
+        const leftVal = p.left.numerator / p.left.denominator;
+        const rightVal = p.right.numerator / p.right.denominator;
+        // Values should not be equal
+        expect(leftVal).not.toBeCloseTo(rightVal, 10);
+      }
+    });
+  });
+
+  describe('simplify type', () => {
+    it('should return a fraction that simplifies to the answer', () => {
+      for (let i = 0; i < 30; i++) {
+        const p = generateFractionProblem({
+          level: 'medium',
+          forceType: 'simplify',
+        });
+        expect(p.type).toBe('simplify');
+        expect(p.numerator).toBeGreaterThan(p.answer.numerator);
+        expect(p.denominator).toBeGreaterThan(p.answer.denominator);
+        // Value should be the same
+        const original = p.numerator / p.denominator;
+        const simplified = p.answer.numerator / p.answer.denominator;
+        expect(original).toBeCloseTo(simplified);
+      }
+    });
+  });
+
+  describe('equivalent type', () => {
+    it('should return an equivalent fraction', () => {
+      for (let i = 0; i < 30; i++) {
+        const p = generateFractionProblem({
+          level: 'hard',
+          forceType: 'equivalent',
+        });
+        expect(p.type).toBe('equivalent');
+        expect(p.multiplier).toBeGreaterThanOrEqual(2);
+        expect(p.answer.numerator).toBe(p.numerator * p.multiplier);
+        expect(p.answer.denominator).toBe(p.denominator * p.multiplier);
+      }
+    });
+  });
+
+  it('should default to easy level when no options given', () => {
+    for (let i = 0; i < 30; i++) {
+      const p = generateFractionProblem();
+      expect(['identify', 'compare']).toContain(p.type);
+    }
+  });
+});
+
+// ============================================
+// WRONG FRACTION GENERATION
+// ============================================
+
+describe('generateWrongFractions', () => {
+  it('should return the requested number of wrong answers', () => {
+    const correct = { numerator: 1, denominator: 3 };
+    const wrongs = generateWrongFractions(correct, 3);
+    expect(wrongs).toHaveLength(3);
+  });
+
+  it('should not include the correct answer', () => {
+    for (let i = 0; i < 20; i++) {
+      const correct = { numerator: 2, denominator: 5 };
+      const wrongs = generateWrongFractions(correct, 3);
+      for (const w of wrongs) {
+        const sameValue =
+          w.numerator / w.denominator ===
+          correct.numerator / correct.denominator;
+        expect(sameValue).toBe(false);
+      }
+    }
+  });
+
+  it('should return fractions with valid numerator and denominator', () => {
+    const correct = { numerator: 1, denominator: 4 };
+    const wrongs = generateWrongFractions(correct, 3);
+    for (const w of wrongs) {
+      expect(w.numerator).toBeGreaterThanOrEqual(1);
+      expect(w.denominator).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('should return unique fractions', () => {
+    const correct = { numerator: 2, denominator: 6 };
+    const wrongs = generateWrongFractions(correct, 3);
+    const keys = wrongs.map((w) => `${w.numerator}/${w.denominator}`);
+    expect(new Set(keys).size).toBe(keys.length);
   });
 });

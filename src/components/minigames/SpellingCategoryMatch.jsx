@@ -4,8 +4,19 @@ import { SPELLING_CATEGORIES } from '../../utils/languageData';
 import SpellingReferenceCard from './SpellingReferenceCard';
 import SpeakButton from './SpeakButton';
 
+const shuffle = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
 /**
  * SpellingCategoryMatch - Woord getoond, kies de juiste spellingcategorie.
+ * Bij verkleinwoord/meervoud (cat 9/10): toon de vervoegde vorm zodat het kind
+ * de categorie kan herkennen.
  * 4 opties (1 correct + 3 fout).
  */
 function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
@@ -17,23 +28,25 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
 
   useEffect(() => {
     const p = generateSpellingProblem(mathSettings);
+
+    // Voor cat 9/10: toon de vervoegde vorm als displaywoord
+    const displayWord = p.answer || p.word;
+
     const mainId = getMainCategoryId(p.categoryId);
     const correctCat = SPELLING_CATEGORIES.find(c => c.id === mainId);
     const wrongs = generateWrongCategories(p.categoryId, 3);
-    
-    const allOptions = [
+    const allOptions = shuffle([
       { id: mainId, name: correctCat.name, icon: correctCat.icon, correct: true },
       ...wrongs.map(w => ({ ...w, correct: false })),
-    ].sort(() => Math.random() - 0.5);
-    
-    setProblem(p);
+    ]);
+    setProblem({ ...p, displayWord });
     setOptions(allOptions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSelect = (option) => {
+  const handleSelect = (option, index) => {
     if (showFeedback) return;
-    setSelected(option.id);
+    setSelected(index);
     setShowFeedback(true);
 
     if (option.correct) {
@@ -51,7 +64,6 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
 
   return (
     <div className="text-center">
-      {/* Reference card button */}
       <div className="flex justify-end mb-2">
         <button
           onClick={() => setShowReference(true)}
@@ -66,16 +78,16 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
       <div className="mb-4 sm:mb-6">
         <p className="text-gray-600 text-sm sm:text-lg mb-2">Welke categorie hoort bij dit woord?</p>
         <div className="inline-flex items-center gap-2 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-indigo-200">
-          <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.word}</p>
-          <SpeakButton text={problem.word} lang="nl-NL" />
+          <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.displayWord}</p>
+          <SpeakButton text={problem.displayWord} lang="nl-NL" />
         </div>
       </div>
 
       {/* Opties */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-        {options.map((option) => {
+        {options.map((option, index) => {
           let btnClass = 'bg-blue-500 text-white hover:bg-blue-600';
-          if (showFeedback && selected === option.id) {
+          if (showFeedback && selected === index) {
             btnClass = option.correct
               ? 'bg-green-500 text-white scale-105'
               : 'bg-red-500 text-white';
@@ -83,8 +95,8 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
 
           return (
             <button
-              key={option.id}
-              onClick={() => handleSelect(option)}
+              key={index}
+              onClick={() => handleSelect(option, index)}
               disabled={showFeedback}
               className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl font-semibold text-sm sm:text-base transition-all ${btnClass}`}
             >
@@ -100,11 +112,11 @@ function SpellingCategoryMatch({ mathSettings, onSuccess, onFailure, theme }) {
       {/* Feedback */}
       {showFeedback && selected !== null && (
         <div className={`mt-4 p-3 rounded-xl text-sm sm:text-base ${
-          options.find(o => o.id === selected)?.correct
+          options[selected]?.correct
             ? 'bg-green-100 text-green-800'
             : 'bg-red-100 text-red-800'
         }`}>
-          {options.find(o => o.id === selected)?.correct
+          {options[selected]?.correct
             ? '✅ Super goed!'
             : '❌ Jammer, probeer het opnieuw!'
           }

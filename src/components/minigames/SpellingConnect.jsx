@@ -102,6 +102,9 @@ function SpellingConnect({ mathSettings, onSuccess, onFailure, theme }) {
             else if (isWrong) btnClass = 'bg-red-100 border-2 border-red-400 text-red-800';
             else if (isSelected) btnClass = 'bg-blue-100 border-2 border-blue-500 text-blue-800 ring-2 ring-blue-300';
 
+            // Voor verkleinwoord/meervoud: toon de getransformeerde vorm zodat het ondubbelzinnig is
+            const displayWord = word.answer || word.word;
+
             return (
               <div key={index} className="flex items-center gap-1">
                 <button
@@ -109,10 +112,10 @@ function SpellingConnect({ mathSettings, onSuccess, onFailure, theme }) {
                   disabled={isConnected || completed}
                   className={`flex-1 p-3 sm:p-4 rounded-xl font-bold text-lg sm:text-xl transition-all ${btnClass}`}
                 >
-                  {word.word}
+                  {displayWord}
                   {isConnected && <span className="ml-2">✓</span>}
                 </button>
-                <SpeakButton text={word.word} lang="nl-NL" />
+                <SpeakButton text={displayWord} lang="nl-NL" />
               </div>
             );
           })}

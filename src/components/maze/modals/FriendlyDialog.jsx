@@ -28,6 +28,7 @@ function FriendlyDialog({ activeFriendly, theme, modalInteractionReady, onChoose
                 >
                   📚 Wil je wat leren?
                 </button>
+                <span className="text-white/80 text-xs font-medium">— of —</span>
                 <button
                   onClick={onChoosePuzzle}
                   className="px-6 sm:px-8 py-2.5 sm:py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-105 text-sm sm:text-base"

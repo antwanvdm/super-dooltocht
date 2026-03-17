@@ -138,7 +138,7 @@ export const GENERAL_VOCABULARY = [
   {
     word: 'verschillend',
     definition: 'Niet hetzelfde, anders.',
-    exampleSentence: 'De twee zussen dragen verschillende kleuren.',
+    exampleSentence: 'De twee zussen dragen zijn erg verschillend.',
   },
   {
     word: 'afstand',

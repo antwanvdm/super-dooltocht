@@ -49,6 +49,11 @@ This game aims to be:
   - Make Amount (Bedrag Maken)
   - Smart Pay (Slim Betalen)
   - Change (Wisselgeld)
+- **Fractions (Breuken)** – Visual fraction exercises:
+  - Identify: "Which fraction is shaded?"
+  - Compare: "Which fraction is larger?"
+  - Simplify & equivalent fractions at higher levels
+  - Fraction Memory – Match visual fractions with their notation
 - **Challenge types** (round-robin: each type is played before any repeats):
   - Multiple Choice – Pick the correct answer from 4 options
   - Memory Game – Match math problems with their answers
@@ -102,9 +107,13 @@ This game aims to be:
 
 ### Language (Taal)
 
-- **Spelling** – Practice Dutch spelling rules across 8 word categories:
-  - Hakwoord, zingwoord, luchtwoord, plankwoord, eer/oor/eur/eel, aai/ooi/oei, eeuw/ieuw, langermaakwoord
-  - Challenge types: pick the category, connect words to rules, type the word
+- **Spelling** – Practice Dutch spelling rules across 10 word categories:
+  - Hakwoord, zingwoord, luchtwoord, plankwoord, eer/oor/eur/eel, aai/ooi/oei, eeuw/ieuw, langermaakwoord, verkleinwoord, meervoud
+  - Challenge types: pick the category, connect words to rules, type the word, meervoud & verkleinwoord transforms
+- **Rijmen (Rhyming)** – Practice recognizing rhyming words:
+  - Challenge types: match rhyming pairs, rijm memory
+- **Woordsoorten (Parts of Speech)** – Learn to recognize zelfstandig naamwoord, werkwoord, bijvoeglijk naamwoord:
+  - Challenge types: pick the word type, sort words by type, woordsoort memory
 - **Vocabulary (Woordenschat)** – Words with definitions and example sentences:
   - General vocabulary + optional theme-specific words
   - Challenge types: pick the definition, memory matching, fill in the blank
@@ -124,6 +133,7 @@ This game aims to be:
   - Challenges and friends are spread across both floors
   - The exit is always on the ground floor
   - Minimap shows floor tabs to inspect both levels
+- **Boss Battle** 🐉 – Final challenge before the exit: solve 3 rapid-fire minigames in a row to escape the maze
 
 ### Customization & Accessibility
 

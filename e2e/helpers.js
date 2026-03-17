@@ -6,6 +6,8 @@
  * endpoints and click through the code entry screen automatically.
  */
 
+import { expect } from '@playwright/test';
+
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
 /** Minimal emoji categories that satisfy the CodeInputModal */
@@ -515,7 +517,11 @@ export function buildMultiFloorTestGameState({
  * which sets it up, OR by injecting the saved state and visiting the URL
  * directly (MazeGame allows this when savedState exists for the themeId).
  */
-export async function injectGameStateAndNavigate(page, gameState) {
+export async function injectGameStateAndNavigate(
+  page,
+  gameState,
+  { skipBoss = false } = {},
+) {
   // First get through CodeFlowManager so the app is authenticated
   await mockAllApiCalls(page);
   await page.goto('/');
@@ -530,6 +536,13 @@ export async function injectGameStateAndNavigate(page, gameState) {
   await page.getByRole('button', { name: /Maak mijn code/i }).click();
   await page.getByRole('button', { name: /Ik heb ze onthouden/i }).click();
   await page.getByText('Super Dooltocht!').waitFor({ state: 'visible' });
+
+  // Set E2E boss skip flag before navigating to maze
+  if (skipBoss) {
+    await page.evaluate(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
+  }
 
   // Now inject the game state into localStorage
   await page.evaluate((state) => {
@@ -554,4 +567,327 @@ export async function injectGameStateAndNavigate(page, gameState) {
 
   // Dismiss any modals
   await dismissMazeModals(page);
+}
+
+// ─── Boss Battle & Friend helpers ─────────────────────────────────────────────
+
+/**
+ * Solve one round of a boss battle minigame.
+ * Detects the game type and applies the appropriate strategy:
+ * - MultipleChoice: brute-force click buttons until one is correct
+ * - MathPuzzle: parse equations and fill in correct answers
+ * - MemoryGame: flip cards to discover contents, then match pairs
+ * - DartsGame: intentionally fail fast (target is hidden)
+ *
+ * @returns {Promise<boolean>} true if solved, false if failed
+ */
+async function solveOneBossRound(page) {
+  // Wait for game content to render
+  await page.waitForTimeout(800);
+
+  // ── Strategy 1: MultipleChoice ──
+  // 2x2 grid of answer buttons (grid-cols-2 with exactly 4 buttons)
+  const mcButtons = page.locator('.grid.grid-cols-2 button');
+  const mcCount = await mcButtons.count();
+  if (mcCount >= 2) {
+    for (let i = 0; i < mcCount; i++) {
+      const btn = mcButtons.nth(i);
+      if (await btn.isDisabled().catch(() => true)) continue;
+      await btn.click();
+      await page.waitForTimeout(500);
+      const isGreen = await btn
+        .evaluate(
+          (el) =>
+            el.classList.contains('bg-green-500') ||
+            el.classList.contains('bg-green-600'),
+        )
+        .catch(() => false);
+      if (isGreen) return true;
+    }
+    return false;
+  }
+
+  // ── Strategy 2: MathPuzzle ──
+  // Has number inputs + "Controleer antwoorden" button
+  const numberInputs = page.locator('input[type="number"]');
+  const inputCount = await numberInputs.count();
+  if (inputCount >= 2) {
+    for (let i = 0; i < inputCount; i++) {
+      const input = numberInputs.nth(i);
+      // The row contains text like "23 + 45 =" — parse the equation
+      const row = input.locator('..');
+      const rowText = await row.textContent().catch(() => '');
+      const answer = parseMathEquation(rowText);
+      await input.fill(String(answer));
+    }
+    const checkBtn = page.getByRole('button', { name: /Controleer/i });
+    if (await checkBtn.isVisible().catch(() => false)) {
+      await checkBtn.click();
+      await page.waitForTimeout(800);
+    }
+    return true;
+  }
+
+  // ── Strategy 3: MemoryGame ──
+  // 4-column grid with 8 card buttons
+  const memoryCards = page.locator('.grid.grid-cols-4 button');
+  const memCount = await memoryCards.count();
+  if (memCount >= 4) {
+    return await solveMemoryGame(page, memoryCards, memCount);
+  }
+
+  // ── Strategy 4: DartsGame ──
+  // SVG dartboard with clickable path segments. Target is hidden ("???"),
+  // so we intentionally overshoot to fail fast and retry with a different game.
+  const svgPaths = page.locator('svg path.cursor-pointer');
+  const pathCount = await svgPaths.count();
+  if (pathCount >= 2) {
+    // Click the biggest value segments repeatedly to overshoot quickly
+    for (let i = pathCount - 1; i >= 0 && i >= pathCount - 3; i--) {
+      for (let c = 0; c < 5; c++) {
+        await svgPaths
+          .nth(i)
+          .click()
+          .catch(() => {});
+        await page.waitForTimeout(100);
+      }
+    }
+    return false;
+  }
+
+  return false;
+}
+
+/**
+ * Parse a math equation row like "23 + 45 =" and return the answer.
+ * Handles +, -, ×, ÷ operators.
+ */
+function parseMathEquation(text) {
+  // Clean up: remove whitespace noise, checkmarks, etc
+  const cleaned = text.replace(/[✅❌=]/g, '').trim();
+  // Match patterns like "23 + 45" or "100 - 37" or "6 × 8" or "36 ÷ 6"
+  const match = cleaned.match(/(\d+)\s*([+\-×÷xX*\/])\s*(\d+)/);
+  if (!match) return 0;
+  const a = parseInt(match[1], 10);
+  const op = match[2];
+  const b = parseInt(match[3], 10);
+  switch (op) {
+    case '+':
+      return a + b;
+    case '-':
+      return a - b;
+    case '×':
+    case 'x':
+    case 'X':
+    case '*':
+      return a * b;
+    case '÷':
+    case '/':
+      return b !== 0 ? Math.round(a / b) : 0;
+    default:
+      return a + b;
+  }
+}
+
+/**
+ * Solve a MemoryGame by flipping cards to discover contents, then matching pairs.
+ * Cards show math questions ("23 + 5") or answers ("28"). Pairs share the same answer.
+ */
+async function solveMemoryGame(page, cards, count) {
+  // Phase 1: Discover card contents by flipping pairs
+  const cardContents = new Array(count).fill(null);
+
+  // Flip cards in pairs of 2 to reveal their content
+  for (let i = 0; i < count; i += 2) {
+    const card1 = cards.nth(i);
+    const card2 = cards.nth(i + 1);
+
+    // Skip already matched cards (green)
+    const c1Matched = await card1
+      .evaluate((el) => el.classList.contains('bg-green-500'))
+      .catch(() => false);
+    const c2Matched = await card2
+      .evaluate((el) => el.classList.contains('bg-green-500'))
+      .catch(() => false);
+
+    if (!c1Matched) {
+      await card1.click().catch(() => {});
+      await page.waitForTimeout(300);
+      cardContents[i] = await card1.textContent().catch(() => '');
+    }
+    if (!c2Matched) {
+      await card2.click().catch(() => {});
+      await page.waitForTimeout(300);
+      cardContents[i + 1] = await card2.textContent().catch(() => '');
+    }
+
+    // Wait for non-match flip back
+    await page.waitForTimeout(1800);
+  }
+
+  // Phase 2: Match pairs using discovered contents
+  // Each question card ("23 + 5") has an answer card ("28") with the same pairId
+  // Evaluate the math in question cards to find their numeric answer
+  const values = cardContents.map((text) => {
+    if (!text) return null;
+    const t = text.trim();
+    // Try to parse as a simple number
+    if (/^\d+$/.test(t)) return parseInt(t, 10);
+    // Try to parse as math expression
+    const match = t.match(/(\d+)\s*([+\-×÷xX*\/])\s*(\d+)/);
+    if (match) {
+      const a = parseInt(match[1], 10);
+      const b = parseInt(match[3], 10);
+      const op = match[2];
+      switch (op) {
+        case '+':
+          return a + b;
+        case '-':
+          return a - b;
+        case '×':
+        case 'x':
+        case 'X':
+        case '*':
+          return a * b;
+        case '÷':
+        case '/':
+          return b !== 0 ? Math.round(a / b) : 0;
+        default:
+          return a + b;
+      }
+    }
+    return null;
+  });
+
+  // Find pairs with matching values and click them
+  const used = new Set();
+  for (let i = 0; i < count; i++) {
+    if (used.has(i) || values[i] === null) continue;
+    // Already matched? Skip
+    const iMatched = await cards
+      .nth(i)
+      .evaluate((el) => el.classList.contains('bg-green-500'))
+      .catch(() => false);
+    if (iMatched) {
+      used.add(i);
+      continue;
+    }
+
+    for (let j = i + 1; j < count; j++) {
+      if (used.has(j) || values[j] === null) continue;
+      const jMatched = await cards
+        .nth(j)
+        .evaluate((el) => el.classList.contains('bg-green-500'))
+        .catch(() => false);
+      if (jMatched) {
+        used.add(j);
+        continue;
+      }
+
+      if (values[i] === values[j]) {
+        await cards
+          .nth(i)
+          .click()
+          .catch(() => {});
+        await page.waitForTimeout(400);
+        await cards
+          .nth(j)
+          .click()
+          .catch(() => {});
+        await page.waitForTimeout(1800);
+        used.add(i);
+        used.add(j);
+        break;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Complete the boss battle that appears before winning.
+ * Clicks "Aan de slag!", solves each round (MultipleChoice brute-force),
+ * and waits for the victory screen to auto-dismiss.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {number} rounds - Number of rounds (2 for short/medium, 3 for long/xl)
+ */
+export async function solveBossBattle(page, rounds = 2) {
+  // Wait for boss intro
+  await expect(page.getByText('Baasgevecht!')).toBeVisible({ timeout: 5000 });
+  await page.waitForTimeout(300);
+
+  // Start the battle
+  await page.getByRole('button', { name: /Aan de slag/i }).click();
+
+  // Solve each round — boss retries on failure so we can be persistent
+  for (let r = 0; r < rounds; r++) {
+    // Wait for round content to appear
+    await page.waitForTimeout(600);
+
+    // Keep trying until either the next round starts or victory appears
+    let solved = false;
+    for (let attempt = 0; attempt < 15 && !solved; attempt++) {
+      const success = await solveOneBossRound(page);
+      await page.waitForTimeout(600);
+
+      // Check if we've moved past this round
+      const victoryVisible = await page
+        .getByText('De bewaker is verslagen!')
+        .isVisible()
+        .catch(() => false);
+      if (victoryVisible) {
+        solved = true;
+        break;
+      }
+
+      // Check if round counter advanced
+      const roundText = await page
+        .getByText(new RegExp(`Ronde ${r + 2} van`))
+        .isVisible()
+        .catch(() => false);
+      if (roundText) {
+        solved = true;
+        break;
+      }
+
+      // If we failed, wait for the 3s taunt screen + new game to appear
+      if (!success) {
+        await page.waitForTimeout(4000);
+      }
+    }
+  }
+
+  // Wait for victory animation and auto-dismiss
+  await page.waitForTimeout(4000);
+}
+
+/**
+ * Collect a friend via the new FriendlyDialog flow:
+ * greeting → click "Wil je wat leren?" → fact modal → click "Neem mee!".
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+export async function collectFriendViaFact(page) {
+  // Wait for greeting message
+  await expect(
+    page.getByText(/Hoera, je hebt me gevonden!|Eindelijk! Dankjewel!/),
+  ).toBeVisible({ timeout: 5000 });
+  await page.waitForTimeout(500);
+
+  // Click "Wil je wat leren?" or the single fact button (puzzle mode shows different text)
+  const learnButton = page.getByRole('button', {
+    name: /Wil je wat leren|Wat wil je me vertellen/i,
+  });
+  await learnButton.click();
+  await page.waitForTimeout(500);
+
+  // Fact modal appears — click "Cool! 🤝 Neem mee!"
+  const neemMeeButton = page.getByRole('button', {
+    name: /Neem mee/i,
+  });
+  await expect(neemMeeButton).toBeVisible({ timeout: 5000 });
+  await neemMeeButton.click();
+  await page.waitForTimeout(500);
 }

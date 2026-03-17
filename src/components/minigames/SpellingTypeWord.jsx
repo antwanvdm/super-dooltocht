@@ -19,7 +19,12 @@ function SpellingTypeWord({ mathSettings, onSuccess, onFailure, theme }) {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setProblem(generateSpellingProblem(mathSettings));
+    const p = generateSpellingProblem(mathSettings);
+    setProblem(p);
+    // Bij transform-opgaven (verkleinwoord/meervoud) is er maar 1 stap
+    if (p.subtype === 'verkleinwoord' || p.subtype === 'meervoud') {
+      setStep('transform');
+    }
     setTimeout(() => inputRef.current?.focus(), 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -29,6 +34,27 @@ function SpellingTypeWord({ mathSettings, onSuccess, onFailure, theme }) {
     if (!typedWord.trim()) return;
 
     const normalizedTyped = typedWord.trim().toLowerCase();
+
+    if (step === 'transform') {
+      // Verkleinwoord / meervoud: check of het antwoord klopt
+      if (normalizedTyped === problem.answer.toLowerCase()) {
+        setShowFeedback(true);
+        setIsCorrect(true);
+        setTimeout(() => onSuccess(), 1500);
+      } else {
+        setShowFeedback(true);
+        setIsCorrect(false);
+        onFailure();
+        setTimeout(() => {
+          setShowFeedback(false);
+          setTypedWord('');
+          inputRef.current?.focus();
+        }, 2000);
+      }
+      return;
+    }
+
+    // Standaard spelling: check of het woord goed geschreven is
     const normalizedCorrect = problem.word.toLowerCase();
 
     if (normalizedTyped === normalizedCorrect) {
@@ -80,7 +106,59 @@ function SpellingTypeWord({ mathSettings, onSuccess, onFailure, theme }) {
         </button>
       </div>
 
-      {step === 'type' ? (
+      {step === 'transform' ? (
+        <>
+          {/* Verkleinwoord / meervoud stap */}
+          <div className="mb-4 sm:mb-6">
+            <p className="text-gray-600 text-sm sm:text-lg mb-3">
+              {problem.subtype === 'verkleinwoord'
+                ? 'Typ het verkleinwoord van:'
+                : 'Typ het meervoud van:'}
+            </p>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-amber-200 mb-4">
+              <p className="text-3xl sm:text-5xl font-bold text-gray-800">{problem.word}</p>
+              <SpeakButton text={problem.word} lang="nl-NL" />
+            </div>
+          </div>
+
+          <form onSubmit={handleWordSubmit} className="max-w-sm mx-auto">
+            <input
+              ref={inputRef}
+              type="text"
+              value={typedWord}
+              onChange={(e) => setTypedWord(e.target.value)}
+              placeholder={problem.subtype === 'verkleinwoord' ? 'Typ het verkleinwoord...' : 'Typ het meervoud...'}
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              className={`w-full text-center text-2xl sm:text-3xl font-bold p-3 sm:p-4 border-2 rounded-xl outline-none transition-colors ${
+                showFeedback && !isCorrect
+                  ? 'border-red-400 bg-red-50'
+                  : 'border-gray-300 focus:border-blue-500'
+              }`}
+            />
+            <button
+              type="submit"
+              disabled={!typedWord.trim()}
+              className={`w-full mt-3 py-3 rounded-xl font-bold text-base sm:text-lg transition-all ${
+                typedWord.trim()
+                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              Controleer ✓
+            </button>
+          </form>
+
+          {showFeedback && (
+            <p className={`mt-3 font-medium text-sm sm:text-base ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+              {isCorrect
+                ? '✅ Super goed!'
+                : `❌ Dat klopt niet. Het juiste antwoord is: ${problem.answer}`}
+            </p>
+          )}
+        </>
+      ) : step === 'type' ? (
         <>
           {/* Stap 1: Typ het woord over */}
           <div className="mb-4 sm:mb-6">

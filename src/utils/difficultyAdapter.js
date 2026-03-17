@@ -815,3 +815,192 @@ export {
   getCurrencyForLevel,
   generateValidAmount,
 };
+
+// ============================================
+// BREUKEN (fractions) – Groep 5-6
+// ============================================
+
+const GCD = (a, b) => (b === 0 ? a : GCD(b, a % b));
+
+/**
+ * Genereer een breukenprobleem.
+ * Types:
+ * - 'identify': Bekijk de figuur, welke breuk is gekleurd? (visueel → breuk)
+ * - 'compare': Welke breuk is groter/kleiner?
+ * - 'simplify': Vereenvoudig de breuk
+ * - 'equivalent': Welke breuk is gelijk aan …?
+ *
+ * @param {object} [options]
+ * @param {string} [options.forceType] - forceer een bepaald type
+ * @returns {{ type: string, ... }} probleem-object
+ */
+export const generateFractionProblem = (options = {}) => {
+  const level = options.level || 'easy';
+  // Types available per level
+  const typesByLevel = {
+    easy: ['identify', 'compare'],
+    medium: ['identify', 'compare', 'simplify'],
+    hard: ['identify', 'compare', 'simplify', 'equivalent'],
+  };
+  const allowedTypes = typesByLevel[level] || typesByLevel.hard;
+  const type =
+    options.forceType ||
+    allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
+
+  // Denominators per level
+  const denoms =
+    level === 'easy'
+      ? [2, 3, 4]
+      : level === 'medium'
+        ? [2, 3, 4, 5, 6]
+        : [2, 3, 4, 5, 6, 8];
+
+  switch (type) {
+    case 'identify': {
+      // Toon visueel: numerator van denominator delen gekleurd
+      const denominator = denoms[Math.floor(Math.random() * denoms.length)];
+      const numerator = randBetween(1, denominator - 1);
+      return {
+        type: 'identify',
+        numerator,
+        denominator,
+        answer: { numerator, denominator },
+        display: `${numerator}/${denominator}`,
+      };
+    }
+    case 'compare': {
+      // Twee breuken, welke is groter?
+      const d1 = denoms[Math.floor(Math.random() * denoms.length)];
+      let d2 = denoms[Math.floor(Math.random() * denoms.length)];
+      const n1 = randBetween(1, d1 - 1);
+      let n2 = randBetween(1, d2 - 1);
+      // Zorg dat ze niet gelijk zijn (probeer max 10x)
+      let guard = 0;
+      while (n1 / d1 === n2 / d2 && guard < 10) {
+        d2 = denoms[Math.floor(Math.random() * denoms.length)];
+        n2 = randBetween(1, d2 - 1);
+        guard++;
+      }
+      const leftBigger = n1 / d1 > n2 / d2;
+      return {
+        type: 'compare',
+        left: { numerator: n1, denominator: d1 },
+        right: { numerator: n2, denominator: d2 },
+        answer: leftBigger ? 'left' : 'right',
+        answerFraction: leftBigger
+          ? { numerator: n1, denominator: d1 }
+          : { numerator: n2, denominator: d2 },
+        display: `${n1}/${d1} of ${n2}/${d2}`,
+      };
+    }
+    case 'simplify': {
+      // Geef een breuk die vereenvoudigd kan worden
+      const simplifyDenoms =
+        level === 'easy'
+          ? [2, 3]
+          : level === 'medium'
+            ? [2, 3, 4, 5]
+            : [2, 3, 4, 5];
+      const simpleDenom =
+        simplifyDenoms[Math.floor(Math.random() * simplifyDenoms.length)];
+      const simpleNum = randBetween(1, simpleDenom - 1);
+      const multiplier = randBetween(2, 4);
+      return {
+        type: 'simplify',
+        numerator: simpleNum * multiplier,
+        denominator: simpleDenom * multiplier,
+        answer: { numerator: simpleNum, denominator: simpleDenom },
+        display: `${simpleNum * multiplier}/${simpleDenom * multiplier}`,
+      };
+    }
+    case 'equivalent':
+    default: {
+      // Welke breuk is gelijk aan een gegeven breuk?
+      const equivDenoms =
+        level === 'easy'
+          ? [2, 3]
+          : level === 'medium'
+            ? [2, 3, 4, 5]
+            : [2, 3, 4, 5];
+      const baseDenom =
+        equivDenoms[Math.floor(Math.random() * equivDenoms.length)];
+      const baseNum = randBetween(1, baseDenom - 1);
+      const mul = randBetween(2, 4);
+      return {
+        type: 'equivalent',
+        numerator: baseNum,
+        denominator: baseDenom,
+        answer: { numerator: baseNum * mul, denominator: baseDenom * mul },
+        multiplier: mul,
+        display: `${baseNum}/${baseDenom}`,
+      };
+    }
+  }
+};
+
+/**
+ * Genereer foute breukantwoorden die plausibel zijn.
+ * @param {{ numerator: number, denominator: number }} correct
+ * @param {number} count
+ * @returns {Array<{ numerator: number, denominator: number }>}
+ */
+export const generateWrongFractions = (correct, count = 3) => {
+  const results = [];
+  const seen = new Set([`${correct.numerator}/${correct.denominator}`]);
+
+  const candidates = [
+    // Teller ± 1
+    { numerator: correct.numerator + 1, denominator: correct.denominator },
+    {
+      numerator: Math.max(1, correct.numerator - 1),
+      denominator: correct.denominator,
+    },
+    // Noemer ± 1
+    { numerator: correct.numerator, denominator: correct.denominator + 1 },
+    {
+      numerator: correct.numerator,
+      denominator: Math.max(2, correct.denominator - 1),
+    },
+    // Teller en noemer omgedraaid
+    { numerator: correct.denominator, denominator: correct.numerator || 1 },
+    // Dubbel
+    { numerator: correct.numerator * 2, denominator: correct.denominator },
+    { numerator: correct.numerator, denominator: correct.denominator * 2 },
+    // Random
+    { numerator: randBetween(1, 7), denominator: randBetween(2, 8) },
+    { numerator: randBetween(1, 5), denominator: randBetween(2, 6) },
+  ];
+
+  for (const c of candidates) {
+    if (results.length >= count) break;
+    const key = `${c.numerator}/${c.denominator}`;
+    // Niet dezelfde waarde als correct
+    if (seen.has(key)) continue;
+    if (c.numerator / c.denominator === correct.numerator / correct.denominator)
+      continue;
+    if (c.numerator <= 0 || c.denominator <= 1) continue;
+    if (c.numerator >= c.denominator && correct.numerator < correct.denominator)
+      continue;
+    seen.add(key);
+    results.push(c);
+  }
+
+  // Vul aan als er niet genoeg zijn
+  let safety = 0;
+  while (results.length < count && safety < 20) {
+    safety++;
+    const n = randBetween(1, 7);
+    const d = randBetween(2, 8);
+    const key = `${n}/${d}`;
+    if (
+      !seen.has(key) &&
+      n / d !== correct.numerator / correct.denominator &&
+      n < d
+    ) {
+      seen.add(key);
+      results.push({ numerator: n, denominator: d });
+    }
+  }
+
+  return results.slice(0, count);
+};

@@ -96,6 +96,19 @@ export const generateSpellingProblem = (settings) => {
         const words = SPELLING_WORDS[subId] || [];
         words.forEach((w) => wordPool.push({ word: w, categoryId: subId }));
       }
+    } else if (mainId === 9 || mainId === 10) {
+      // Verkleinwoord / meervoud — object-arrays met { word, answer, suffix }
+      const items = SPELLING_WORDS[mainId] || [];
+      items.forEach((item) => {
+        if (typeof item === 'object' && item.word && item.answer) {
+          wordPool.push({
+            word: item.word,
+            answer: item.answer,
+            suffix: item.suffix,
+            categoryId: mainId,
+          });
+        }
+      });
     } else {
       const words = SPELLING_WORDS[mainId] || [];
       words.forEach((w) => wordPool.push({ word: w, categoryId: mainId }));
@@ -119,6 +132,23 @@ export const generateSpellingProblem = (settings) => {
 
   const chosen = wordPool[randBetween(0, wordPool.length - 1)];
   const cat = getCategoryById(chosen.categoryId);
+  const mainId = getMainCategoryId(chosen.categoryId);
+
+  // Cat 9 (verkleinwoord) en 10 (meervoud) zijn transform-opgaven
+  if ((mainId === 9 || mainId === 10) && chosen.answer) {
+    return {
+      type: 'spelling',
+      subtype: mainId === 9 ? 'verkleinwoord' : 'meervoud',
+      word: chosen.word,
+      answer: chosen.answer,
+      suffix: chosen.suffix,
+      categoryId: chosen.categoryId,
+      mainCategoryId: mainId,
+      categoryName: cat?.name || 'Onbekend',
+      rule: cat?.rule || '',
+      allCategories: SPELLING_CATEGORIES,
+    };
+  }
 
   return {
     type: 'spelling',
@@ -194,6 +224,68 @@ export const generateWrongCategories = (correctCategoryId, count = 3) => {
     const cat = SPELLING_CATEGORIES.find((c) => c.id === id);
     return { id, name: cat.name, rule: cat.rule, icon: cat.icon };
   });
+};
+
+/**
+ * Genereer foute antwoorden voor verkleinwoord/meervoud opgaven.
+ * Maakt plausibele varianten door verkeerde suffixen toe te passen.
+ */
+export const generateWrongTransforms = (problem, count = 3) => {
+  const { word, answer, suffix, mainCategoryId } = problem;
+  if (!word || !answer)
+    return Array.from({ length: count }, (_, i) => `${word || '?'}${i}`);
+  const wrongs = new Set();
+
+  if (mainCategoryId === 9) {
+    // Verkleinwoord — verkeerde suffixen
+    const allSuffixes = ['-je', '-tje', '-pje', '-etje', '-kje'];
+    const wrongSuffixes = allSuffixes.filter((s) => s !== suffix);
+    for (const ws of shuffle(wrongSuffixes)) {
+      let wrong;
+      if (ws === '-etje') {
+        // Verdubbel laatste medeklinker
+        const lastChar = word[word.length - 1];
+        wrong = word + lastChar + 'etje';
+      } else if (ws === '-kje') {
+        wrong = word.replace(/ng$/, 'nk') + 'je';
+      } else {
+        wrong = word + ws.slice(1); // Verwijder de -
+      }
+      if (wrong !== answer) wrongs.add(wrong);
+    }
+  } else {
+    // Meervoud — verkeerde suffixen
+    const wrongForms = [];
+    // Simpele varianten
+    if (!answer.endsWith('en')) wrongForms.push(word + 'en');
+    if (!answer.endsWith('s')) wrongForms.push(word + 's');
+    if (!answer.endsWith('eren')) wrongForms.push(word + 'eren');
+    // Dubbele medeklinker variant
+    const lastChar = word[word.length - 1];
+    const doubled = word + lastChar + 'en';
+    if (doubled !== answer) wrongForms.push(doubled);
+    // Apostrophe variant
+    if (!answer.includes("'")) wrongForms.push(word + "'s");
+
+    for (const w of shuffle(wrongForms)) {
+      if (w !== answer) wrongs.add(w);
+    }
+  }
+
+  // Fallback: als we te weinig foute antwoorden hebben, voeg generieke varianten toe
+  const fallbacks = [
+    word + 'en',
+    word + 's',
+    word + 'jes',
+    word + 'tje',
+    word + 'eren',
+  ];
+  for (const fb of fallbacks) {
+    if (wrongs.size >= count) break;
+    if (fb !== answer) wrongs.add(fb);
+  }
+
+  return [...wrongs].slice(0, count);
 };
 
 // ============================================

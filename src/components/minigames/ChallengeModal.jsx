@@ -25,6 +25,7 @@ const GAME_COMPONENTS = {
   'spellingCategoryMatch': lazy(() => lazyRetry(() => import('./SpellingCategoryMatch'))),
   'spellingConnect': lazy(() => lazyRetry(() => import('./SpellingConnect'))),
   'spellingTypeWord': lazy(() => lazyRetry(() => import('./SpellingTypeWord'))),
+  'spellingTransform': lazy(() => lazyRetry(() => import('./SpellingTransform'))),
   'vocabularyMatch': lazy(() => lazyRetry(() => import('./VocabularyMatch'))),
   'vocabularyMemory': lazy(() => lazyRetry(() => import('./VocabularyMemory'))),
   'vocabularyFillIn': lazy(() => lazyRetry(() => import('./VocabularyFillIn'))),
@@ -48,6 +49,14 @@ const GAME_COMPONENTS = {
   'tectonic': lazy(() => lazyRetry(() => import('./TectonicGame'))),
   'binary': lazy(() => lazyRetry(() => import('./BinaryGame'))),
   'chess': lazy(() => lazyRetry(() => import('./ChessGame'))),
+  'rijmMatch': lazy(() => lazyRetry(() => import('./RijmMatch'))),
+  'rijmMemory': lazy(() => lazyRetry(() => import('./RijmMemory'))),
+  'woordsoortKies': lazy(() => lazyRetry(() => import('./WoordsoortKies'))),
+  'woordsoortSorteer': lazy(() => lazyRetry(() => import('./WoordsoortSorteer'))),
+  'woordsoortMemory': lazy(() => lazyRetry(() => import('./WoordsoortMemory'))),
+  'fractionIdentify': lazy(() => lazyRetry(() => import('./FractionIdentify'))),
+  'fractionCompare': lazy(() => lazyRetry(() => import('./FractionCompare'))),
+  'fractionMemory': lazy(() => lazyRetry(() => import('./FractionMemory'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {

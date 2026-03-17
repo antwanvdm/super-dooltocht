@@ -11,7 +11,7 @@
 - **Routing:** React Router v7 (HashRouter)
 - **Language:** JavaScript (JSX)
 - **Build Tool:** Vite with ESLint
-- **Unit Tests:** Vitest 4 (~408 tests)
+- **Unit Tests:** Vitest 4 (~508 tests)
 - **E2E Tests:** Playwright (~89 tests)
 - **Backend:** Express 5 + Mongoose 9 (MongoDB)
 
@@ -71,15 +71,17 @@ server/
 
 ### Exercise Categories
 
-- **Rekenen (Math):** Addition, subtraction, multiplication, division, place value, loving hearts, money
+- **Rekenen (Math):** Addition, subtraction, multiplication, division, place value, loving hearts, money, fractions
 - **Klokkijken (Clock Reading):** Analog/digital clocks, words mode, 24h notation
 - **Tijdsbesef (Time Awareness):** Days, months, seasons
 - **Rekenen met Tijd (Time Calculation):** Duration, forward/backward time
-- **Taal (Language):** Spelling rules, vocabulary, reading comprehension
+- **Taal (Language):** Spelling rules (incl. verkleinwoord & meervoud), rijmen, woordsoorten, vocabulary, reading comprehension, English
+- **Puzzels (Puzzles):** Sudoku, tectonic, binary, chess
 
 ### Game Modes
 
-- **Adventure lengths:** Short (2 friends + 4 challenges), Medium (4 friends + 7 challenges), Long (6 friends + 10 challenges)
+- **Adventure lengths:** Short (2 friends + 4 challenges), Medium (4 friends + 7 challenges), Long (6 friends + 10 challenges), XL (10 friends + 16 challenges, 2 floors)
+- **Boss battle:** Final challenge before the exit — solve 3 rapid-fire minigames in a row
 - **Themed worlds:** 12 visual themes (space, ocean, jungle, castle, etc.)
 - **Player customization:** Emoji-based character selection
 
@@ -124,6 +126,10 @@ server/
 - Support keyboard navigation where applicable
 
 ## Critical Rules
+
+### Single Responsibility per Minigame
+
+Each minigame component must have exactly **one** game mechanic. Never combine two hidden/separate game modes into a single minigame component (e.g. mixing "pick the category" with "pick the transform" in one file). If a component needs to behave differently based on settings, split it into separate minigame files instead.
 
 ### Mobile-First Styling
 

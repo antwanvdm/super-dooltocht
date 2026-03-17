@@ -55,6 +55,23 @@ export const TIME_CALCULATION_GAMES = [
   'klokRekenen',
 ];
 
+// Rijmen minigames
+export const RIJMEN_GAMES = ['rijmMatch', 'rijmMemory'];
+
+// Woordsoorten minigames
+export const WOORDSOORTEN_GAMES = [
+  'woordsoortKies',
+  'woordsoortSorteer',
+  'woordsoortMemory',
+];
+
+// Fraction minigames
+export const FRACTION_GAMES = [
+  'fractionIdentify',
+  'fractionCompare',
+  'fractionMemory',
+];
+
 // Puzzle minigames
 export const PUZZLE_GAMES = ['sudoku', 'tectonic', 'binary', 'chess'];
 
@@ -78,6 +95,7 @@ export const GAME_NAMES = {
   spellingCategoryMatch: 'Spellingcategorie',
   spellingConnect: 'Verbind de categorie',
   spellingTypeWord: 'Typ het woord',
+  spellingTransform: 'Meervoud & verkleinwoord',
   vocabularyMatch: 'Woordenschat',
   vocabularyMemory: 'Woorden Memory',
   vocabularyFillIn: 'Vul het woord in',
@@ -88,6 +106,15 @@ export const GAME_NAMES = {
   englishTypeWord: 'Typ het Engelse woord',
   englishFillIn: 'Engels invullen',
   englishConnect: 'Engels verbinden',
+  fractionIdentify: 'Welke breuk?',
+  fractionCompare: 'Welke is groter?',
+  fractionMemory: 'Breuken Memory',
+  rijmMatch: 'Welk woord rijmt?',
+  rijmMemory: 'Rijm Memory',
+  woordsoortKies: 'Wat voor woord?',
+  woordsoortSorteer: 'Woordsoorten sorteren',
+  woordsoortMemory: 'Woordsoorten Memory',
+
   kalenderQuiz: 'Kalenderquiz',
   volgordeSorteer: 'Volgorde',
   seizoenenMatch: 'Seizoenen verbinden',
@@ -115,11 +142,14 @@ export const getAvailableGameTypes = (mathSettings) => {
   const hasPlaceValue = enabled.placeValue;
   const hasLovingHearts = enabled.lovingHearts;
   const hasMoney = enabled.money;
+  const hasFractions = enabled.fractions;
   const hasClock = enabled.clock;
   const hasSpelling = enabled.spelling;
   const hasVocabulary = enabled.vocabulary;
   const hasReading = enabled.reading;
   const hasEnglish = enabled.english;
+  const hasRijmen = enabled.rijmen;
+  const hasWoordsoorten = enabled.woordsoorten;
 
   // Bouw pool van beschikbare game types
   const availableTypes = [];
@@ -135,6 +165,9 @@ export const getAvailableGameTypes = (mathSettings) => {
   }
   if (hasMoney) {
     availableTypes.push(...MONEY_GAMES);
+  }
+  if (hasFractions) {
+    availableTypes.push(...FRACTION_GAMES);
   }
   if (hasClock) {
     availableTypes.push(...CLOCK_GAMES);
@@ -152,12 +185,23 @@ export const getAvailableGameTypes = (mathSettings) => {
     if (spellingCatCount >= 2) {
       availableTypes.push('spellingConnect');
     }
+    // SpellingTransform alleen als cat 9 of 10 actief is
+    const spellingCats = (mathSettings?.spellingCategories || []).map(Number);
+    if (spellingCats.includes(9) || spellingCats.includes(10)) {
+      availableTypes.push('spellingTransform');
+    }
   }
   if (hasVocabulary) {
     availableTypes.push(...VOCABULARY_GAMES);
   }
   if (hasReading) {
     availableTypes.push(...READING_GAMES);
+  }
+  if (hasRijmen) {
+    availableTypes.push(...RIJMEN_GAMES);
+  }
+  if (hasWoordsoorten) {
+    availableTypes.push(...WOORDSOORTEN_GAMES);
   }
   if (hasEnglish) {
     availableTypes.push(...ENGLISH_GAMES);

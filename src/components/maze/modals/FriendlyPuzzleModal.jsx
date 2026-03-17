@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { lazyRetry } from '../../../utils/lazyRetry';
+import Confetti from '../../Confetti';
 
 const PUZZLE_COMPONENTS = {
   sudoku: lazy(() => lazyRetry(() => import('../../minigames/SudokuGame'))),
@@ -40,6 +41,7 @@ function FriendlyPuzzleModal({ activeFriendly, theme, modalInteractionReady, onC
   if (phase === 'complete') {
     return (
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
+        <Confetti />
         <div className="rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
           <div className={`${theme.colors.primary} px-6 sm:px-8 py-8 sm:py-10 text-center`}>
             <span className="text-6xl sm:text-8xl block mb-4">{activeFriendly.emoji}</span>

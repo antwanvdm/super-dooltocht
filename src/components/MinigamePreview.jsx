@@ -13,6 +13,9 @@ import {
   ENGLISH_GAMES,
   TIME_AWARENESS_GAMES,
   TIME_CALCULATION_GAMES,
+  RIJMEN_GAMES,
+  WOORDSOORTEN_GAMES,
+  FRACTION_GAMES,
   PUZZLE_GAMES,
 } from '../utils/gameSelection';
 
@@ -37,6 +40,7 @@ const GAME_COMPONENTS = {
   'spellingCategoryMatch': lazy(() => lazyRetry(() => import('./minigames/SpellingCategoryMatch'))),
   'spellingConnect': lazy(() => lazyRetry(() => import('./minigames/SpellingConnect'))),
   'spellingTypeWord': lazy(() => lazyRetry(() => import('./minigames/SpellingTypeWord'))),
+  'spellingTransform': lazy(() => lazyRetry(() => import('./minigames/SpellingTransform'))),
   'vocabularyMatch': lazy(() => lazyRetry(() => import('./minigames/VocabularyMatch'))),
   'vocabularyMemory': lazy(() => lazyRetry(() => import('./minigames/VocabularyMemory'))),
   'vocabularyFillIn': lazy(() => lazyRetry(() => import('./minigames/VocabularyFillIn'))),
@@ -60,6 +64,14 @@ const GAME_COMPONENTS = {
   'tectonic': lazy(() => lazyRetry(() => import('./minigames/TectonicGame'))),
   'binary': lazy(() => lazyRetry(() => import('./minigames/BinaryGame'))),
   'chess': lazy(() => lazyRetry(() => import('./minigames/ChessGame'))),
+  'rijmMatch': lazy(() => lazyRetry(() => import('./minigames/RijmMatch'))),
+  'rijmMemory': lazy(() => lazyRetry(() => import('./minigames/RijmMemory'))),
+  'woordsoortKies': lazy(() => lazyRetry(() => import('./minigames/WoordsoortKies'))),
+  'woordsoortSorteer': lazy(() => lazyRetry(() => import('./minigames/WoordsoortSorteer'))),
+  'woordsoortMemory': lazy(() => lazyRetry(() => import('./minigames/WoordsoortMemory'))),
+  'fractionIdentify': lazy(() => lazyRetry(() => import('./minigames/FractionIdentify'))),
+  'fractionCompare': lazy(() => lazyRetry(() => import('./minigames/FractionCompare'))),
+  'fractionMemory': lazy(() => lazyRetry(() => import('./minigames/FractionMemory'))),
 };
 
 // Categories with their game types, emoji, colour, and configurable settings
@@ -89,6 +101,18 @@ const CATEGORIES = [
       { key: 'placeValueLevel', label: 'Getallen begrijpen', type: 'select', options: [
         { value: 'tens', label: 'Tientallen' }, { value: 'hundreds', label: 'Honderdtallen' },
         { value: 'thousands', label: 'Duizendtallen' },
+      ]},
+    ],
+  },
+  {
+    name: 'Breuken',
+    emoji: '🍕',
+    color: 'from-orange-500 to-amber-600',
+    games: FRACTION_GAMES,
+    settings: [
+      { key: 'fractionLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
       ]},
     ],
   },
@@ -141,13 +165,14 @@ const CATEGORIES = [
     name: 'Spelling',
     emoji: '✏️',
     color: 'from-purple-500 to-violet-600',
-    games: SPELLING_GAMES,
+    games: [...SPELLING_GAMES, 'spellingTransform'],
     settings: [
       { key: 'spellingCategories', label: 'Categorieën', type: 'multiSelect', options: [
         { value: 1, label: '✂️ Hak' }, { value: 2, label: '🎵 Zing' },
         { value: 3, label: '💨 Lucht' }, { value: 4, label: '🪵 Plank' },
         { value: 5, label: '🔤 Eer-oor' }, { value: 6, label: '🌈 Aai-ooi' },
         { value: 7, label: '✨ Eeuw' }, { value: 8, label: '📏 Langer' },
+        { value: 9, label: '🐣 Verkleinwoord' }, { value: 10, label: '👥 Meervoud' },
       ]},
     ],
   },
@@ -165,6 +190,30 @@ const CATEGORIES = [
     settings: [
       { key: 'readingLevel', label: 'Niveau', type: 'select', options: [
         { value: 'short', label: 'Kort (1-2 zinnen)' }, { value: 'long', label: 'Lang (3-4 zinnen)' },
+      ]},
+    ],
+  },
+  {
+    name: 'Woordsoorten',
+    emoji: '🏷️',
+    color: 'from-lime-500 to-green-600',
+    games: WOORDSOORTEN_GAMES,
+    settings: [
+      { key: 'woordsoortenLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
+      ]},
+    ],
+  },
+  {
+    name: 'Rijmen',
+    emoji: '🎶',
+    color: 'from-pink-500 to-rose-600',
+    games: RIJMEN_GAMES,
+    settings: [
+      { key: 'rijmenLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
       ]},
     ],
   },
@@ -210,6 +259,7 @@ const PREVIEW_SETTINGS = {
     spelling: true, vocabulary: true, reading: true, english: true,
     timeAwareness: true, timeCalculation: true,
     sudoku: true, tectonic: true, binary: true, chess: true,
+    rijmen: true, woordsoorten: true, fractions: true,
   },
   maxValue: 100,
   mulTables: 'easy',
@@ -221,7 +271,7 @@ const PREVIEW_SETTINGS = {
   clockLevel: 'halfHours',
   clock24h: true,
   clockWords: true,
-  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8],
+  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   includeThemeVocabulary: false,
   readingLevel: 'short',
   includeThemeReading: false,
@@ -238,6 +288,9 @@ const PREVIEW_SETTINGS = {
   timeCalculationOmrekenen: true,
   timeCalculationKlok: true,
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
+  rijmenLevel: 'easy',
+  woordsoortenLevel: 'easy',
+  fractionLevel: 'easy',
 };
 
 function MinigamePreview() {

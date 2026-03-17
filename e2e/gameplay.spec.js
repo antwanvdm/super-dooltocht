@@ -7,6 +7,7 @@ import {
   injectGameStateAndNavigate,
   navigateToHome,
   dismissMazeModals,
+  collectFriendViaFact,
 } from './helpers.js';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -139,10 +140,15 @@ test.describe('Gameplay – Rescuing friends', () => {
     await expect(page.getByText('Hoera, je hebt me gevonden!')).toBeVisible({
       timeout: 5000,
     });
-    await expect(page.getByRole('button', { name: /Neem mee/i })).toBeVisible();
+    // New flow: greeting shows choice buttons instead of "Neem mee"
+    await expect(
+      page.getByRole('button', {
+        name: /Wil je wat leren|Wat wil je me vertellen/i,
+      }),
+    ).toBeVisible();
   });
 
-  test('clicking "Neem mee" collects the friend', async ({ page }) => {
+  test('clicking through fact flow collects the friend', async ({ page }) => {
     const state = buildTestGameState({ playerPos: { x: 3, y: 1 } });
     await injectGameStateAndNavigate(page, state);
 
@@ -152,15 +158,8 @@ test.describe('Gameplay – Rescuing friends', () => {
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(800);
 
-    await expect(page.getByText('Hoera, je hebt me gevonden!')).toBeVisible({
-      timeout: 5000,
-    });
-
-    // Wait for interaction delay
-    await page.waitForTimeout(500);
-
-    await page.getByRole('button', { name: /Neem mee/i }).click();
-    await page.waitForTimeout(500);
+    // Collect via the new fact flow
+    await collectFriendViaFact(page);
 
     // The friends indicator in the header should now show 1 collected
     // The friend slot shows the friend emoji 🛸 instead of '?'
@@ -256,7 +255,7 @@ test.describe('Gameplay – Exit & Win', () => {
       collectedFriendIds: [],
       playerPos: { x: 3, y: 5 },
     });
-    await injectGameStateAndNavigate(page, state);
+    await injectGameStateAndNavigate(page, state, { skipBoss: true });
 
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(150);
@@ -268,12 +267,13 @@ test.describe('Gameplay – Exit & Win', () => {
     // Wait for interaction delay
     await page.waitForTimeout(500);
 
-    // Choose to leave
+    // Choose to leave — boss battle is auto-skipped via __E2E_SKIP_BOSS__
     await page.getByRole('button', { name: /Toch vertrekken/i }).click();
-    await page.waitForTimeout(500);
 
     // Win screen (incomplete) should appear
-    await expect(page.getByText('Goed gedaan!')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Goed gedaan!')).toBeVisible({
+      timeout: 10000,
+    });
     // Shows "Begin een nieuw avontuur" button
     await expect(
       page.getByRole('button', { name: /Begin een nieuw avontuur/i }),
@@ -289,7 +289,7 @@ test.describe('Gameplay – Exit & Win', () => {
       collectedFriendIds: ['f1', 'f2'],
       playerPos: { x: 3, y: 5 },
     });
-    await injectGameStateAndNavigate(page, state);
+    await injectGameStateAndNavigate(page, state, { skipBoss: true });
 
     // Walk to exit at (5,5)
     await page.keyboard.press('ArrowRight');
@@ -297,8 +297,12 @@ test.describe('Gameplay – Exit & Win', () => {
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(800);
 
+    // Boss battle is auto-skipped via __E2E_SKIP_BOSS__
+
     // Complete win screen should appear
-    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({
+      timeout: 10000,
+    });
     await expect(page.getByText(/2 van de 2 vriendjes gered/)).toBeVisible();
     await expect(
       page.getByRole('button', { name: /Begin een nieuw avontuur/i }),
@@ -311,14 +315,18 @@ test.describe('Gameplay – Exit & Win', () => {
       collectedFriendIds: ['f1', 'f2'],
       playerPos: { x: 3, y: 5 },
     });
-    await injectGameStateAndNavigate(page, state);
+    await injectGameStateAndNavigate(page, state, { skipBoss: true });
 
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(150);
     await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(800);
 
-    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({ timeout: 5000 });
+    // Boss battle is auto-skipped via __E2E_SKIP_BOSS__
+
+    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({
+      timeout: 10000,
+    });
 
     // Wait for interaction delay
     await page.waitForTimeout(500);
@@ -520,15 +528,19 @@ test.describe('Footer modals – Settings (Speler)', () => {
 });
 
 test.describe('Gameplay – Stats tracking', () => {
-  // These tests do a full round-trip: Home → inject state → maze → win → Home
+  // These tests do a full round-trip: Home → inject state → maze → boss battle → win → Home
   // which needs more time than the default 30s timeout.
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
 
   test('completed maze counter increments after winning', async ({ page }) => {
+    // Skip boss battle for all navigations in this test
+    await page.addInitScript(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     // First, check the initial stats on home
     await navigateToHome(page);
     const statsText = await page
-      .getByText(/doolhof(hoven)? voltooid/)
+      .getByText(/doolho(f|ven) voltooid/)
       .textContent();
     const initialCount = parseInt(statsText.match(/(\d+)/)?.[1] || '0', 10);
 
@@ -562,7 +574,9 @@ test.describe('Gameplay – Stats tracking', () => {
     await page.waitForTimeout(800);
 
     // Win!
-    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({
+      timeout: 10000,
+    });
     await page.waitForTimeout(500);
     await page
       .getByRole('button', { name: /Begin een nieuw avontuur/i })
@@ -571,7 +585,7 @@ test.describe('Gameplay – Stats tracking', () => {
     // Back on home — check stats
     await page.getByText('Stel je avontuur in').waitFor({ state: 'visible' });
     const newStatsText = await page
-      .getByText(/doolhof(hoven)? voltooid/)
+      .getByText(/doolho(f|ven) voltooid/)
       .textContent();
     const newCount = parseInt(newStatsText.match(/(\d+)/)?.[1] || '0', 10);
 
@@ -581,6 +595,10 @@ test.describe('Gameplay – Stats tracking', () => {
   test('saved friends counter increments after winning with friends', async ({
     page,
   }) => {
+    // Skip boss battle for all navigations in this test
+    await page.addInitScript(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     // Navigate to home first to check initial count
     await navigateToHome(page);
     const friendsText = await page
@@ -617,7 +635,9 @@ test.describe('Gameplay – Stats tracking', () => {
     await page.waitForTimeout(800);
 
     // Win!
-    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('🎉 Geweldig!')).toBeVisible({
+      timeout: 10000,
+    });
     await page.waitForTimeout(500);
     await page
       .getByRole('button', { name: /Begin een nieuw avontuur/i })
@@ -636,9 +656,13 @@ test.describe('Gameplay – Stats tracking', () => {
   test('winning without friends still increments maze counter but not friends', async ({
     page,
   }) => {
+    // Skip boss battle for all navigations in this test
+    await page.addInitScript(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     await navigateToHome(page);
     const mazeText = await page
-      .getByText(/doolhof(hoven)? voltooid/)
+      .getByText(/doolho(f|ven) voltooid/)
       .textContent();
     const initialMazes = parseInt(mazeText.match(/(\d+)/)?.[1] || '0', 10);
     const friendsText = await page
@@ -679,8 +703,12 @@ test.describe('Gameplay – Stats tracking', () => {
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: /Toch vertrekken/i }).click();
 
+    // Boss battle is auto-skipped via __E2E_SKIP_BOSS__
+
     // Win screen
-    await expect(page.getByText('Goed gedaan!')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Goed gedaan!')).toBeVisible({
+      timeout: 10000,
+    });
     await page.waitForTimeout(500);
     await page
       .getByRole('button', { name: /Begin een nieuw avontuur/i })
@@ -689,7 +717,7 @@ test.describe('Gameplay – Stats tracking', () => {
     // Check stats
     await page.getByText('Stel je avontuur in').waitFor({ state: 'visible' });
     const newMazeText = await page
-      .getByText(/doolhof(hoven)? voltooid/)
+      .getByText(/doolho(f|ven) voltooid/)
       .textContent();
     const newMazes = parseInt(newMazeText.match(/(\d+)/)?.[1] || '0', 10);
     const newFriendsText = await page

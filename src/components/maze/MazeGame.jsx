@@ -18,6 +18,7 @@ import FriendlyDialog from './modals/FriendlyDialog';
 import FriendlyFactModal from './modals/FriendlyFactModal';
 import FriendlyPuzzleModal from './modals/FriendlyPuzzleModal';
 import FriendsWarningModal from './modals/FriendsWarningModal';
+import BossBattleModal from './modals/BossBattleModal';
 import WinScreen from './modals/WinScreen';
 
 function MazeGame() {
@@ -96,6 +97,7 @@ function MazeGame() {
   const [hasWon, setHasWon] = useState(false);
   const [exitModal, setExitModal] = useState(null);
   const [friendsWarningModal, setFriendsWarningModal] = useState(null); // Waarschuwing voor achtergelaten vriendjes
+  const [bossBattle, setBossBattle] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
   // Track welke game types al gespeeld zijn voor round-robin verdeling.
@@ -120,12 +122,12 @@ function MazeGame() {
   // Korte delay voordat popup-modals interactief worden, zodat een vinger die
   // al op het scherm lag (bijv. D-pad) niet per ongeluk meteen een knop indrukt.
   useEffect(() => {
-    if (exitModal || friendsWarningModal || activeFriendly || hasWon) {
+    if (exitModal || friendsWarningModal || activeFriendly || hasWon || bossBattle) {
       setModalInteractionReady(false);
       const timer = setTimeout(() => setModalInteractionReady(true), 400);
       return () => clearTimeout(timer);
     }
-  }, [exitModal, friendsWarningModal, activeFriendly, hasWon]);
+  }, [exitModal, friendsWarningModal, activeFriendly, hasWon, bossBattle]);
 
   // Start/stop achtergrondmuziek wanneer geluid wordt in-/uitgeschakeld
   useEffect(() => {
@@ -166,6 +168,7 @@ function MazeGame() {
       setCompletedCount(savedState.completedCount || 0);
       setShowMinimap(false);
       setHasWon(false);
+      setBossBattle(false);
       setExitModal(null);
       setActiveFriendly(null);
     } else {
@@ -255,6 +258,7 @@ function MazeGame() {
       setCompletedCount(0);
       setShowMinimap(false);
       setHasWon(false);
+      setBossBattle(false);
       setExitModal(null);
       setActiveFriendly(null);
 
@@ -388,7 +392,7 @@ function MazeGame() {
         return;
       }
 
-      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal || showStoryIntro || showSettings) return; // Geen beweging als popup open staat
+      if (activeChallenge || activeFriendly || showMinimap || showHelp || exitModal || friendsWarningModal || bossBattle || showStoryIntro || showSettings) return; // Geen beweging als popup open staat
 
       // Toggle kaart met K
       if (e.key === 'k' || e.key === 'K') {
@@ -477,7 +481,7 @@ function MazeGame() {
 
   // Check voor challenges/friendlies/exit/portalen na beweging
   useEffect(() => {
-    if (!maze || hasWon || portalTransition) return;
+    if (!maze || hasWon || bossBattle || portalTransition) return;
 
     const { x, y } = playerPos;
 
@@ -507,16 +511,9 @@ function MazeGame() {
             canLeave: true // Alle challenges gedaan, mag vertrekken
           });
         } else {
-          // Gewonnen! Sla geredde vriendjes op
-          setHasWon(true);
+          // Start boss battle voordat je wint
+          setBossBattle(true);
           pauseMusic();
-          playSound('victory');
-          addSavedFriends(collectedFriends.length);
-          clearGameState();
-          incrementCompletedMazes();
-          // Final sync naar server: adventure afgerond (localStorage is al bijgewerkt)
-          setTimeout(() => syncProgress(), 100);
-          // Niet automatisch sluiten - laat de speler klikken
         }
       } else {
         const remaining = challenges.length - completedCount;
@@ -603,17 +600,26 @@ function MazeGame() {
   // Functie voor vertrekken met achtergelaten vriendjes
   const handleLeaveWithoutFriends = () => {
     setFriendsWarningModal(null);
-    setHasWon(true);
+    setBossBattle(true);
     pauseMusic();
-    playSound('victory');
+  };
+
+  // Boss battle gewonnen → nu echt gewonnen
+  const handleBossVictory = useCallback(() => {
+    setBossBattle(false);
+    setHasWon(true);
     addSavedFriends(collectedFriends.length);
     clearGameState();
     incrementCompletedMazes();
-    
-    // Final sync naar server: adventure afgerond (localStorage is al bijgewerkt)
     setTimeout(() => syncProgress(), 100);
-    // Niet automatisch navigeren - laat speler zelf klikken in win scherm
-  };
+  }, [collectedFriends.length, syncProgress]);
+
+  // E2E test hook: allow tests to skip the boss battle entirely
+  useEffect(() => {
+    if (bossBattle && window.__E2E_SKIP_BOSS__) {
+      handleBossVictory();
+    }
+  }, [bossBattle, handleBossVictory]);
 
   // Functie om terug te gaan en vriendjes te zoeken
   const handleSearchForFriends = () => {
@@ -930,6 +936,18 @@ function MazeGame() {
           gameType={activeGameType}
           onComplete={handleChallengeComplete}
           onClose={handleChallengeClose}
+        />
+      )}
+
+      {/* Boss Battle */}
+      {bossBattle && (
+        <BossBattleModal
+          theme={theme}
+          mathSettings={mathSettings}
+          totalRounds={adventureLength === 'long' || adventureLength === 'xl' ? 3 : 2}
+          onVictory={handleBossVictory}
+          playedGameTypes={playedGameTypesRef.current}
+          playSound={playSound}
         />
       )}
 

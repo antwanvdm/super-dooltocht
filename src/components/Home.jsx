@@ -13,7 +13,7 @@ const PLAYER_EMOJIS = [
 // Default settings used when no saved settings exist
 const DEFAULT_SETTINGS = {
   exerciseCategory: 'rekenen',
-  ops: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false },
+  ops: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false },
   maxValue: 100,
   mulTables: 'easy',
   addSubMode: 'beyond',
@@ -30,13 +30,16 @@ const DEFAULT_SETTINGS = {
   timeAwarenessSeizoen: true,
   timeCalcLevel: 'wholeHours',
   timeCalc24h: false,
-  taalOps: { spelling: false, vocabulary: false, reading: false, english: false },
-  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8],
+  taalOps: { spelling: false, vocabulary: false, reading: false, english: false, rijmen: false, woordsoorten: false },
+  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   includeThemeVocabulary: true,
   includeThemeReading: true,
   readingLevel: 'short',
   englishLevel: 'easy',
   englishDirection: 'nl-en',
+  rijmenLevel: 'easy',
+  woordsoortenLevel: 'easy',
+  fractionLevel: 'easy',
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
   adventureLength: 'medium',
@@ -72,6 +75,9 @@ const buildInitialSettings = (saved) => ({
   readingLevel: saved?.readingLevel || DEFAULT_SETTINGS.readingLevel,
   englishLevel: saved?.englishLevel || DEFAULT_SETTINGS.englishLevel,
   englishDirection: saved?.englishDirection || DEFAULT_SETTINGS.englishDirection,
+  rijmenLevel: saved?.rijmenLevel || DEFAULT_SETTINGS.rijmenLevel,
+  woordsoortenLevel: saved?.woordsoortenLevel || DEFAULT_SETTINGS.woordsoortenLevel,
+  fractionLevel: saved?.fractionLevel || DEFAULT_SETTINGS.fractionLevel,
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
   adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
@@ -102,6 +108,7 @@ function settingsReducer(state, action) {
           : [...state.spellingCategories, action.id],
       };
     }
+
     default:
       return state;
   }
@@ -128,7 +135,8 @@ function Home({ disabled = false }) {
     clock24h, clockWords, timeAwarenessDagen, timeAwarenessMaanden,
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
-    readingLevel, englishLevel, englishDirection, puzzelOps, puzzleLevel,
+    readingLevel, englishLevel, englishDirection, rijmenLevel,
+    woordsoortenLevel, fractionLevel, puzzelOps, puzzleLevel,
     adventureLength, playerEmoji,
     musicEnabled,
   } = settings;
@@ -205,7 +213,7 @@ function Home({ disabled = false }) {
     let mathSettings;
     if (exerciseCategory === 'tijd') {
       mathSettings = {
-        enabledOperations: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness, timeCalculation: tijdOps.timeCalculation },
+        enabledOperations: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: tijdOps.clock, timeAwareness: tijdOps.timeAwareness, timeCalculation: tijdOps.timeCalculation },
         clockLevel,
         clock24h,
         clockWords,
@@ -217,18 +225,20 @@ function Home({ disabled = false }) {
       };
     } else if (exerciseCategory === 'taal') {
       mathSettings = {
-        enabledOperations: { ...taalOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: false },
+        enabledOperations: { ...taalOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false },
         spellingCategories,
         includeThemeVocabulary,
         includeThemeReading,
         readingLevel,
         englishLevel,
         englishDirection,
+        rijmenLevel,
+        woordsoortenLevel,
         themeId: selectedTheme,
       };
     } else if (exerciseCategory === 'puzzel') {
       mathSettings = {
-        enabledOperations: { ...puzzelOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+        enabledOperations: { ...puzzelOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
         puzzleLevel,
       };
     } else {
@@ -241,6 +251,7 @@ function Home({ disabled = false }) {
         placeValueLevel: placeValueLevel,
         moneyMaxAmount: moneyMaxAmount,
         moneyIncludeCents: moneyIncludeCents,
+        fractionLevel: fractionLevel,
       };
     }
 
@@ -254,9 +265,9 @@ function Home({ disabled = false }) {
   };
 
   const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
-    || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english)
+    || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english || taalOps.rijmen || taalOps.woordsoorten)
     || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
-    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money);
+    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions);
   const canLaunch = canStart && selectedTheme;
 
   return (
@@ -346,8 +357,9 @@ function Home({ disabled = false }) {
                   { key: 'sub', label: 'Minsommen', icon: '➖' },
                   { key: 'mul', label: 'Keersommen', icon: '✖️' },
                   { key: 'div', label: 'Deelsommen', icon: '➗' },
-                  { key: 'placeValue', label: 'Getallen begrijpen', icon: '🧮' },
+                  { key: 'fractions', label: 'Breuken', icon: '🍕' },
                   { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
+                  { key: 'placeValue', label: 'Getallen begrijpen', icon: '🧮' },
                   { key: 'money', label: 'Rekenen met geld', icon: '💶' },
                 ].map(({ key, label, icon }) => (
                   <label
@@ -560,10 +572,52 @@ function Home({ disabled = false }) {
                 </>
               )}
               
+              {/* Breuken niveau */}
+              {ops.fractions && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${(ops.add || ops.sub || ops.mul || ops.div) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🍕 Breuken — niveau:</p>
+                  <div className="space-y-1.5 mb-3">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: 'Herkennen en vergelijken (noemers 2-4)' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '+ vereenvoudigen (noemers 2-6)' },
+                      { key: 'hard', label: 'Moeilijk', desc: '+ gelijkwaardig (noemers 2-8)' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          fractionLevel === key
+                            ? 'bg-indigo-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="fractionLevel"
+                          value={key}
+                          checked={fractionLevel === key}
+                          onChange={(e) => set('fractionLevel', e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${fractionLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {fractionLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+              
+              {/* Verliefde harten heeft geen extra niveau opties */}
+              {ops.lovingHearts && (
+                <p className={`text-sm text-gray-500 italic ${(ops.add || ops.sub || ops.mul || ops.div || ops.fractions) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💕 Verliefde harten: oefen getallenparen die samen 10 maken</p>
+              )}
+
               {/* Getallen begrijpen niveau */}
               {ops.placeValue && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🧮 Getallen begrijpen niveau:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul || ops.div || ops.fractions || ops.lovingHearts) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🧮 Getallen begrijpen niveau:</p>
                   <div className="space-y-2">
                     {[
                       { key: 'tens', label: 'Tientallen', desc: 'Getallen 10-99' },
@@ -597,15 +651,10 @@ function Home({ disabled = false }) {
                 </>
               )}
               
-              {/* Verliefde harten heeft geen extra niveau opties */}
-              {ops.lovingHearts && (
-                <p className={`text-sm text-gray-500 italic ${(ops.add || ops.sub || ops.mul || ops.placeValue) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💕 Verliefde harten: oefen getallenparen die samen 10 maken</p>
-              )}
-              
               {/* Geld instellingen */}
               {ops.money && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul || ops.placeValue || ops.lovingHearts) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💶 Rekenen met geld:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-3 ${(ops.add || ops.sub || ops.mul || ops.div || ops.fractions || ops.lovingHearts || ops.placeValue) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>💶 Rekenen met geld:</p>
                   
                   <p className="text-xs text-gray-500 mb-2">Bedrag tot:</p>
                   <div className="grid grid-cols-2 gap-2 mb-3">
@@ -654,9 +703,9 @@ function Home({ disabled = false }) {
                   </label>
                 </>
               )}
-              
+
               {/* Geen opties geselecteerd */}
-              {!ops.add && !ops.sub && !ops.mul && !ops.div && !ops.placeValue && !ops.lovingHearts && !ops.money && (
+              {!ops.add && !ops.sub && !ops.mul && !ops.div && !ops.placeValue && !ops.lovingHearts && !ops.money && !ops.fractions && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
               )}
             </div>
@@ -870,6 +919,8 @@ function Home({ disabled = false }) {
                   { key: 'spelling', label: 'Spelling', icon: '✏️', desc: 'Oefen spellingcategorieën' },
                   { key: 'vocabulary', label: 'Woordenschat', icon: '📖', desc: 'Leer de betekenis van woorden' },
                   { key: 'reading', label: 'Begrijpend lezen', icon: '📚', desc: 'Lees teksten en beantwoord vragen' },
+                  { key: 'woordsoorten', label: 'Woordsoorten', icon: '🏷️', desc: 'Oefen verschillende woordsoorten' },
+                  { key: 'rijmen', label: 'Rijmen', icon: '🎵', desc: 'Herken rijmwoorden' },
                   { key: 'english', label: 'Engels', icon: '🇬🇧', desc: 'Leer Engelse woordjes' },
                 ].map(({ key, label, icon, desc }) => (
                   <label
@@ -895,7 +946,7 @@ function Home({ disabled = false }) {
                   </label>
                 ))}
               </div>
-              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && (
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && !taalOps.rijmen && !taalOps.woordsoorten && (
                 <p className="mt-4 text-sm text-red-500 font-medium text-center">
                   ⚠️ Kies minstens één soort oefening
                 </p>
@@ -924,6 +975,8 @@ function Home({ disabled = false }) {
                       { id: 6, label: '🌈 Aai-ooi-oei', desc: 'haai, mooi, loei' },
                       { id: 7, label: '🦁 Eeuw-ieuw', desc: 'leeuw, nieuw' },
                       { id: 8, label: '📏 Langermaakwoord', desc: 'hart, vind' },
+                      { id: 9, label: '🐣 Verkleinwoord', desc: 'huisje, bloempje' },
+                      { id: 10, label: '👥 Meervoud', desc: 'katten, auto\'s' },
                     ].map(({ id, label, desc }) => {
                       const active = spellingCategories.includes(id);
                       return (
@@ -1042,10 +1095,84 @@ function Home({ disabled = false }) {
                 </>
               )}
 
+              {/* Woordsoorten opties */}
+              {taalOps.woordsoorten && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary || taalOps.reading ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🏷️ Woordsoorten — niveau:</p>
+                  <div className="space-y-1.5 mb-3">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: 'Zelfst. naamwoord + werkwoord' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '+ bijvoeglijk naamwoord' },
+                      { key: 'hard', label: 'Moeilijk', desc: 'Alle woordsoorten, meer woorden' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          woordsoortenLevel === key
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-rose-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="woordsoortenLevel"
+                          value={key}
+                          checked={woordsoortenLevel === key}
+                          onChange={(e) => set('woordsoortenLevel', e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${woordsoortenLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {woordsoortenLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Rijmen opties */}
+              {taalOps.rijmen && (
+                <>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.woordsoorten ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🎵 Rijmen — niveau:</p>
+                  <div className="space-y-1.5 mb-3">
+                    {[
+                      { key: 'easy', label: 'Makkelijk', desc: 'Korte, bekende woorden (groep 3-4)' },
+                      { key: 'medium', label: 'Gemiddeld', desc: '+ langere woorden (groep 4-5)' },
+                      { key: 'hard', label: 'Moeilijk', desc: 'Alle woorden (groep 5-6)' },
+                    ].map(({ key, label, desc }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                          rijmenLevel === key
+                            ? 'bg-rose-500 text-white shadow-sm'
+                            : 'bg-white text-gray-700 hover:bg-rose-50 border border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="rijmenLevel"
+                          value={key}
+                          checked={rijmenLevel === key}
+                          onChange={(e) => set('rijmenLevel', e.target.value)}
+                          className="sr-only"
+                        />
+                        <div>
+                          <span className="font-medium">{label}</span>
+                          <span className={`ml-2 text-xs ${rijmenLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                        </div>
+                        {rijmenLevel === key && <span>✓</span>}
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+
               {/* Engels opties */}
               {taalOps.english && (
                 <>
-                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary || taalOps.reading ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🇬🇧 Engels:</p>
+                  <p className={`text-sm font-medium text-gray-600 mb-2 ${taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.woordsoorten || taalOps.rijmen ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🇬🇧 Engels:</p>
                   <p className="text-xs text-gray-500 mb-2">Niveau:</p>
                   <div className="space-y-1.5 mb-3">
                     {[
@@ -1112,7 +1239,7 @@ function Home({ disabled = false }) {
               )}
 
               {/* Geen opties geselecteerd */}
-              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && (
+              {!taalOps.spelling && !taalOps.vocabulary && !taalOps.reading && !taalOps.english && !taalOps.rijmen && !taalOps.woordsoorten && (
                 <p className="text-sm text-gray-500 italic">Kies eerst een soort oefening om opties te zien</p>
               )}
             </div>

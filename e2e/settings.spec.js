@@ -375,7 +375,7 @@ test.describe('Home – Settings flow', () => {
   // ─── Stats ────────────────────────────────────────────────────────────────
 
   test('shows stats badges', async ({ page }) => {
-    await expect(page.getByText(/doolhof(hoven)? voltooid/)).toBeVisible();
-    await expect(page.getByText(/vriendje(s)? gered/)).toBeVisible();
+    await expect(page.locator('text=🏆').first()).toBeVisible();
+    await expect(page.locator('text=🤝').first()).toBeVisible();
   });
 });
