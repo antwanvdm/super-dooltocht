@@ -533,10 +533,6 @@ test.describe('Gameplay – Stats tracking', () => {
   test.setTimeout(90_000);
 
   test('completed maze counter increments after winning', async ({ page }) => {
-    // Skip boss battle for all navigations in this test
-    await page.addInitScript(() => {
-      window.__E2E_SKIP_BOSS__ = true;
-    });
     // First, check the initial stats on home
     await navigateToHome(page);
     const statsText = await page
@@ -551,6 +547,10 @@ test.describe('Gameplay – Stats tracking', () => {
       playerPos: { x: 3, y: 5 },
     });
 
+    // Skip boss battle and navigate to maze
+    await page.evaluate(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     await page.evaluate((s) => {
       localStorage.setItem('super-dooltocht-game-state', JSON.stringify(s));
     }, state);
@@ -595,10 +595,6 @@ test.describe('Gameplay – Stats tracking', () => {
   test('saved friends counter increments after winning with friends', async ({
     page,
   }) => {
-    // Skip boss battle for all navigations in this test
-    await page.addInitScript(() => {
-      window.__E2E_SKIP_BOSS__ = true;
-    });
     // Navigate to home first to check initial count
     await navigateToHome(page);
     const friendsText = await page
@@ -613,6 +609,10 @@ test.describe('Gameplay – Stats tracking', () => {
       playerPos: { x: 3, y: 5 },
     });
 
+    // Skip boss battle and navigate to maze
+    await page.evaluate(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     await page.evaluate((s) => {
       localStorage.setItem('super-dooltocht-game-state', JSON.stringify(s));
     }, state);
@@ -656,10 +656,6 @@ test.describe('Gameplay – Stats tracking', () => {
   test('winning without friends still increments maze counter but not friends', async ({
     page,
   }) => {
-    // Skip boss battle for all navigations in this test
-    await page.addInitScript(() => {
-      window.__E2E_SKIP_BOSS__ = true;
-    });
     await navigateToHome(page);
     const mazeText = await page
       .getByText(/doolho(f|ven) voltooid/)
@@ -677,6 +673,10 @@ test.describe('Gameplay – Stats tracking', () => {
       playerPos: { x: 3, y: 5 },
     });
 
+    // Skip boss battle and navigate to maze
+    await page.evaluate(() => {
+      window.__E2E_SKIP_BOSS__ = true;
+    });
     await page.evaluate((s) => {
       localStorage.setItem('super-dooltocht-game-state', JSON.stringify(s));
     }, state);

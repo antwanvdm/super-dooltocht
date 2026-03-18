@@ -81,7 +81,6 @@ function BossBattleModal({ theme, mathSettings, totalRounds, onVictory, playedGa
   const [phaseMessage, setPhaseMessage] = useState('');
 
   const bossEmoji = theme?.colors?.challenge || '👾';
-  const primary = theme?.colors?.primary || '#6366f1';
 
   const BOSS_TAUNTS = [
     'Haha, fout! Dat was makkelijk!',
