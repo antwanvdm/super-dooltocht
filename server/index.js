@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import ChessPuzzle from './models/ChessPuzzle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -237,6 +238,56 @@ app.post('/api/players/:codeKey/progress', async (req, res) => {
     return res.json({ ok: true, updatedAt: player.updatedAt });
   } catch (error) {
     return res.status(500).json({ error: 'Failed to update progress' });
+  }
+});
+
+// ── Chess puzzles ──────────────────────────────────────────────
+
+app.get('/api/chess-puzzles', async (req, res) => {
+  try {
+    const theme = req.query.theme;
+    const minRating = Math.max(parseInt(req.query.minRating, 10) || 0, 0);
+    const maxRating = Math.min(parseInt(req.query.maxRating, 10) || 1400, 1800);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 5, 1), 50);
+
+    const rnd = Math.random();
+    const filter = {
+      rating: { $gte: minRating, $lte: maxRating },
+      random: { $gte: rnd },
+    };
+    if (theme) filter.primaryTheme = theme;
+
+    const projection = {
+      _id: 0,
+      lichessId: 1,
+      fen: 1,
+      moves: 1,
+      rating: 1,
+      primaryTheme: 1,
+      themes: 1,
+      moveCount: 1,
+    };
+
+    let puzzles = await ChessPuzzle.find(filter)
+      .select(projection)
+      .sort({ random: 1 })
+      .limit(limit)
+      .lean();
+
+    // Wrap around if not enough results (random was near 1.0)
+    if (puzzles.length < limit) {
+      filter.random = { $lt: rnd };
+      const extra = await ChessPuzzle.find(filter)
+        .select(projection)
+        .sort({ random: 1 })
+        .limit(limit - puzzles.length)
+        .lean();
+      puzzles = puzzles.concat(extra);
+    }
+
+    return res.json(puzzles);
+  } catch (error) {
+    return res.status(500).json({ error: `Failed to fetch puzzles: ${error}` });
   }
 });
 
