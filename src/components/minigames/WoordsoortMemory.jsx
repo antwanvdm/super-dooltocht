@@ -15,8 +15,20 @@ const LEVEL_PAIR_COUNT = { easy: 4, medium: 4, hard: 4 };
 function buildCards(level) {
   const types = WOORDSOORTEN_LEVEL_TYPES[level] || WOORDSOORTEN_LEVEL_TYPES.medium;
   const count = LEVEL_PAIR_COUNT[level] || 4;
-  const filtered = WOORDSOORTEN_DATA.filter(d => types.includes(d.type));
-  const items = shuffle(filtered).slice(0, count);
+
+  // Verdeel eerlijk over de beschikbare woordsoorten
+  const byType = {};
+  for (const t of types) {
+    byType[t] = shuffle(WOORDSOORTEN_DATA.filter(d => d.type === t));
+  }
+  const items = [];
+  let typeIdx = 0;
+  while (items.length < count) {
+    const t = types[typeIdx % types.length];
+    const word = byType[t].pop();
+    if (word) items.push(word);
+    typeIdx++;
+  }
 
   const cards = [];
   items.forEach((item, i) => {
@@ -63,7 +75,7 @@ function WoordsoortMemory({ onSuccess, theme, mathSettings }) {
       const a = cards[first];
       const b = cards[second];
 
-      const isMatch = first !== second && a.pairId === b.pairId && a.type !== b.type;
+      const isMatch = first !== second && a.type !== b.type && a.wordType === b.wordType;
 
       if (isMatch) {
         setMatched((prev) => [...prev, first, second]);
