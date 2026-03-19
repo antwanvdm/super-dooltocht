@@ -56,6 +56,13 @@ const DEFAULT_SETTINGS = {
   musicEnabled: false,
 };
 
+const VALID_CHESS_THEMES = new Set([
+  'mateIn1', 'mateIn2', 'mateIn3', 'mateIn4',
+  'fork', 'pin', 'hangingPiece', 'skewer',
+  'discoveredAttack', 'sacrifice', 'castling',
+  'promotion', 'trappedPiece', 'enPassant',
+]);
+
 // Build initial state from saved settings, using defaults for missing values.
 // Uses nullish coalescing (??) for booleans that can be false, || for the rest.
 const buildInitialSettings = (saved) => ({
@@ -89,7 +96,7 @@ const buildInitialSettings = (saved) => ({
   fractionLevel: saved?.fractionLevel || DEFAULT_SETTINGS.fractionLevel,
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
-  chessThemes: saved?.chessThemes || DEFAULT_SETTINGS.chessThemes,
+  chessThemes: (saved?.chessThemes || DEFAULT_SETTINGS.chessThemes).filter(t => VALID_CHESS_THEMES.has(t)),
   adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
   playerEmoji: saved?.playerEmoji || DEFAULT_SETTINGS.playerEmoji,
   musicEnabled: saved?.musicEnabled ?? DEFAULT_SETTINGS.musicEnabled,
@@ -107,8 +114,14 @@ function settingsReducer(state, action) {
       return { ...state, taalOps: { ...state.taalOps, [action.key]: !state.taalOps[action.key] } };
     case 'TOGGLE_PUZZEL_OPS':
       return { ...state, puzzelOps: { ...state.puzzelOps, [action.key]: !state.puzzelOps[action.key] } };
-    case 'SET_PUZZLE_LEVEL':
-      return { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
+    case 'SET_PUZZLE_LEVEL': {
+      const next = { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
+      // Auto-remove hard-only chess themes when level drops below hard
+      if (action.key === 'chess' && action.value !== 'hard' && action.value !== 'wizard') {
+        next.chessThemes = state.chessThemes.filter(t => t !== 'castling' && t !== 'enPassant');
+      }
+      return next;
+    }
     case 'TOGGLE_CHESS_THEME': {
       const active = state.chessThemes.includes(action.theme);
       return {

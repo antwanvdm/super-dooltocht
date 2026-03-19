@@ -1,12 +1,15 @@
 import { Chess } from 'chess.js';
 
 /**
- * Pick a random chess puzzle from the provided pool.
+ * Pick a random chess puzzle from the provided pool and remove it so it
+ * won't be picked again during the same adventure.
  * @param {Array<{ fen: string, solution: string[], rating: number }>} puzzlePool
- * @returns {{ fen: string, solution: string[], rating: number }}
+ * @returns {{ fen: string, solution: string[], rating: number } | undefined}
  */
 export function getRandomPuzzle(puzzlePool) {
-  return puzzlePool[Math.floor(Math.random() * puzzlePool.length)];
+  if (!puzzlePool || puzzlePool.length === 0) return undefined;
+  const index = Math.floor(Math.random() * puzzlePool.length);
+  return puzzlePool.splice(index, 1)[0];
 }
 
 /**

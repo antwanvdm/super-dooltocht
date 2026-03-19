@@ -195,7 +195,7 @@ export default function PuzzelPanel({ settings, dispatch }) {
             </div>
 
             <p className="text-sm font-medium text-gray-600 mb-2">♟️ Soorten puzzels:</p>
-            <div className="space-y-1.5">
+            <div className="columns-1 sm:columns-2 gap-1.5 space-y-1.5">
               {[
                 { key: 'mateIn1', label: 'Schaakmat in 1', icon: '👑' },
                 { key: 'mateIn2', label: 'Schaakmat in 2', icon: '👑' },
@@ -207,14 +207,15 @@ export default function PuzzelPanel({ settings, dispatch }) {
                 { key: 'skewer', label: 'Spies', icon: '🗡️' },
                 { key: 'discoveredAttack', label: 'Gedekte aanval', icon: '🫣' },
                 { key: 'sacrifice', label: 'Offer', icon: '💎' },
-                { key: 'backRankMate', label: 'Achterste rij mat', icon: '🏰' },
                 { key: 'promotion', label: 'Promotie', icon: '⬆️' },
                 { key: 'trappedPiece', label: 'Opgesloten stuk', icon: '🪤' },
-                { key: 'enPassant', label: 'En passant', icon: '🐾' },
-              ].map(({ key, label, icon }) => (
+                { key: 'castling', label: 'Rokade', icon: '🏰', hardOnly: true },
+                { key: 'enPassant', label: 'En passant', icon: '🐾', hardOnly: true },
+              ].filter(({ hardOnly }) => !hardOnly || puzzleLevel.chess === 'hard' || puzzleLevel.chess === 'wizard')
+              .map(({ key, label, icon }) => (
                 <label
                   key={key}
-                  className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                  className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all text-sm break-inside-avoid ${
                     chessThemes.includes(key)
                       ? 'bg-violet-500 text-white shadow-sm'
                       : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'

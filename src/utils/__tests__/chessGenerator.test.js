@@ -15,40 +15,36 @@ import {
 } from '../chessGenerator';
 
 // Sample puzzles for testing (from Lichess open database, CC0)
-const SAMPLE_PUZZLES = {
-  easy: [
-    // Scholar's mate — Qxf7# is checkmate in 1
-    {
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
-      solution: ['h5f7'],
-      rating: 500,
-      primaryTheme: 'mateIn1',
-    },
-  ],
-  medium: [
-    // Mate in 2 — player move, opponent responds, player mates
-    {
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
-      solution: ['h5f7'],
-      rating: 900,
-      primaryTheme: 'mateIn1',
-    },
-  ],
-  hard: [
-    // 3-move solution (simplified — just needs correct structure)
-    {
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
-      solution: ['h5f7'],
-      rating: 1200,
-      primaryTheme: 'mateIn1',
-    },
-  ],
+const EASY_PUZZLE = {
+  fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+  solution: ['h5f7'],
+  rating: 500,
+  primaryTheme: 'mateIn1',
 };
+
+const MEDIUM_PUZZLE = {
+  fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+  solution: ['h5f7'],
+  rating: 900,
+  primaryTheme: 'mateIn1',
+};
+
+const HARD_PUZZLE = {
+  fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+  solution: ['h5f7'],
+  rating: 1200,
+  primaryTheme: 'mateIn1',
+};
+
+// Helper: fresh pool (getRandomPuzzle mutates the array via splice)
+const easyPool = () => [{ ...EASY_PUZZLE }];
+const mediumPool = () => [{ ...MEDIUM_PUZZLE }];
+const hardPool = () => [{ ...HARD_PUZZLE }];
 
 describe('chessGenerator', () => {
   describe('getRandomPuzzle', () => {
     it('returns a puzzle with fen and solution from a pool', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       expect(puzzle).toHaveProperty('fen');
       expect(puzzle).toHaveProperty('solution');
       expect(puzzle.solution.length).toBeGreaterThan(0);
@@ -58,11 +54,22 @@ describe('chessGenerator', () => {
       const puzzle = getRandomPuzzle([]);
       expect(puzzle).toBeUndefined();
     });
+
+    it('removes the chosen puzzle from the pool', () => {
+      const pool = [
+        { ...EASY_PUZZLE },
+        { ...MEDIUM_PUZZLE },
+        { ...HARD_PUZZLE },
+      ];
+      const puzzle = getRandomPuzzle(pool);
+      expect(pool).toHaveLength(2);
+      expect(pool).not.toContain(puzzle);
+    });
   });
 
   describe('createGame', () => {
     it('creates a Chess instance from a puzzle FEN', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const game = createGame(puzzle);
       expect(getBoard(game)).toHaveLength(8);
       expect(getBoard(game)[0]).toHaveLength(8);
@@ -71,7 +78,7 @@ describe('chessGenerator', () => {
 
   describe('getLegalMoves', () => {
     it('returns legal moves for a piece', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const game = createGame(puzzle);
       const from = puzzle.solution[0].slice(0, 2);
       const moves = getLegalMoves(game, from);
@@ -81,7 +88,7 @@ describe('chessGenerator', () => {
     });
 
     it('returns empty array for empty square', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const game = createGame(puzzle);
       // Find an empty square
       const board = getBoard(game);
@@ -103,14 +110,14 @@ describe('chessGenerator', () => {
 
   describe('getTurn', () => {
     it('returns w or b', () => {
-      const game = createGame(getRandomPuzzle(SAMPLE_PUZZLES.easy));
+      const game = createGame(getRandomPuzzle(easyPool()));
       expect(['w', 'b']).toContain(getTurn(game));
     });
   });
 
   describe('makeMove + isCheckmate', () => {
     it('easy puzzles reach checkmate in 1 move', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const game = createGame(puzzle);
       const move = puzzle.solution[0];
       expect(makeMove(game, move.slice(0, 2), move.slice(2, 4))).toBe(true);
@@ -118,14 +125,14 @@ describe('chessGenerator', () => {
     });
 
     it('returns false for an invalid move', () => {
-      const game = createGame(getRandomPuzzle(SAMPLE_PUZZLES.easy));
+      const game = createGame(getRandomPuzzle(easyPool()));
       expect(makeMove(game, 'a1', 'h8')).toBe(false);
     });
   });
 
   describe('isCorrectMove', () => {
     it('returns true for the correct solution move', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const move = puzzle.solution[0];
       expect(isCorrectMove(puzzle, 0, move.slice(0, 2), move.slice(2, 4))).toBe(
         true,
@@ -138,7 +145,7 @@ describe('chessGenerator', () => {
     });
 
     it('returns false for an incorrect move', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       expect(isCorrectMove(puzzle, 0, 'a1', 'a2')).toBe(false);
     });
   });
@@ -157,27 +164,27 @@ describe('chessGenerator', () => {
 
   describe('getHint', () => {
     it('returns the source square of the next player move', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       const hint = getHint(puzzle, 0);
       expect(hint).toBe(puzzle.solution[0].slice(0, 2));
     });
 
     it('returns null for out-of-range moveIndex', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       expect(getHint(puzzle, 99)).toBeNull();
     });
   });
 
   describe('getOpponentResponse', () => {
     it('returns null when no opponent response exists (1-move puzzle)', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       expect(getOpponentResponse(puzzle, 0)).toBeNull();
     });
   });
 
   describe('getPlayerMoveCount', () => {
     it('returns 1 for a 1-move puzzle', () => {
-      const puzzle = getRandomPuzzle(SAMPLE_PUZZLES.easy);
+      const puzzle = getRandomPuzzle(easyPool());
       expect(getPlayerMoveCount(puzzle)).toBe(1);
     });
   });

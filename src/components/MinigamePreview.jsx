@@ -248,6 +248,15 @@ const CATEGORIES = [
         { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
         { value: 'hard', label: 'Moeilijk' }, { value: 'wizard', label: '🧙 Wizard' },
       ]},
+      { key: 'chessThemes', label: 'Schaakcategorie', type: 'select', options: [
+        { value: 'mateIn1', label: '👑 Schaakmat in 1' }, { value: 'mateIn2', label: '👑 Schaakmat in 2' },
+        { value: 'mateIn3', label: '👑 Schaakmat in 3' }, { value: 'mateIn4', label: '👑 Schaakmat in 4' },
+        { value: 'fork', label: '🍴 Dubbele aanval' }, { value: 'pin', label: '📌 Pen' },
+        { value: 'hangingPiece', label: '🎯 Stuk pakken' }, { value: 'skewer', label: '🗡️ Spies' },
+        { value: 'discoveredAttack', label: '🫣 Gedekte aanval' }, { value: 'sacrifice', label: '💎 Offer' },
+        { value: 'promotion', label: '⬆️ Promotie' }, { value: 'trappedPiece', label: '🪤 Opgesloten stuk' },
+        { value: 'castling', label: '🏰 Rokade', hardOnly: true }, { value: 'enPassant', label: '🐾 En passant', hardOnly: true },
+      ]},
     ],
   },
 ];
@@ -289,7 +298,7 @@ const PREVIEW_SETTINGS = {
   timeCalculationOmrekenen: true,
   timeCalculationKlok: true,
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
-  chessThemes: ['mateIn1', 'mateIn2', 'fork', 'pin', 'hangingPiece'],
+  chessThemes: 'mateIn1',
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
@@ -304,29 +313,35 @@ function MinigamePreview() {
   const [overrides, setOverrides] = useState({});
   const [chessPuzzles, setChessPuzzles] = useState([]);
 
-  const loadChessPuzzles = useCallback(async () => {
+  const loadChessPuzzle = useCallback(async () => {
     try {
       const level = overrides['Puzzels']?.chessLevel || PREVIEW_SETTINGS.puzzleLevel.chess;
-      const themes = PREVIEW_SETTINGS.chessThemes;
-      const puzzles = await fetchChessPuzzles({ chessLevel: level, chessThemes: themes }, 20);
+      const chessTheme = overrides['Puzzels']?.chessThemes || PREVIEW_SETTINGS.chessThemes;
+      const puzzles = await fetchChessPuzzles({ chessLevel: level, chessThemes: [chessTheme] }, 1);
       setChessPuzzles(puzzles);
     } catch {
       // API unavailable — chess preview will show empty state
     }
   }, [overrides]);
 
-  useEffect(() => {
-    loadChessPuzzles();
-  }, [loadChessPuzzles]);
-
   const updateOverride = (categoryName, settingKey, value) => {
-    setOverrides((prev) => ({
-      ...prev,
-      [categoryName]: {
-        ...(prev[categoryName] || {}),
-        [settingKey]: value,
-      },
-    }));
+    setOverrides((prev) => {
+      const next = {
+        ...prev,
+        [categoryName]: {
+          ...(prev[categoryName] || {}),
+          [settingKey]: value,
+        },
+      };
+      // Auto-reset hardOnly chess themes when dropping to easy/medium
+      if (settingKey === 'chessLevel' && !['hard', 'wizard'].includes(value)) {
+        const currentTheme = next[categoryName]?.chessThemes ?? PREVIEW_SETTINGS.chessThemes;
+        if (currentTheme === 'castling' || currentTheme === 'enPassant') {
+          next[categoryName] = { ...next[categoryName], chessThemes: 'mateIn1' };
+        }
+      }
+      return next;
+    });
   };
 
   const getSettingValue = (categoryName, settingKey) =>
@@ -347,6 +362,8 @@ function MinigamePreview() {
     setActiveGame(gameType);
     setActiveCategory(categoryName);
     setKey((k) => k + 1);
+    // Fetch a fresh puzzle when opening a chess game
+    if (gameType === 'chess') loadChessPuzzle();
   };
 
   const closeGame = () => {
@@ -407,9 +424,16 @@ function MinigamePreview() {
                           }}
                           className="bg-white border border-slate-200 rounded-lg px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-300"
                         >
-                          {setting.options.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
+                          {setting.options.map((opt) => {
+                            const isHardOnly = opt.hardOnly && !['hard', 'wizard'].includes(
+                              getSettingValue(category.name, 'chessLevel') ?? PREVIEW_SETTINGS.puzzleLevel?.chess,
+                            );
+                            return (
+                              <option key={opt.value} value={opt.value} disabled={isHardOnly}>
+                                {opt.label}{isHardOnly ? ' (moeilijk+)' : ''}
+                              </option>
+                            );
+                          })}
                         </select>
                       </label>
                     );

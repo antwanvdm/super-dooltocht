@@ -29,6 +29,21 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
   const chessPuzzles = mathSettings?.chessPuzzles || [];
 
   const puzzle = useMemo(() => getRandomPuzzle(chessPuzzles), [chessPuzzles]);
+
+  // Puzzles not loaded yet (e.g. page refresh before API responds)
+  if (!puzzle) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 gap-4">
+        <span className="text-4xl animate-bounce">♟️</span>
+        <p className="text-gray-600 font-medium">Schaakpuzzel laden…</p>
+      </div>
+    );
+  }
+
+  return <ChessGameInner puzzle={puzzle} onSuccess={onSuccess} theme={theme} />;
+}
+
+function ChessGameInner({ puzzle, onSuccess, theme }) {
   const totalPlayerMoves = useMemo(() => getPlayerMoveCount(puzzle), [puzzle]);
 
   const THEME_LABELS = {

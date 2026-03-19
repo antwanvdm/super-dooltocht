@@ -136,7 +136,7 @@ function MazeGame() {
     if (!mathSettings.enabledOperations?.chess) return;
     const chessLevel = (typeof mathSettings.puzzleLevel === 'object' ? mathSettings.puzzleLevel?.chess : mathSettings.puzzleLevel) || 'easy';
     const chessThemes = mathSettings.chessThemes || [];
-    fetchChessPuzzles({ chessLevel, chessThemes }, 20)
+    fetchChessPuzzles({ chessLevel, chessThemes }, 25)
       .then(puzzles => { chessPuzzlesRef.current = puzzles; })
       .catch(() => { /* server niet bereikbaar — speler ziet gewoon geen schaakpuzzels */ });
   }, [mathSettings]);
@@ -668,6 +668,9 @@ function MazeGame() {
       });
       syncProgress();
     }
+
+    // Herlaad schaakpuzzels als de pool bijna leeg is
+    if (chessPuzzlesRef.current.length < 5) loadChessPuzzles();
   };
 
   const handleChallengeClose = () => {

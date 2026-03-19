@@ -1,5 +1,22 @@
 import { SPELLING_CATEGORIES } from '../../../utils/languageData';
 
+const CHESS_THEME_LABELS = {
+  mateIn1: '👑 Mat in 1',
+  mateIn2: '👑 Mat in 2',
+  mateIn3: '👑 Mat in 3',
+  mateIn4: '👑 Mat in 4',
+  fork: '🍴 Dubbele aanval',
+  pin: '📌 Pen',
+  hangingPiece: '🎯 Stuk pakken',
+  skewer: '🗡️ Spies',
+  discoveredAttack: '🫣 Gedekte aanval',
+  sacrifice: '💎 Offer',
+  castling: '🏰 Rokade',
+  promotion: '⬆️ Promotie',
+  trappedPiece: '🪤 Opgesloten stuk',
+  enPassant: '🐾 En passant',
+};
+
 function SettingsModal({ mathSettings, playerEmoji, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-2 sm:p-4">
@@ -276,14 +293,23 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
             {mathSettings.enabledOperations.chess && (
               <div className="bg-violet-50 rounded-xl p-4">
                 <h4 className="font-bold text-violet-800 mb-2">♟️ Schaken</h4>
-                <p className="text-sm text-violet-700">
-                  Niveau: <strong>
+                <div className="text-sm text-violet-700 space-y-1">
+                  <p>Niveau: <strong>
                     {mathSettings.puzzleLevel?.chess === 'easy' && 'Makkelijk'}
                     {mathSettings.puzzleLevel?.chess === 'medium' && 'Gemiddeld'}
                     {mathSettings.puzzleLevel?.chess === 'hard' && 'Moeilijk'}
                     {mathSettings.puzzleLevel?.chess === 'wizard' && '🧙 Wizard'}
-                  </strong>
-                </p>
+                  </strong></p>
+                  {mathSettings.chessThemes?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {mathSettings.chessThemes.map(t => (
+                        <span key={t} className="bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded text-xs">
+                          {CHESS_THEME_LABELS[t] || t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

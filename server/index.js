@@ -251,19 +251,6 @@ app.get('/api/chess-puzzles', async (req, res) => {
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 5, 1), 50);
 
     const rnd = Math.random();
-    const filter = {
-      rating: { $gte: minRating, $lte: maxRating },
-      random: { $gte: rnd },
-    };
-    if (themes) {
-      const themeList = themes
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean);
-      if (themeList.length === 1) filter.primaryTheme = themeList[0];
-      else if (themeList.length > 1) filter.primaryTheme = { $in: themeList };
-    }
-
     const projection = {
       _id: 0,
       lichessId: 1,
@@ -274,6 +261,58 @@ app.get('/api/chess-puzzles', async (req, res) => {
       themes: 1,
       moveCount: 1,
     };
+
+    const themeList = themes
+      ? themes
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
+
+    // When multiple themes are selected, fetch per theme to ensure even distribution
+    if (themeList.length > 1) {
+      const perTheme = Math.max(Math.ceil(limit / themeList.length), 1);
+      const fetches = themeList.map(async (theme) => {
+        const filter = {
+          rating: { $gte: minRating, $lte: maxRating },
+          primaryTheme: theme,
+          random: { $gte: rnd },
+        };
+        let results = await ChessPuzzle.find(filter)
+          .select(projection)
+          .sort({ random: 1 })
+          .limit(perTheme)
+          .lean();
+        if (results.length < perTheme) {
+          filter.random = { $lt: rnd };
+          const extra = await ChessPuzzle.find(filter)
+            .select(projection)
+            .sort({ random: 1 })
+            .limit(perTheme - results.length)
+            .lean();
+          results = results.concat(extra);
+        }
+        return results;
+      });
+      const groups = await Promise.all(fetches);
+      // Interleave results so themes are mixed, then trim to limit
+      const puzzles = [];
+      const maxLen = Math.max(...groups.map((g) => g.length));
+      for (let i = 0; i < maxLen && puzzles.length < limit; i++) {
+        for (const group of groups) {
+          if (i < group.length && puzzles.length < limit)
+            puzzles.push(group[i]);
+        }
+      }
+      return res.json(puzzles);
+    }
+
+    // Single theme or no theme filter — original logic
+    const filter = {
+      rating: { $gte: minRating, $lte: maxRating },
+      random: { $gte: rnd },
+    };
+    if (themeList.length === 1) filter.primaryTheme = themeList[0];
 
     let puzzles = await ChessPuzzle.find(filter)
       .select(projection)
