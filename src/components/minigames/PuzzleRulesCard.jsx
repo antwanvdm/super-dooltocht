@@ -47,15 +47,15 @@ const RULES = {
   chess: {
     emoji: '♟️',
     title: 'Schaken',
-    intro: 'Vind de juiste zet(ten) om de koning schaakmat te zetten!',
+    intro: 'Vind de beste zet(ten) om de puzzel op te lossen!',
     rules: [
       { icon: '👆', text: 'Tik op een stuk om het te selecteren. Groene bolletjes tonen waar het heen kan.' },
-      { icon: '♔', text: 'Zet de vijandige koning schaakmat — hij mag nergens heen kunnen.' },
-      { icon: '🤖', text: 'Bij mat in 2 of 3: de tegenstander speelt automatisch terug.' },
+      { icon: '🎯', text: 'Zoek de beste zet: schaakmat, een vork, een pen, materiaal winnen, of iets anders!' },
+      { icon: '🤖', text: 'Bij meerdere zetten: de tegenstander speelt automatisch terug.' },
       { icon: '✖', text: 'Er is maar één juiste oplossing. Bij een foute zet kun je opnieuw proberen.' },
     ],
     tips: [
-      'Kijk welke stukken de vijandige koning al insluiten.',
+      'Lees bovenaan welk type puzzel het is.',
       'Gebruik Hint om te zien welk stuk je moet bewegen.',
     ],
   },

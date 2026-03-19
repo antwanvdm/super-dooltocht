@@ -1,5 +1,5 @@
 export default function PuzzelPanel({ settings, dispatch }) {
-  const { puzzelOps, puzzleLevel } = settings;
+  const { puzzelOps, puzzleLevel, chessThemes } = settings;
 
   return (
     <>
@@ -161,12 +161,13 @@ export default function PuzzelPanel({ settings, dispatch }) {
 
         {puzzelOps.chess && (
           <>
-            <p className={`text-sm font-medium text-gray-600 mb-2 ${puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>♟️ Schaken:</p>
-            <div className="space-y-1.5">
+            <p className={`text-sm font-medium text-gray-600 mb-2 ${puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>♟️ Schaken — niveau:</p>
+            <div className="space-y-1.5 mb-4">
               {[
-                { key: 'easy', label: 'Schaakmat in 1', desc: '1 zet' },
-                { key: 'medium', label: 'Schaakmat in 2', desc: '2 zetten' },
-                { key: 'hard', label: 'Schaakmat in 3', desc: '3 zetten' },
+                { key: 'easy', label: 'Makkelijk', desc: 'rating ≤ 800' },
+                { key: 'medium', label: 'Gemiddeld', desc: 'rating 801–1100' },
+                { key: 'hard', label: 'Moeilijk', desc: 'rating 1101–1400' },
+                { key: 'wizard', label: '🧙 Wizard', desc: 'rating 1401–1800' },
               ].map(({ key, label, desc }) => (
                 <label
                   key={key}
@@ -191,6 +192,48 @@ export default function PuzzelPanel({ settings, dispatch }) {
                   {puzzleLevel.chess === key && <span>✓</span>}
                 </label>
               ))}
+            </div>
+
+            <p className="text-sm font-medium text-gray-600 mb-2">♟️ Soorten puzzels:</p>
+            <div className="space-y-1.5">
+              {[
+                { key: 'mateIn1', label: 'Schaakmat in 1', icon: '👑' },
+                { key: 'mateIn2', label: 'Schaakmat in 2', icon: '👑' },
+                { key: 'mateIn3', label: 'Schaakmat in 3', icon: '👑' },
+                { key: 'mateIn4', label: 'Schaakmat in 4', icon: '👑' },
+                { key: 'fork', label: 'Dubbele aanval', icon: '🍴' },
+                { key: 'pin', label: 'Pen', icon: '📌' },
+                { key: 'hangingPiece', label: 'Stuk pakken', icon: '🎯' },
+                { key: 'skewer', label: 'Spies', icon: '🗡️' },
+                { key: 'discoveredAttack', label: 'Gedekte aanval', icon: '🫣' },
+                { key: 'sacrifice', label: 'Offer', icon: '💎' },
+                { key: 'backRankMate', label: 'Achterste rij mat', icon: '🏰' },
+                { key: 'promotion', label: 'Promotie', icon: '⬆️' },
+                { key: 'trappedPiece', label: 'Opgesloten stuk', icon: '🪤' },
+                { key: 'enPassant', label: 'En passant', icon: '🐾' },
+              ].map(({ key, label, icon }) => (
+                <label
+                  key={key}
+                  className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                    chessThemes.includes(key)
+                      ? 'bg-violet-500 text-white shadow-sm'
+                      : 'bg-white text-gray-700 hover:bg-violet-50 border border-gray-200'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={chessThemes.includes(key)}
+                    onChange={() => dispatch({ type: 'TOGGLE_CHESS_THEME', theme: key })}
+                    className="sr-only"
+                  />
+                  <span>{icon}</span>
+                  <span className="font-medium">{label}</span>
+                  {chessThemes.includes(key) && <span className="ml-auto">✓</span>}
+                </label>
+              ))}
+              {chessThemes.length === 0 && (
+                <p className="text-xs text-red-500 font-medium">⚠️ Kies minstens één soort puzzel</p>
+              )}
             </div>
           </>
         )}

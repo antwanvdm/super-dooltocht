@@ -20,6 +20,7 @@ import FriendlyPuzzleModal from './modals/FriendlyPuzzleModal';
 import FriendsWarningModal from './modals/FriendsWarningModal';
 import BossBattleModal from './modals/BossBattleModal';
 import WinScreen from './modals/WinScreen';
+import { fetchChessPuzzles } from '../../utils/chessApi';
 
 function MazeGame() {
   const { theme: themeId } = useParams();
@@ -104,6 +105,7 @@ function MazeGame() {
   // Leeft in MazeGame (niet in ChallengeModal) omdat ChallengeModal
   // elke keer opnieuw gemount wordt per challenge.
   const playedGameTypesRef = useRef([]);
+  const chessPuzzlesRef = useRef([]);
   const [activeGameType, setActiveGameType] = useState(null);
   const [lastCompletedPos, setLastCompletedPos] = useState(null); // Voorkom direct opnieuw triggeren
   const [lastPortalPos, setLastPortalPos] = useState(null); // Voorkom heen-en-weer portaal loop
@@ -128,6 +130,18 @@ function MazeGame() {
       return () => clearTimeout(timer);
     }
   }, [exitModal, friendsWarningModal, activeFriendly, hasWon, bossBattle]);
+
+  // Laad schaakpuzzels van de server wanneer schaken actief is.
+  const loadChessPuzzles = useCallback(() => {
+    if (!mathSettings.enabledOperations?.chess) return;
+    const chessLevel = (typeof mathSettings.puzzleLevel === 'object' ? mathSettings.puzzleLevel?.chess : mathSettings.puzzleLevel) || 'easy';
+    const chessThemes = mathSettings.chessThemes || [];
+    fetchChessPuzzles({ chessLevel, chessThemes }, 20)
+      .then(puzzles => { chessPuzzlesRef.current = puzzles; })
+      .catch(() => { /* server niet bereikbaar — speler ziet gewoon geen schaakpuzzels */ });
+  }, [mathSettings]);
+
+  useEffect(() => { loadChessPuzzles(); }, [loadChessPuzzles]);
 
   // Start/stop achtergrondmuziek wanneer geluid wordt in-/uitgeschakeld
   useEffect(() => {
@@ -932,7 +946,7 @@ function MazeGame() {
         <ChallengeModal
           challenge={activeChallenge}
           theme={theme}
-          mathSettings={mathSettings}
+          mathSettings={{ ...mathSettings, chessPuzzles: chessPuzzlesRef.current }}
           gameType={activeGameType}
           onComplete={handleChallengeComplete}
           onClose={handleChallengeClose}
@@ -943,7 +957,7 @@ function MazeGame() {
       {bossBattle && (
         <BossBattleModal
           theme={theme}
-          mathSettings={mathSettings}
+          mathSettings={{ ...mathSettings, chessPuzzles: chessPuzzlesRef.current }}
           totalRounds={adventureLength === 'long' || adventureLength === 'xl' ? 3 : 2}
           onVictory={handleBossVictory}
           playedGameTypes={playedGameTypesRef.current}

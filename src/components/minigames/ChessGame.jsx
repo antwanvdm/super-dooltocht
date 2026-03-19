@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   getRandomPuzzle, createGame, getLegalMoves, makeMove,
   isCheckmate, getBoard, getTurn, getHint, isCorrectMove,
-  getOpponentResponse, getPlayerMoveCount,
+  getOpponentResponse, getPlayerMoveCount, getPromotion,
 } from '../../utils/chessGenerator';
 import PuzzleRulesCard from './PuzzleRulesCard';
 
@@ -26,11 +26,32 @@ const PIECE_IMAGES = {
 };
 
 function ChessGame({ mathSettings, onSuccess, theme }) {
-  const pl = mathSettings?.puzzleLevel;
-  const level = (typeof pl === 'object' ? pl?.chess : pl) || 'easy';
+  const chessPuzzles = mathSettings?.chessPuzzles || [];
 
-  const puzzle = useMemo(() => getRandomPuzzle(level), [level]);
+  const puzzle = useMemo(() => getRandomPuzzle(chessPuzzles), [chessPuzzles]);
   const totalPlayerMoves = useMemo(() => getPlayerMoveCount(puzzle), [puzzle]);
+
+  const THEME_LABELS = {
+    mateIn1: 'Schaakmat in 1',
+    mateIn2: 'Schaakmat in 2',
+    mateIn3: 'Schaakmat in 3',
+    mateIn4: 'Schaakmat in 4',
+    fork: 'Dubbele aanval',
+    pin: 'Pen',
+    hangingPiece: 'Stuk pakken',
+    skewer: 'Spies',
+    discoveredAttack: 'Gedekte aanval',
+    sacrifice: 'Offer',
+    backRankMate: 'Achterste rij mat',
+    promotion: 'Promotie',
+    doubleCheck: 'Dubbelschaak',
+    trappedPiece: 'Opgesloten stuk',
+    smotheredMate: 'Verstikkingsmat',
+    enPassant: 'En passant',
+    castling: 'Rokade',
+  };
+  const puzzleLabel = THEME_LABELS[puzzle?.primaryTheme] || `Schaakmat in ${totalPlayerMoves}`;
+
 
   const [game] = useState(() => createGame(puzzle));
   const [board, setBoard] = useState(() => getBoard(game));
@@ -68,15 +89,19 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
     // If we already selected a piece and click a legal-move square → try move
     if (selectedSquare && legalMoves.some(m => m.to === square)) {
       if (isCorrectMove(puzzle, moveIndex, selectedSquare, square)) {
-        // Correct move
-        makeMove(game, selectedSquare, square);
+        // Correct move — use promotion from solution if present
+        const promotion = getPromotion(puzzle, moveIndex);
+        makeMove(game, selectedSquare, square, promotion);
         setLastMove({ from: selectedSquare, to: square });
         setBoard(getBoard(game));
         setSelectedSquare(null);
         setLegalMoves([]);
         setHintSquare(null);
 
-        if (isCheckmate(game)) {
+        // Check if puzzle is complete: checkmate OR all player moves done
+        const nextPlayerIndex = (moveIndex + 1) * 2;
+        const allMovesDone = nextPlayerIndex >= puzzle.solution.length;
+        if (isCheckmate(game) || allMovesDone) {
           setSolved(true);
           onSuccess();
           return;
@@ -87,7 +112,7 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
         if (response) {
           const nextIndex = moveIndex + 1;
           setTimeout(() => {
-            makeMove(game, response.from, response.to);
+            makeMove(game, response.from, response.to, response.promotion);
             setLastMove({ from: response.from, to: response.to });
             setBoard(getBoard(game));
             setPlayerTurn(getTurn(game));
@@ -130,7 +155,7 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
       {/* Status bar */}
       <div className="flex items-center gap-2 text-sm sm:text-base">
         <span className="font-bold text-gray-700">
-          ♟️ Schaakmat in {totalPlayerMoves}
+          ♟️ {puzzleLabel}
         </span>
         <span className="text-gray-400">•</span>
         <span className="text-gray-500">
@@ -214,7 +239,7 @@ function ChessGame({ mathSettings, onSuccess, theme }) {
       {/* Solved feedback */}
       {solved && (
         <p className="text-green-600 text-lg font-bold animate-bounce">
-          ♔ Schaakmat! Goed gedaan!
+          ♔ Goed gedaan!
         </p>
       )}
 

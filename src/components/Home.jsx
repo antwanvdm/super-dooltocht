@@ -50,6 +50,7 @@ const DEFAULT_SETTINGS = {
   fractionLevel: 'easy',
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
+  chessThemes: ['mateIn1'],
   adventureLength: 'medium',
   playerEmoji: PLAYER_EMOJIS[0],
   musicEnabled: false,
@@ -88,6 +89,7 @@ const buildInitialSettings = (saved) => ({
   fractionLevel: saved?.fractionLevel || DEFAULT_SETTINGS.fractionLevel,
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
+  chessThemes: saved?.chessThemes || DEFAULT_SETTINGS.chessThemes,
   adventureLength: saved?.adventureLength || DEFAULT_SETTINGS.adventureLength,
   playerEmoji: saved?.playerEmoji || DEFAULT_SETTINGS.playerEmoji,
   musicEnabled: saved?.musicEnabled ?? DEFAULT_SETTINGS.musicEnabled,
@@ -107,6 +109,15 @@ function settingsReducer(state, action) {
       return { ...state, puzzelOps: { ...state.puzzelOps, [action.key]: !state.puzzelOps[action.key] } };
     case 'SET_PUZZLE_LEVEL':
       return { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
+    case 'TOGGLE_CHESS_THEME': {
+      const active = state.chessThemes.includes(action.theme);
+      return {
+        ...state,
+        chessThemes: active
+          ? state.chessThemes.filter(t => t !== action.theme)
+          : [...state.chessThemes, action.theme],
+      };
+    }
     case 'TOGGLE_SPELLING_CATEGORY': {
       const active = state.spellingCategories.includes(action.id);
       return {
@@ -144,7 +155,7 @@ function Home({ disabled = false }) {
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
     readingLevel, englishLevel, englishDirection, rijmenLevel,
-    woordsoortenLevel, fractionLevel, puzzelOps, puzzleLevel,
+    woordsoortenLevel, fractionLevel, puzzelOps, puzzleLevel, chessThemes,
     adventureLength, playerEmoji,
     musicEnabled,
   } = settings;
@@ -248,6 +259,7 @@ function Home({ disabled = false }) {
       mathSettings = {
         enabledOperations: { ...puzzelOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
         puzzleLevel,
+        chessThemes,
       };
     } else {
       mathSettings = {

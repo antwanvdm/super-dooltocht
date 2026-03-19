@@ -245,7 +245,7 @@ app.post('/api/players/:codeKey/progress', async (req, res) => {
 
 app.get('/api/chess-puzzles', async (req, res) => {
   try {
-    const theme = req.query.theme;
+    const themes = req.query.themes; // comma-separated list
     const minRating = Math.max(parseInt(req.query.minRating, 10) || 0, 0);
     const maxRating = Math.min(parseInt(req.query.maxRating, 10) || 1400, 1800);
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 5, 1), 50);
@@ -255,7 +255,14 @@ app.get('/api/chess-puzzles', async (req, res) => {
       rating: { $gte: minRating, $lte: maxRating },
       random: { $gte: rnd },
     };
-    if (theme) filter.primaryTheme = theme;
+    if (themes) {
+      const themeList = themes
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean);
+      if (themeList.length === 1) filter.primaryTheme = themeList[0];
+      else if (themeList.length > 1) filter.primaryTheme = { $in: themeList };
+    }
 
     const projection = {
       _id: 0,

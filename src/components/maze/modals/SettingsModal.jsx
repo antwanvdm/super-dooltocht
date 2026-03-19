@@ -278,9 +278,10 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 <h4 className="font-bold text-violet-800 mb-2">♟️ Schaken</h4>
                 <p className="text-sm text-violet-700">
                   Niveau: <strong>
-                    {mathSettings.puzzleLevel?.chess === 'easy' && 'Schaakmat in 1'}
-                    {mathSettings.puzzleLevel?.chess === 'medium' && 'Schaakmat in 2'}
-                    {mathSettings.puzzleLevel?.chess === 'hard' && 'Schaakmat in 3'}
+                    {mathSettings.puzzleLevel?.chess === 'easy' && 'Makkelijk'}
+                    {mathSettings.puzzleLevel?.chess === 'medium' && 'Gemiddeld'}
+                    {mathSettings.puzzleLevel?.chess === 'hard' && 'Moeilijk'}
+                    {mathSettings.puzzleLevel?.chess === 'wizard' && '🧙 Wizard'}
                   </strong>
                 </p>
               </div>

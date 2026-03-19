@@ -1,14 +1,12 @@
 import { Chess } from 'chess.js';
-import { CHESS_PUZZLES } from './chessData';
 
 /**
- * Pick a random chess puzzle for the given level.
- * @param {'easy'|'medium'|'hard'} level - Puzzle difficulty
+ * Pick a random chess puzzle from the provided pool.
+ * @param {Array<{ fen: string, solution: string[], rating: number }>} puzzlePool
  * @returns {{ fen: string, solution: string[], rating: number }}
  */
-export function getRandomPuzzle(level = 'easy') {
-  const puzzles = CHESS_PUZZLES[level] || CHESS_PUZZLES.easy;
-  return puzzles[Math.floor(Math.random() * puzzles.length)];
+export function getRandomPuzzle(puzzlePool) {
+  return puzzlePool[Math.floor(Math.random() * puzzlePool.length)];
 }
 
 /**
@@ -29,7 +27,7 @@ export function createGame(puzzle) {
 export function getLegalMoves(game, square) {
   return game
     .moves({ square, verbose: true })
-    .map((m) => ({ from: m.from, to: m.to }));
+    .map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
 }
 
 /**
@@ -39,9 +37,9 @@ export function getLegalMoves(game, square) {
  * @param {string} to
  * @returns {boolean}
  */
-export function makeMove(game, from, to) {
+export function makeMove(game, from, to, promotion) {
   try {
-    game.move({ from, to });
+    game.move({ from, to, promotion });
     return true;
   } catch {
     return false;
@@ -103,7 +101,20 @@ export function isCorrectMove(puzzle, moveIndex, from, to) {
   const solutionIndex = moveIndex * 2;
   const expected = puzzle.solution[solutionIndex];
   if (!expected) return false;
-  return expected === from + to;
+  // Compare first 4 chars (from+to). Promotion char (5th) is handled separately.
+  return expected.slice(0, 4) === from + to;
+}
+
+/**
+ * Get the promotion piece for a solution move (e.g. 'q' for queen).
+ * @param {{ solution: string[] }} puzzle
+ * @param {number} moveIndex
+ * @returns {string|undefined}
+ */
+export function getPromotion(puzzle, moveIndex) {
+  const solutionIndex = moveIndex * 2;
+  const move = puzzle.solution[solutionIndex];
+  return move?.[4] || undefined;
 }
 
 /**
@@ -116,7 +127,11 @@ export function getOpponentResponse(puzzle, moveIndex) {
   const solutionIndex = moveIndex * 2 + 1;
   const move = puzzle.solution[solutionIndex];
   if (!move) return null;
-  return { from: move.slice(0, 2), to: move.slice(2, 4) };
+  return {
+    from: move.slice(0, 2),
+    to: move.slice(2, 4),
+    promotion: move[4] || undefined,
+  };
 }
 
 /**

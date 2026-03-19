@@ -1,7 +1,8 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTheme } from '../utils/themes';
 import { lazyRetry } from '../utils/lazyRetry';
+import { fetchChessPuzzles } from '../utils/chessApi';
 import {
   GAME_NAMES,
   STANDARD_GAMES,
@@ -243,9 +244,9 @@ const CATEGORIES = [
         { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
         { value: 'hard', label: 'Moeilijk' },
       ]},
-      { key: 'chessLevel', label: 'Schaakmat in', type: 'select', options: [
-        { value: 'easy', label: '1 zet' }, { value: 'medium', label: '2 zetten' },
-        { value: 'hard', label: '3 zetten' },
+      { key: 'chessLevel', label: 'Schaakniveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' }, { value: 'wizard', label: '🧙 Wizard' },
       ]},
     ],
   },
@@ -288,6 +289,7 @@ const PREVIEW_SETTINGS = {
   timeCalculationOmrekenen: true,
   timeCalculationKlok: true,
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
+  chessThemes: ['mateIn1', 'mateIn2', 'fork', 'pin', 'hangingPiece'],
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
@@ -300,6 +302,22 @@ function MinigamePreview() {
   const [activeCategory, setActiveCategory] = useState(null);
   const [key, setKey] = useState(0); // force re-mount on retry
   const [overrides, setOverrides] = useState({});
+  const [chessPuzzles, setChessPuzzles] = useState([]);
+
+  const loadChessPuzzles = useCallback(async () => {
+    try {
+      const level = overrides['Puzzels']?.chessLevel || PREVIEW_SETTINGS.puzzleLevel.chess;
+      const themes = PREVIEW_SETTINGS.chessThemes;
+      const puzzles = await fetchChessPuzzles({ chessLevel: level, chessThemes: themes }, 20);
+      setChessPuzzles(puzzles);
+    } catch {
+      // API unavailable — chess preview will show empty state
+    }
+  }, [overrides]);
+
+  useEffect(() => {
+    loadChessPuzzles();
+  }, [loadChessPuzzles]);
 
   const updateOverride = (categoryName, settingKey, value) => {
     setOverrides((prev) => ({
@@ -320,6 +338,8 @@ function MinigamePreview() {
     if (merged.chessLevel) {
       merged.puzzleLevel = { ...merged.puzzleLevel, chess: merged.chessLevel };
     }
+    // Inject fetched chess puzzles
+    merged.chessPuzzles = chessPuzzles;
     return merged;
   };
 
