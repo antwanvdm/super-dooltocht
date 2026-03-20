@@ -65,10 +65,20 @@ This game aims to be:
 - **Sudoku** – Classic number puzzles in 4×4 (easy), 6×6 (medium), and 9×9 (hard) grids
 - **Tectonic** – Fill regions with numbers where no adjacent cells share the same value
 - **Binary (Binair)** – Fill a grid with 0s and 1s following row/column balance and no-triple rules
-- **Chess (Schaken)** – Tactical checkmate puzzles sourced from the [Lichess puzzle database](https://database.lichess.org/#puzzles) (CC0):
-  - Schaakmat in 1 – Find the single move that delivers checkmate
-  - Schaakmat in 2 – Two-move checkmate sequences (opponent responds automatically)
-  - Schaakmat in 3 – Three-move checkmate sequences
+- **Chess (Schaken)** – Tactical puzzles sourced from the [Lichess open puzzle database](https://database.lichess.org/#puzzles) (CC0), served via MongoDB API:
+  - Schaakmat in 1/2/3/4 – Find the checkmate sequence
+  - Dubbele aanval (fork) – Attack two pieces at once
+  - Pen (pin) – Pin a piece against the king
+  - Stuk pakken (hanging piece) – Capture an undefended piece
+  - Spies (skewer) – Attack through a more valuable piece
+  - Gedekte aanval (discovered attack) – Reveal a hidden attack
+  - Offer (sacrifice) – Give up material for advantage
+  - Promotie (promotion) – Promote a pawn
+  - Opgesloten stuk (trapped piece) – Trap a piece
+  - Rokade (castling) – Castling tactics (hard+ only)
+  - En passant – En passant tactics (hard+ only)
+  - 4 difficulty levels: easy, medium, hard, wizard (by puzzle rating)
+  - Puzzles are deduplicated per adventure (no repeats)
 - **Difficulty levels** per puzzle type (easy/medium/hard), configurable in settings
 - **Friend encounters** – When rescuing friends, a random puzzle (sudoku, tectonic, or binary) must be solved at easy difficulty
 
@@ -156,7 +166,7 @@ This game aims to be:
 
 ### Developer Tools
 
-- 🎮 **Minigame Preview Page** – Test all ~40 minigames in isolation at `/#/preview-minigames` (bypasses player code authentication). Each category has configurable settings (difficulty, ranges, spelling categories, etc.) so you can test different configurations without starting an adventure.
+- 🎮 **Minigame Preview Page** – Test all ~58 minigames in isolation at `/#/preview-minigames` (bypasses player code authentication). Each category has configurable settings (difficulty, ranges, spelling categories, etc.) so you can test different configurations without starting an adventure.
 - 🔄 **Lazy Import Retry** – Dynamic imports wrapped with `lazyRetry()` to gracefully handle stale chunk references after deployments (auto-reloads once per session on import failure).
 
 ## 🚀 Getting Started
@@ -213,8 +223,13 @@ src/
 │   │   ├── MazeGame.jsx    # Main game controller
 │   │   ├── MazeView.jsx    # Maze rendering & player movement
 │   │   ├── DPad.jsx        # Touch controls overlay
-│   │   └── Minimap.jsx     # Overview minimap
-│   ├── minigames/      # Educational challenges (~40 components)
+│   │   ├── Minimap.jsx     # Overview minimap
+│   │   └── modals/         # In-game modals (boss battle, win, help, settings, ...)
+│   ├── home/           # Settings panel components
+│   │   ├── RekenPanel.jsx, TaalPanel.jsx, TijdPanel.jsx, PuzzelPanel.jsx
+│   │   ├── ThemeSelector.jsx, EmojiPicker.jsx, AdventureLengthPicker.jsx
+│   │   └── ContinueModal.jsx
+│   ├── minigames/      # Educational challenges (~58 components)
 │   │   ├── ChallengeModal.jsx    # Modal wrapper & game type router
 │   │   ├── MathPuzzle.jsx        # Fill-in-the-blank worksheet
 │   │   ├── MultipleChoice.jsx    # Multiple choice questions
@@ -232,9 +247,13 @@ src/
 │   │   ├── English*.jsx          # English language minigames
 │   │   ├── Reading*.jsx          # Reading comprehension minigames
 │   │   ├── *Money*.jsx / *Pay*.jsx / *Change*.jsx  # Money minigames
+│   │   ├── Rijm*.jsx             # Rhyming minigames
+│   │   ├── Woordsoort*.jsx       # Parts of speech minigames
+│   │   ├── Fraction*.jsx         # Fraction minigames
 │   │   ├── ChessGame.jsx         # Checkmate puzzles (Lichess DB)
 │   │   ├── PuzzleRulesCard.jsx   # Shared puzzle rules overlay
 │   │   └── PlaceValueGame.jsx, LovingHeartsGame.jsx, ...
+│   ├── chess-pieces/        # SVG chess piece images (cburnett, CC BY-SA)
 │   ├── CodeFlowManager.jsx  # Player code auth flow
 │   ├── CodeInputModal.jsx   # Emoji code entry modal
 │   ├── CodeDisplayModal.jsx # New code display modal
@@ -254,8 +273,9 @@ src/
 │   ├── serverSync.js            # Server sync utilities
 │   ├── emojiCode.js             # Emoji ↔ slug conversion
 │   ├── gameSelection.js         # Minigame type selection (round-robin)
-│   ├── chessData.js             # 90 Lichess checkmate puzzles (CC0)
+│   ├── chessApi.js              # Server API client for chess puzzles
 │   ├── chessGenerator.js        # Chess game logic (wraps chess.js)
+│   ├── clockAdapter.js          # Clock time generation & formatting
 │   ├── sudokuGenerator.js       # Sudoku puzzle generation & validation
 │   ├── tectonicGenerator.js     # Tectonic puzzle generation & validation
 │   ├── binaryGenerator.js       # Binary puzzle generation & validation
@@ -271,7 +291,9 @@ src/
 │   │   ├── spellingData.js      # Dutch spelling rules & words
 │   │   ├── vocabularyData.js    # Vocabulary words & definitions
 │   │   ├── readingData.js       # Reading comprehension passages
-│   │   └── englishData.js       # English vocabulary data
+│   │   ├── englishData.js       # English vocabulary data
+│   │   ├── rijmenData.js        # Rhyming word pairs
+│   │   └── woordsoortenData.js  # Parts of speech data
 │   └── __tests__/               # Unit tests (Vitest)
 └── assets/             # Static assets
 e2e/
@@ -279,12 +301,16 @@ e2e/
 ├── settings.spec.js      # Home screen & settings tests
 ├── play-adventure.spec.js # Adventure start & minigame tests
 ├── gameplay.spec.js      # In-game mechanics & modal tests
+├── preview.spec.js       # Minigame preview page tests
 └── error-scenarios.spec.js # Error handling & edge cases
 server/
 ├── index.js            # Express API server
 ├── cleanup.js          # Stale player cleanup script
+├── models/
+│   └── ChessPuzzle.js  # Mongoose model for chess puzzles
 ├── scripts/
-│   └── generate-sounds.js  # jsfxr SFX generator
+│   ├── importChessPuzzles.js  # Import Lichess CSV into MongoDB
+│   └── generate-sounds.js     # jsfxr SFX generator
 ├── public/sounds/      # Audio files (SFX + music)
 └── package.json
 ```
@@ -323,7 +349,7 @@ The project has two layers of testing:
 
 ### Unit Tests (Vitest)
 
-~470 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, time awareness/calculation data, puzzle generators (sudoku, tectonic, binary, chess), and edge cases.
+~512 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, clock adapters, time awareness/calculation data, puzzle generators (sudoku, tectonic, binary, chess), game selection (round-robin), and edge cases.
 
 ```bash
 # Run all unit tests
@@ -338,7 +364,7 @@ npm run test:ui
 
 ### E2E Tests (Playwright)
 
-~115 end-to-end tests covering settings, adventure flow, gameplay mechanics (including multi-floor XL mode), and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
+~103 end-to-end tests covering settings, adventure flow, gameplay mechanics (including multi-floor XL mode), minigame preview, and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
 
 ```bash
 # Run all E2E tests (headless)
@@ -369,6 +395,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - Built with love for Dutch elementary school children
 - Inspired by the need for quality, ad-free educational content
+- Chess puzzles from the [Lichess open database](https://database.lichess.org/#puzzles), licensed under [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+- Chess piece SVGs from the [cburnett set](https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces) (CC BY-SA 3.0)
 - Thanks to all the parents and teachers who share this frustration!
 
 ---

@@ -13,7 +13,7 @@ export default function PuzzelPanel({ settings, dispatch }) {
             { key: 'sudoku', label: 'Sudoku', icon: '🔢', desc: 'Vul het rooster met cijfers' },
             { key: 'tectonic', label: 'Tectonic', icon: '🧱', desc: 'Vul gebieden zonder herhalingen' },
             { key: 'binary', label: 'Binair', icon: '0️⃣', desc: 'Vul rijen met nullen en enen' },
-            { key: 'chess', label: 'Schaken', icon: '♟️', desc: 'Zet de koning schaakmat' },
+            { key: 'chess', label: 'Schaken', icon: '♟️', desc: 'Los schaaktactieken op' },
           ].map(({ key, label, icon, desc }) => (
             <label
               key={key}
