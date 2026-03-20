@@ -202,7 +202,7 @@ function Home({ disabled = false }) {
         themeEmoji: theme?.emoji || '🎮',
         completedCount: savedGame.completedCount || 0,
         collectedFriends: savedGame.collectedFriends?.length || 0,
-        mathSettings: savedGame.mathSettings,
+        mathSettings: buildInitialSettings(savedGame.mathSettings),
         playerEmoji: savedGame.playerEmoji,
         adventureLength: savedGame.adventureLength || 'medium',
       });
