@@ -63,6 +63,15 @@ const VALID_CHESS_THEMES = new Set([
   'promotion', 'trappedPiece', 'enPassant',
 ]);
 
+// Sanitize a saved game's mathSettings (maze-format) without reshaping it.
+// Only strips invalid chess themes; leaves all other fields untouched.
+const sanitizeSavedMathSettings = (ms) => {
+  if (!ms) return ms;
+  if (!ms.chessThemes) return ms;
+  const filtered = ms.chessThemes.filter(t => VALID_CHESS_THEMES.has(t));
+  return { ...ms, chessThemes: filtered.length > 0 ? filtered : ['mateIn1'] };
+};
+
 // Build initial state from saved settings, using defaults for missing values.
 // Uses nullish coalescing (??) for booleans that can be false, || for the rest.
 const buildInitialSettings = (saved) => ({
@@ -202,7 +211,7 @@ function Home({ disabled = false }) {
         themeEmoji: theme?.emoji || '🎮',
         completedCount: savedGame.completedCount || 0,
         collectedFriends: savedGame.collectedFriends?.length || 0,
-        mathSettings: buildInitialSettings(savedGame.mathSettings),
+        mathSettings: sanitizeSavedMathSettings(savedGame.mathSettings),
         playerEmoji: savedGame.playerEmoji,
         adventureLength: savedGame.adventureLength || 'medium',
       });
