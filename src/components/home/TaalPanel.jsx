@@ -62,14 +62,17 @@ export default function TaalPanel({ settings, dispatch, set }) {
             <p className="text-sm font-medium text-gray-600 mb-3">✏️ Spellingcategorieën:</p>
             <div className="space-y-1.5 mb-4">
               {[
-                { id: 1, label: '🔨 Hakwoord', desc: 'kat' },
+                { id: 1, label: '✂️ Hakwoord', desc: 'kat' },
                 { id: 2, label: '🎵 Zingwoord', desc: 'zing' },
                 { id: 3, label: '💨 Luchtwoord', desc: 'lucht' },
                 { id: 4, label: '🪵 Plankwoord', desc: 'plank' },
                 { id: 5, label: '👂 Eer-oor-eur-eel', desc: 'beer, hoor, geur, geel' },
                 { id: 6, label: '🌈 Aai-ooi-oei', desc: 'haai, mooi, loei' },
-                { id: 7, label: '🦁 Eeuw-ieuw', desc: 'leeuw, nieuw' },
+                { id: 7, label: '✨ Eeuw-ieuw', desc: 'leeuw, nieuw' },
                 { id: 8, label: '📏 Langermaakwoord', desc: 'hart, vind' },
+                { id: 11, label: '🔊 Lange klank', desc: 'maan, boom, vuur' },
+                { id: 12, label: '🧩 Samenstelling', desc: 'voetbal, regenjas' },
+                { id: 13, label: '🔠 Hoofdletters', desc: 'Jan, Amsterdam' },
                 { id: 9, label: '🐣 Verkleinwoord', desc: 'huisje, bloempje' },
                 { id: 10, label: '👥 Meervoud', desc: 'katten, auto\'s' },
               ].map(({ id, label, desc }) => {

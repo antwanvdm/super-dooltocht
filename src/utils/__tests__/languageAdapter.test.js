@@ -111,7 +111,7 @@ describe('generateSpellingProblem', () => {
       expect(problem.categoryId).toBeTruthy();
       expect(problem.categoryName).toBeTruthy();
       expect(problem.rule).toBeTruthy();
-      expect(problem.allCategories).toHaveLength(10);
+      expect(problem.allCategories).toHaveLength(13);
     }
   });
 
@@ -759,10 +759,10 @@ describe('Data integrity', () => {
     });
   });
 
-  it('SPELLING_CATEGORIES should have 10 categories', () => {
-    expect(SPELLING_CATEGORIES).toHaveLength(10);
+  it('SPELLING_CATEGORIES should have 13 categories', () => {
+    expect(SPELLING_CATEGORIES).toHaveLength(13);
     expect(SPELLING_CATEGORIES.map((c) => c.id)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 10,
     ]);
   });
 
@@ -779,9 +779,18 @@ describe('Data integrity', () => {
   });
 
   it('no duplicate words within a spelling category', () => {
-    for (const [_catId, words] of Object.entries(SPELLING_WORDS)) {
-      const unique = new Set(words);
-      expect(unique.size).toBe(words.length);
+    for (const [catId, words] of Object.entries(SPELLING_WORDS)) {
+      const strs = words.map((w) => (typeof w === 'string' ? w : w.word));
+      const seen = new Set();
+      const dupes = strs.filter((w) => {
+        if (seen.has(w)) return true;
+        seen.add(w);
+        return false;
+      });
+      expect(
+        dupes,
+        `Cat ${catId} has duplicates: ${dupes.join(', ')}`,
+      ).toHaveLength(0);
     }
   });
 });

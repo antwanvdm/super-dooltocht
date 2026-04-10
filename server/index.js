@@ -40,9 +40,9 @@ if (!MONGODB_URI) {
 }
 
 await mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 3000,
-  connectTimeoutMS: 3000,
-  socketTimeoutMS: 3000,
+  serverSelectionTimeoutMS: 5000,
+  connectTimeoutMS: 5000,
+  socketTimeoutMS: 5000,
 });
 
 const playerSchema = new mongoose.Schema(

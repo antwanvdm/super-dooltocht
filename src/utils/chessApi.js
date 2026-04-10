@@ -29,7 +29,14 @@ export async function fetchChessPuzzles(
   // Send all enabled themes so the API returns a mix
   if (chessThemes.length > 0) params.set('themes', chessThemes.join(','));
 
-  const response = await fetch(`${API_URL}/api/chess-puzzles?${params}`);
+  let response;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    response = await fetch(`${API_URL}/api/chess-puzzles?${params}`);
+    if (response.ok || response.status < 500) break;
+    // Server error — wait before retrying
+    if (attempt < 2)
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+  }
   if (!response.ok) throw new Error(`Chess API error: ${response.status}`);
 
   const puzzles = await response.json();

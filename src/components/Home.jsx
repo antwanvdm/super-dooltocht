@@ -39,7 +39,7 @@ const DEFAULT_SETTINGS = {
   timeCalcLevel: 'wholeHours',
   timeCalc24h: false,
   taalOps: { spelling: false, vocabulary: false, reading: false, english: false, rijmen: false, woordsoorten: false },
-  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  spellingCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
   includeThemeVocabulary: true,
   includeThemeReading: true,
   readingLevel: 'short',
