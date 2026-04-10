@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 // ============================================
 // Game Selection Logic Tests
@@ -857,5 +859,27 @@ describe('pickRandomGameType (round-robin)', () => {
       attempts.add(pickRandomGameType(settings, playedTypes));
     }
     expect(attempts.has(first)).toBe(true);
+  });
+});
+
+describe('BossBattleModal GAME_COMPONENTS parity', () => {
+  function extractGameComponentKeys(filePath) {
+    const src = readFileSync(resolve(__dirname, filePath), 'utf-8');
+    const keys = [];
+    for (const m of src.matchAll(/^\s*'([^']+)':\s*lazy\(/gm)) {
+      keys.push(m[1]);
+    }
+    return keys;
+  }
+
+  it('should register every game type from ChallengeModal', () => {
+    const challengeKeys = extractGameComponentKeys('../../components/minigames/ChallengeModal.jsx');
+    const bossKeys = extractGameComponentKeys('../../components/maze/modals/BossBattleModal.jsx');
+
+    expect(challengeKeys.length).toBeGreaterThan(0);
+    expect(bossKeys.length).toBeGreaterThan(0);
+
+    const missingInBoss = challengeKeys.filter(k => !bossKeys.includes(k));
+    expect(missingInBoss, `BossBattleModal is missing game types: ${missingInBoss.join(', ')}`).toEqual([]);
   });
 });

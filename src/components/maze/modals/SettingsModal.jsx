@@ -312,6 +312,64 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 </div>
               </div>
             )}
+            {mathSettings.enabledOperations.vormen && (
+              <div className="bg-teal-50 rounded-xl p-4">
+                <h4 className="font-bold text-teal-800 mb-2">🔶 Vormen</h4>
+                <p className="text-sm text-teal-700">Niveau: <strong>
+                  {mathSettings.meetkundeLevel?.vormen === 'easy' && 'Makkelijk'}
+                  {mathSettings.meetkundeLevel?.vormen === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.meetkundeLevel?.vormen && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.symmetrie && (
+              <div className="bg-teal-50 rounded-xl p-4">
+                <h4 className="font-bold text-teal-800 mb-2">🪞 Symmetrie</h4>
+                <p className="text-sm text-teal-700">Niveau: <strong>
+                  {mathSettings.meetkundeLevel?.symmetrie === 'easy' && 'Makkelijk'}
+                  {mathSettings.meetkundeLevel?.symmetrie === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.meetkundeLevel?.symmetrie && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.omtrekOppervlakte && (
+              <div className="bg-teal-50 rounded-xl p-4">
+                <h4 className="font-bold text-teal-800 mb-2">📏 Omtrek & oppervlakte</h4>
+                <p className="text-sm text-teal-700">Niveau: <strong>
+                  {mathSettings.meetkundeLevel?.omtrekOppervlakte === 'easy' && 'Makkelijk'}
+                  {mathSettings.meetkundeLevel?.omtrekOppervlakte === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.meetkundeLevel?.omtrekOppervlakte && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.eenheden && (
+              <div className="bg-teal-50 rounded-xl p-4">
+                <h4 className="font-bold text-teal-800 mb-2">⚖️ Eenheden omrekenen</h4>
+                <p className="text-sm text-teal-700">Niveau: <strong>
+                  {mathSettings.meetkundeLevel?.eenheden === 'easy' && 'Makkelijk'}
+                  {mathSettings.meetkundeLevel?.eenheden === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.meetkundeLevel?.eenheden && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.computerkennis && (
+              <div className="bg-slate-50 rounded-xl p-4">
+                <h4 className="font-bold text-slate-800 mb-2">🖥️ Computerkennis</h4>
+                <p className="text-sm text-slate-700">Computertermen en begrippen</p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.veiligheid && (
+              <div className="bg-slate-50 rounded-xl p-4">
+                <h4 className="font-bold text-slate-800 mb-2">🔒 Online veiligheid</h4>
+                <p className="text-sm text-slate-700">Veilig omgaan met internet</p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.mediawijsheid && (
+              <div className="bg-slate-50 rounded-xl p-4">
+                <h4 className="font-bold text-slate-800 mb-2">📱 Mediawijsheid</h4>
+                <p className="text-sm text-slate-700">Kritisch kijken naar media</p>
+              </div>
+            )}
           </div>
           <button
             onClick={onClose}

@@ -56,6 +56,16 @@ const GAME_COMPONENTS = {
   'fractionIdentify': lazy(() => lazyRetry(() => import('../../minigames/FractionIdentify'))),
   'fractionCompare': lazy(() => lazyRetry(() => import('../../minigames/FractionCompare'))),
   'fractionMemory': lazy(() => lazyRetry(() => import('../../minigames/FractionMemory'))),
+  'vormenQuiz': lazy(() => lazyRetry(() => import('../../minigames/VormenQuiz'))),
+  'vormenMemory': lazy(() => lazyRetry(() => import('../../minigames/VormenMemory'))),
+  'symmetrieQuiz': lazy(() => lazyRetry(() => import('../../minigames/SymmetrieQuiz'))),
+  'eenhedenQuiz': lazy(() => lazyRetry(() => import('../../minigames/EenhedenQuiz'))),
+  'eenhedenMemory': lazy(() => lazyRetry(() => import('../../minigames/EenhedenMemory'))),
+  'omtrekOppervlakteQuiz': lazy(() => lazyRetry(() => import('../../minigames/OmtrekOppervlakteQuiz'))),
+  'digitaalQuiz': lazy(() => lazyRetry(() => import('../../minigames/DigitaalQuiz'))),
+  'digitaalMemory': lazy(() => lazyRetry(() => import('../../minigames/DigitaalMemory'))),
+  'digitaalConnect': lazy(() => lazyRetry(() => import('../../minigames/DigitaalConnect'))),
+  'veiligheidQuiz': lazy(() => lazyRetry(() => import('../../minigames/VeiligheidQuiz'))),
 };
 
 /**

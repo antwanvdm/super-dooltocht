@@ -131,6 +131,16 @@ server/
 
 Each minigame component must have exactly **one** game mechanic. Never combine two hidden/separate game modes into a single minigame component (e.g. mixing "pick the category" with "pick the transform" in one file). If a component needs to behave differently based on settings, split it into separate minigame files instead.
 
+### Minigame Feedback Rules
+
+Feedback after a correct or incorrect answer must be **motivational and never reveal the correct answer**. The child gets another attempt, so revealing the answer would remove the learning challenge.
+
+- **Correct:** `🎉 Super! Je hebt het goed!` or `🎉 Goed zo!` — green (bg-green-100/text-green-800 or text-green-600)
+- **Incorrect:** `💪 Bijna! Probeer nog eens!` — orange (bg-orange-100/text-orange-800 or text-orange-600)
+- **Never** show the correct answer, an explanation, or a hint after a wrong answer
+- **Never** use red (bg-red) for the feedback banner — use orange for an encouraging tone
+- Keep messages short, positive, and age-appropriate (6–10 years)
+
 ### Mobile-First Styling
 
 Every UI component MUST work well on mobile screens (320px+). Always:

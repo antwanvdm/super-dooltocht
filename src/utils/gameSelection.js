@@ -75,6 +75,14 @@ export const FRACTION_GAMES = [
 // Puzzle minigames
 export const PUZZLE_GAMES = ['sudoku', 'tectonic', 'binary', 'chess'];
 
+// Meetkunde (Geometry) minigames
+export const VORMEN_GAMES = ['vormenQuiz', 'vormenMemory'];
+export const EENHEDEN_GAMES = ['eenhedenQuiz', 'eenhedenMemory'];
+export const MEETKUNDE_GAMES = [...VORMEN_GAMES, ...EENHEDEN_GAMES, 'omtrekOppervlakteQuiz'];
+
+// Digitale geletterdheid minigames
+export const DIGITAAL_GAMES = ['digitaalQuiz', 'digitaalMemory', 'digitaalConnect', 'veiligheidQuiz'];
+
 export const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
   memory: 'Memory',
@@ -128,6 +136,18 @@ export const GAME_NAMES = {
   tectonic: 'Tectonic',
   binary: 'Binair',
   chess: 'Schaken',
+
+  vormenQuiz: 'Vormen herkennen',
+  vormenMemory: 'Vormen Memory',
+  symmetrieQuiz: 'Symmetrie',
+  eenhedenQuiz: 'Eenheden omrekenen',
+  eenhedenMemory: 'Eenheden Memory',
+  omtrekOppervlakteQuiz: 'Omtrek & oppervlakte',
+
+  digitaalQuiz: 'Digitale kennis',
+  digitaalMemory: 'Digitaal Memory',
+  digitaalConnect: 'Begrippen verbinden',
+  veiligheidQuiz: 'Online veiligheid',
 };
 
 /**
@@ -250,6 +270,29 @@ export const getAvailableGameTypes = (mathSettings) => {
   if (hasTectonic) availableTypes.push('tectonic');
   if (hasBinary) availableTypes.push('binary');
   if (hasChess) availableTypes.push('chess');
+
+  // Meetkunde (Geometry)
+  const hasVormen = enabled.vormen;
+  const hasSymmetrie = enabled.symmetrie;
+  const hasOmtrekOppervlakte = enabled.omtrekOppervlakte;
+  const hasEenheden = enabled.eenheden;
+  if (hasVormen) availableTypes.push(...VORMEN_GAMES);
+  if (hasSymmetrie) availableTypes.push('symmetrieQuiz');
+  if (hasOmtrekOppervlakte) availableTypes.push('omtrekOppervlakteQuiz');
+  if (hasEenheden) availableTypes.push(...EENHEDEN_GAMES);
+
+  // Digitale geletterdheid
+  const hasComputerkennis = enabled.computerkennis;
+  const hasVeiligheid = enabled.veiligheid;
+  const hasMediawijsheid = enabled.mediawijsheid;
+  if (hasComputerkennis) {
+    availableTypes.push('digitaalQuiz', 'digitaalMemory', 'digitaalConnect');
+  }
+  if (hasVeiligheid || hasMediawijsheid) {
+    availableTypes.push('veiligheidQuiz');
+    // Also add general digitaalQuiz if not already added
+    if (!hasComputerkennis) availableTypes.push('digitaalQuiz');
+  }
 
   // Fallback naar multiple-choice als niets beschikbaar
   if (availableTypes.length === 0) {

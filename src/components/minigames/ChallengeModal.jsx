@@ -57,6 +57,18 @@ const GAME_COMPONENTS = {
   'fractionIdentify': lazy(() => lazyRetry(() => import('./FractionIdentify'))),
   'fractionCompare': lazy(() => lazyRetry(() => import('./FractionCompare'))),
   'fractionMemory': lazy(() => lazyRetry(() => import('./FractionMemory'))),
+  // Meetkunde (Geometry)
+  'vormenQuiz': lazy(() => lazyRetry(() => import('./VormenQuiz'))),
+  'vormenMemory': lazy(() => lazyRetry(() => import('./VormenMemory'))),
+  'symmetrieQuiz': lazy(() => lazyRetry(() => import('./SymmetrieQuiz'))),
+  'eenhedenQuiz': lazy(() => lazyRetry(() => import('./EenhedenQuiz'))),
+  'eenhedenMemory': lazy(() => lazyRetry(() => import('./EenhedenMemory'))),
+  'omtrekOppervlakteQuiz': lazy(() => lazyRetry(() => import('./OmtrekOppervlakteQuiz'))),
+  // Digitale geletterdheid
+  'digitaalQuiz': lazy(() => lazyRetry(() => import('./DigitaalQuiz'))),
+  'digitaalMemory': lazy(() => lazyRetry(() => import('./DigitaalMemory'))),
+  'digitaalConnect': lazy(() => lazyRetry(() => import('./DigitaalConnect'))),
+  'veiligheidQuiz': lazy(() => lazyRetry(() => import('./VeiligheidQuiz'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {

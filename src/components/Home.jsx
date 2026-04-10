@@ -8,6 +8,8 @@ import RekenPanel from './home/RekenPanel';
 import TijdPanel from './home/TijdPanel';
 import TaalPanel from './home/TaalPanel';
 import PuzzelPanel from './home/PuzzelPanel';
+import MeetkundePanel from './home/MeetkundePanel';
+import DigitaalPanel from './home/DigitaalPanel';
 import AdventureLengthPicker from './home/AdventureLengthPicker';
 import EmojiPicker from './home/EmojiPicker';
 import ThemeSelector from './home/ThemeSelector';
@@ -48,6 +50,9 @@ const DEFAULT_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
+  meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false },
+  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy' },
+  digitaalOps: { computerkennis: true, veiligheid: true, mediawijsheid: false },
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
   chessThemes: ['mateIn1'],
@@ -103,6 +108,9 @@ const buildInitialSettings = (saved) => ({
   rijmenLevel: saved?.rijmenLevel || DEFAULT_SETTINGS.rijmenLevel,
   woordsoortenLevel: saved?.woordsoortenLevel || DEFAULT_SETTINGS.woordsoortenLevel,
   fractionLevel: saved?.fractionLevel || DEFAULT_SETTINGS.fractionLevel,
+  meetkundeOps: saved?.meetkundeOps || DEFAULT_SETTINGS.meetkundeOps,
+  meetkundeLevel: saved?.meetkundeLevel || DEFAULT_SETTINGS.meetkundeLevel,
+  digitaalOps: saved?.digitaalOps || DEFAULT_SETTINGS.digitaalOps,
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
   chessThemes: (saved?.chessThemes || DEFAULT_SETTINGS.chessThemes).filter(t => VALID_CHESS_THEMES.has(t)),
@@ -123,6 +131,12 @@ function settingsReducer(state, action) {
       return { ...state, taalOps: { ...state.taalOps, [action.key]: !state.taalOps[action.key] } };
     case 'TOGGLE_PUZZEL_OPS':
       return { ...state, puzzelOps: { ...state.puzzelOps, [action.key]: !state.puzzelOps[action.key] } };
+    case 'TOGGLE_MEETKUNDE_OPS':
+      return { ...state, meetkundeOps: { ...state.meetkundeOps, [action.key]: !state.meetkundeOps[action.key] } };
+    case 'SET_MEETKUNDE_LEVEL':
+      return { ...state, meetkundeLevel: { ...state.meetkundeLevel, [action.key]: action.value } };
+    case 'TOGGLE_DIGITAAL_OPS':
+      return { ...state, digitaalOps: { ...state.digitaalOps, [action.key]: !state.digitaalOps[action.key] } };
     case 'SET_PUZZLE_LEVEL': {
       const next = { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
       // Auto-remove hard-only chess themes when level drops below hard
@@ -177,7 +191,8 @@ function Home({ disabled = false }) {
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
     readingLevel, englishLevel, englishDirection, rijmenLevel,
-    woordsoortenLevel, fractionLevel, puzzelOps, puzzleLevel, chessThemes,
+    woordsoortenLevel, fractionLevel, meetkundeOps, meetkundeLevel,
+    digitaalOps, puzzelOps, puzzleLevel, chessThemes,
     adventureLength, playerEmoji,
     musicEnabled,
   } = settings;
@@ -283,6 +298,15 @@ function Home({ disabled = false }) {
         puzzleLevel,
         chessThemes,
       };
+    } else if (exerciseCategory === 'meetkunde') {
+      mathSettings = {
+        enabledOperations: { ...meetkundeOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+        meetkundeLevel,
+      };
+    } else if (exerciseCategory === 'digitaal') {
+      mathSettings = {
+        enabledOperations: { ...digitaalOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+      };
     } else {
       mathSettings = {
         enabledOperations: ops,
@@ -309,6 +333,8 @@ function Home({ disabled = false }) {
   const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english || taalOps.rijmen || taalOps.woordsoorten)
     || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
+    || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden)
+    || exerciseCategory === 'digitaal' && (digitaalOps.computerkennis || digitaalOps.veiligheid || digitaalOps.mediawijsheid)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions);
   const canLaunch = canStart && selectedTheme;
 
@@ -360,18 +386,22 @@ function Home({ disabled = false }) {
           </div>
 
           {/* Category Tabs */}
-          <div className="grid grid-cols-4 gap-2 sm:flex sm:justify-center sm:gap-3 mb-6 sm:mb-8">
+          <div className="grid grid-cols-4 gap-2 md:gap-3 mb-6 md:mb-8 md:max-w-2xl md:mx-auto">
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'tijd', label: 'Tijd', icon: '⏰', disabled: false },
               { key: 'taal', label: 'Taal', icon: '📝', disabled: false },
               { key: 'puzzel', label: 'Puzzels', icon: '🧠', disabled: false },
+              { key: 'meetkunde', label: 'Meten', icon: '📐', disabled: false },
+              { key: 'digitaal', label: 'Digitaal', icon: '💻', disabled: false },
+              { key: 'topografie', label: 'Topo', icon: '🗺️', disabled: true },
+              { key: 'verkeer', label: 'Verkeer', icon: '🚲', disabled: true },
             ].map(({ key, label, icon, disabled: tabDisabled }) => (
               <button
                 key={key}
                 onClick={() => !tabDisabled && set('exerciseCategory', key)}
                 disabled={tabDisabled}
-                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-lg transition-all min-w-0 ${
+                className={`flex flex-col md:flex-row items-center gap-0.5 md:gap-2 px-3 md:px-6 py-2 md:py-4 rounded-xl font-bold text-xs md:text-lg transition-all min-w-0 ${
                   tabDisabled
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                     : exerciseCategory === key
@@ -379,9 +409,9 @@ function Home({ disabled = false }) {
                       : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300'
                 }`}
               >
-                <span className="text-xl sm:text-2xl">{icon}</span>
+                <span className="text-xl md:text-2xl">{icon}</span>
                 <span>{label}</span>
-                {tabDisabled && <span className="text-[10px] sm:text-xs">(binnenkort)</span>}
+                {tabDisabled && <span className="text-[10px] md:text-xs">(binnenkort)</span>}
               </button>
             ))}
           </div>
@@ -391,6 +421,8 @@ function Home({ disabled = false }) {
             {exerciseCategory === 'tijd' && <TijdPanel settings={settings} dispatch={dispatch} set={set} />}
             {exerciseCategory === 'taal' && <TaalPanel settings={settings} dispatch={dispatch} set={set} />}
             {exerciseCategory === 'puzzel' && <PuzzelPanel settings={settings} dispatch={dispatch} />}
+            {exerciseCategory === 'meetkunde' && <MeetkundePanel settings={settings} dispatch={dispatch} />}
+            {exerciseCategory === 'digitaal' && <DigitaalPanel settings={settings} dispatch={dispatch} />}
 
             <AdventureLengthPicker adventureLength={adventureLength} set={set} />
             <EmojiPicker playerEmoji={playerEmoji} set={set} emojis={PLAYER_EMOJIS} />
