@@ -370,6 +370,56 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 <p className="text-sm text-slate-700">Kritisch kijken naar media</p>
               </div>
             )}
+            {mathSettings.enabledOperations.nederland && (
+              <div className="bg-amber-50 rounded-xl p-4">
+                <h4 className="font-bold text-amber-800 mb-2">🇳🇱 Nederland</h4>
+                <p className="text-sm text-amber-700">Niveau: <strong>
+                  {mathSettings.topoLevel?.nederland === 'easy' && 'Makkelijk'}
+                  {mathSettings.topoLevel?.nederland === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.topoLevel?.nederland && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.europa && (
+              <div className="bg-amber-50 rounded-xl p-4">
+                <h4 className="font-bold text-amber-800 mb-2">🇪🇺 Europa</h4>
+                <p className="text-sm text-amber-700">Niveau: <strong>
+                  {mathSettings.topoLevel?.europa === 'easy' && 'Makkelijk'}
+                  {mathSettings.topoLevel?.europa === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.topoLevel?.europa && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.wereld && (
+              <div className="bg-amber-50 rounded-xl p-4">
+                <h4 className="font-bold text-amber-800 mb-2">🌍 De wereld</h4>
+                <p className="text-sm text-amber-700">Niveau: <strong>
+                  {mathSettings.topoLevel?.wereld === 'easy' && 'Makkelijk'}
+                  {mathSettings.topoLevel?.wereld === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.topoLevel?.wereld && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.borden && (
+              <div className="bg-sky-50 rounded-xl p-4">
+                <h4 className="font-bold text-sky-800 mb-2">🪧 Verkeersborden</h4>
+                <p className="text-sm text-sky-700">Niveau: <strong>
+                  {mathSettings.verkeerLevel?.borden === 'easy' && 'Makkelijk'}
+                  {mathSettings.verkeerLevel?.borden === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.verkeerLevel?.borden && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.regels && (
+              <div className="bg-sky-50 rounded-xl p-4">
+                <h4 className="font-bold text-sky-800 mb-2">📋 Verkeersregels</h4>
+                <p className="text-sm text-sky-700">Niveau: <strong>
+                  {mathSettings.verkeerLevel?.regels === 'easy' && 'Makkelijk'}
+                  {mathSettings.verkeerLevel?.regels === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.verkeerLevel?.regels && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
           </div>
           <button
             onClick={onClose}

@@ -873,13 +873,20 @@ describe('BossBattleModal GAME_COMPONENTS parity', () => {
   }
 
   it('should register every game type from ChallengeModal', () => {
-    const challengeKeys = extractGameComponentKeys('../../components/minigames/ChallengeModal.jsx');
-    const bossKeys = extractGameComponentKeys('../../components/maze/modals/BossBattleModal.jsx');
+    const challengeKeys = extractGameComponentKeys(
+      '../../components/minigames/ChallengeModal.jsx',
+    );
+    const bossKeys = extractGameComponentKeys(
+      '../../components/maze/modals/BossBattleModal.jsx',
+    );
 
     expect(challengeKeys.length).toBeGreaterThan(0);
     expect(bossKeys.length).toBeGreaterThan(0);
 
-    const missingInBoss = challengeKeys.filter(k => !bossKeys.includes(k));
-    expect(missingInBoss, `BossBattleModal is missing game types: ${missingInBoss.join(', ')}`).toEqual([]);
+    const missingInBoss = challengeKeys.filter((k) => !bossKeys.includes(k));
+    expect(
+      missingInBoss,
+      `BossBattleModal is missing game types: ${missingInBoss.join(', ')}`,
+    ).toEqual([]);
   });
 });

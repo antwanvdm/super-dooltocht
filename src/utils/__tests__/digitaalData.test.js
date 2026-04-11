@@ -69,13 +69,21 @@ describe('generateDigitaalQuestion', () => {
   });
 
   it('respects topic filtering', () => {
-    const q = generateDigitaalQuestion({ computerkennis: false, veiligheid: false, mediawijsheid: true });
+    const q = generateDigitaalQuestion({
+      computerkennis: false,
+      veiligheid: false,
+      mediawijsheid: true,
+    });
     expect(q.question).toBeTruthy();
     expect(q.correctAnswer).toBeTruthy();
   });
 
   it('falls back to computerkennis when all disabled', () => {
-    const q = generateDigitaalQuestion({ computerkennis: false, veiligheid: false, mediawijsheid: false });
+    const q = generateDigitaalQuestion({
+      computerkennis: false,
+      veiligheid: false,
+      mediawijsheid: false,
+    });
     expect(q.question).toBeTruthy();
     expect(q.correctAnswer).toBeTruthy();
   });
@@ -85,7 +93,7 @@ describe('generateDigitaalMemoryPairs', () => {
   it('returns requested number of pairs', () => {
     const pairs = generateDigitaalMemoryPairs(4);
     expect(pairs.length).toBe(4);
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).toBeTruthy();
       expect(p.right).toBeTruthy();
     });
@@ -93,7 +101,7 @@ describe('generateDigitaalMemoryPairs', () => {
 
   it('pairs have different left and right', () => {
     const pairs = generateDigitaalMemoryPairs(4);
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).not.toBe(p.right);
     });
   });
@@ -103,7 +111,7 @@ describe('generateDigitaalConnectPairs', () => {
   it('returns requested number of pairs', () => {
     const pairs = generateDigitaalConnectPairs(4);
     expect(pairs.length).toBe(4);
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).toBeTruthy();
       expect(p.right).toBeTruthy();
     });

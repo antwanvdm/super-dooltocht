@@ -10,6 +10,8 @@ import TaalPanel from './home/TaalPanel';
 import PuzzelPanel from './home/PuzzelPanel';
 import MeetkundePanel from './home/MeetkundePanel';
 import DigitaalPanel from './home/DigitaalPanel';
+import TopografiePanel from './home/TopografiePanel';
+import VerkeerPanel from './home/VerkeerPanel';
 import AdventureLengthPicker from './home/AdventureLengthPicker';
 import EmojiPicker from './home/EmojiPicker';
 import ThemeSelector from './home/ThemeSelector';
@@ -53,6 +55,10 @@ const DEFAULT_SETTINGS = {
   meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false },
   meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy' },
   digitaalOps: { computerkennis: true, veiligheid: true, mediawijsheid: false },
+  topoOps: { nederland: true, europa: false, wereld: false },
+  topoLevel: { nederland: 'easy', europa: 'easy', wereld: 'easy' },
+  verkeerOps: { borden: true, regels: false },
+  verkeerLevel: { borden: 'easy', regels: 'easy' },
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
   chessThemes: ['mateIn1'],
@@ -111,6 +117,10 @@ const buildInitialSettings = (saved) => ({
   meetkundeOps: saved?.meetkundeOps || DEFAULT_SETTINGS.meetkundeOps,
   meetkundeLevel: saved?.meetkundeLevel || DEFAULT_SETTINGS.meetkundeLevel,
   digitaalOps: saved?.digitaalOps || DEFAULT_SETTINGS.digitaalOps,
+  topoOps: { ...DEFAULT_SETTINGS.topoOps, ...saved?.topoOps },
+  topoLevel: { ...DEFAULT_SETTINGS.topoLevel, ...saved?.topoLevel },
+  verkeerOps: saved?.verkeerOps || DEFAULT_SETTINGS.verkeerOps,
+  verkeerLevel: saved?.verkeerLevel || DEFAULT_SETTINGS.verkeerLevel,
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
   chessThemes: (saved?.chessThemes || DEFAULT_SETTINGS.chessThemes).filter(t => VALID_CHESS_THEMES.has(t)),
@@ -137,6 +147,14 @@ function settingsReducer(state, action) {
       return { ...state, meetkundeLevel: { ...state.meetkundeLevel, [action.key]: action.value } };
     case 'TOGGLE_DIGITAAL_OPS':
       return { ...state, digitaalOps: { ...state.digitaalOps, [action.key]: !state.digitaalOps[action.key] } };
+    case 'TOGGLE_TOPO_OPS':
+      return { ...state, topoOps: { ...state.topoOps, [action.key]: !state.topoOps[action.key] } };
+    case 'SET_TOPO_LEVEL':
+      return { ...state, topoLevel: { ...state.topoLevel, [action.key]: action.value } };
+    case 'TOGGLE_VERKEER_OPS':
+      return { ...state, verkeerOps: { ...state.verkeerOps, [action.key]: !state.verkeerOps[action.key] } };
+    case 'SET_VERKEER_LEVEL':
+      return { ...state, verkeerLevel: { ...state.verkeerLevel, [action.key]: action.value } };
     case 'SET_PUZZLE_LEVEL': {
       const next = { ...state, puzzleLevel: { ...state.puzzleLevel, [action.key]: action.value } };
       // Auto-remove hard-only chess themes when level drops below hard
@@ -193,6 +211,7 @@ function Home({ disabled = false }) {
     readingLevel, englishLevel, englishDirection, rijmenLevel,
     woordsoortenLevel, fractionLevel, meetkundeOps, meetkundeLevel,
     digitaalOps, puzzelOps, puzzleLevel, chessThemes,
+    topoOps, topoLevel, verkeerOps, verkeerLevel,
     adventureLength, playerEmoji,
     musicEnabled,
   } = settings;
@@ -307,6 +326,16 @@ function Home({ disabled = false }) {
       mathSettings = {
         enabledOperations: { ...digitaalOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
       };
+    } else if (exerciseCategory === 'topografie') {
+      mathSettings = {
+        enabledOperations: { ...topoOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+        topoLevel,
+      };
+    } else if (exerciseCategory === 'verkeer') {
+      mathSettings = {
+        enabledOperations: { ...verkeerOps, add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, clock: false, spelling: false, vocabulary: false, reading: false, english: false },
+        verkeerLevel,
+      };
     } else {
       mathSettings = {
         enabledOperations: ops,
@@ -335,6 +364,8 @@ function Home({ disabled = false }) {
     || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
     || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden)
     || exerciseCategory === 'digitaal' && (digitaalOps.computerkennis || digitaalOps.veiligheid || digitaalOps.mediawijsheid)
+    || exerciseCategory === 'topografie' && (topoOps.nederland || topoOps.europa || topoOps.wereld)
+    || exerciseCategory === 'verkeer' && (verkeerOps.borden || verkeerOps.regels)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions);
   const canLaunch = canStart && selectedTheme;
 
@@ -394,8 +425,8 @@ function Home({ disabled = false }) {
               { key: 'puzzel', label: 'Puzzels', icon: '🧠', disabled: false },
               { key: 'meetkunde', label: 'Meten', icon: '📐', disabled: false },
               { key: 'digitaal', label: 'Digitaal', icon: '💻', disabled: false },
-              { key: 'topografie', label: 'Topo', icon: '🗺️', disabled: true },
-              { key: 'verkeer', label: 'Verkeer', icon: '🚲', disabled: true },
+              { key: 'topografie', label: 'Topo', icon: '🗺️', disabled: false },
+              { key: 'verkeer', label: 'Verkeer', icon: '🚲', disabled: false },
             ].map(({ key, label, icon, disabled: tabDisabled }) => (
               <button
                 key={key}
@@ -423,6 +454,8 @@ function Home({ disabled = false }) {
             {exerciseCategory === 'puzzel' && <PuzzelPanel settings={settings} dispatch={dispatch} />}
             {exerciseCategory === 'meetkunde' && <MeetkundePanel settings={settings} dispatch={dispatch} />}
             {exerciseCategory === 'digitaal' && <DigitaalPanel settings={settings} dispatch={dispatch} />}
+            {exerciseCategory === 'topografie' && <TopografiePanel settings={settings} dispatch={dispatch} />}
+            {exerciseCategory === 'verkeer' && <VerkeerPanel settings={settings} dispatch={dispatch} />}
 
             <AdventureLengthPicker adventureLength={adventureLength} set={set} />
             <EmojiPicker playerEmoji={playerEmoji} set={set} emojis={PLAYER_EMOJIS} />

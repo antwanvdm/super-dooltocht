@@ -78,10 +78,46 @@ export const PUZZLE_GAMES = ['sudoku', 'tectonic', 'binary', 'chess'];
 // Meetkunde (Geometry) minigames
 export const VORMEN_GAMES = ['vormenQuiz', 'vormenMemory'];
 export const EENHEDEN_GAMES = ['eenhedenQuiz', 'eenhedenMemory'];
-export const MEETKUNDE_GAMES = [...VORMEN_GAMES, ...EENHEDEN_GAMES, 'omtrekOppervlakteQuiz'];
+export const MEETKUNDE_GAMES = [
+  ...VORMEN_GAMES,
+  ...EENHEDEN_GAMES,
+  'omtrekOppervlakteQuiz',
+];
 
 // Digitale geletterdheid minigames
-export const DIGITAAL_GAMES = ['digitaalQuiz', 'digitaalMemory', 'digitaalConnect', 'veiligheidQuiz'];
+export const DIGITAAL_GAMES = [
+  'digitaalQuiz',
+  'digitaalMemory',
+  'digitaalConnect',
+  'veiligheidQuiz',
+];
+
+// Topografie minigames
+export const NEDERLAND_GAMES = [
+  'topoNederlandQuiz',
+  'topoNederlandMemory',
+  'topoNederlandKaart',
+];
+export const EUROPA_GAMES = [
+  'topoEuropaQuiz',
+  'topoEuropaMemory',
+  'topoEuropaKaart',
+];
+export const WERELD_GAMES = [
+  'topoWereldQuiz',
+  'topoWereldMemory',
+  'topoWereldKaart',
+];
+export const TOPOGRAFIE_GAMES = [
+  ...NEDERLAND_GAMES,
+  ...EUROPA_GAMES,
+  ...WERELD_GAMES,
+];
+
+// Verkeer minigames
+export const BORDEN_GAMES = ['verkeerBordenQuiz', 'verkeerBordenMemory'];
+export const REGELS_GAMES = ['verkeerRegelsQuiz', 'verkeerRegelsMemory'];
+export const VERKEER_GAMES = [...BORDEN_GAMES, ...REGELS_GAMES];
 
 export const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -148,6 +184,21 @@ export const GAME_NAMES = {
   digitaalMemory: 'Digitaal Memory',
   digitaalConnect: 'Begrippen verbinden',
   veiligheidQuiz: 'Online veiligheid',
+
+  topoNederlandQuiz: 'Nederland quiz',
+  topoNederlandMemory: 'Nederland Memory',
+  topoNederlandKaart: 'Nederland kaart',
+  topoEuropaQuiz: 'Europa quiz',
+  topoEuropaMemory: 'Europa Memory',
+  topoEuropaKaart: 'Europa kaart',
+  topoWereldQuiz: 'De wereld quiz',
+  topoWereldMemory: 'De wereld Memory',
+  topoWereldKaart: 'De wereld kaart',
+
+  verkeerBordenQuiz: 'Verkeersborden quiz',
+  verkeerBordenMemory: 'Verkeersborden Memory',
+  verkeerRegelsQuiz: 'Verkeersregels quiz',
+  verkeerRegelsMemory: 'Verkeersregels Memory',
 };
 
 /**
@@ -293,6 +344,15 @@ export const getAvailableGameTypes = (mathSettings) => {
     // Also add general digitaalQuiz if not already added
     if (!hasComputerkennis) availableTypes.push('digitaalQuiz');
   }
+
+  // Topografie
+  if (enabled.nederland) availableTypes.push(...NEDERLAND_GAMES);
+  if (enabled.europa) availableTypes.push(...EUROPA_GAMES);
+  if (enabled.wereld) availableTypes.push(...WERELD_GAMES);
+
+  // Verkeer
+  if (enabled.borden) availableTypes.push(...BORDEN_GAMES);
+  if (enabled.regels) availableTypes.push(...REGELS_GAMES);
 
   // Fallback naar multiple-choice als niets beschikbaar
   if (availableTypes.length === 0) {

@@ -69,6 +69,21 @@ const GAME_COMPONENTS = {
   'digitaalMemory': lazy(() => lazyRetry(() => import('./DigitaalMemory'))),
   'digitaalConnect': lazy(() => lazyRetry(() => import('./DigitaalConnect'))),
   'veiligheidQuiz': lazy(() => lazyRetry(() => import('./VeiligheidQuiz'))),
+  // Topografie
+  'topoNederlandQuiz': lazy(() => lazyRetry(() => import('./TopoNederlandQuiz'))),
+  'topoNederlandMemory': lazy(() => lazyRetry(() => import('./TopoNederlandMemory'))),
+  'topoNederlandKaart': lazy(() => lazyRetry(() => import('./TopoNederlandKaart'))),
+  'topoEuropaQuiz': lazy(() => lazyRetry(() => import('./TopoEuropaQuiz'))),
+  'topoEuropaMemory': lazy(() => lazyRetry(() => import('./TopoEuropaMemory'))),
+  'topoEuropaKaart': lazy(() => lazyRetry(() => import('./TopoEuropaKaart'))),
+  'topoWereldQuiz': lazy(() => lazyRetry(() => import('./TopoWereldQuiz'))),
+  'topoWereldMemory': lazy(() => lazyRetry(() => import('./TopoWereldMemory'))),
+  'topoWereldKaart': lazy(() => lazyRetry(() => import('./TopoWereldKaart'))),
+  // Verkeer
+  'verkeerBordenQuiz': lazy(() => lazyRetry(() => import('./VerkeerBordenQuiz'))),
+  'verkeerBordenMemory': lazy(() => lazyRetry(() => import('./VerkeerBordenMemory'))),
+  'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('./VerkeerRegelsQuiz'))),
+  'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('./VerkeerRegelsMemory'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {

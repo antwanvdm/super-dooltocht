@@ -5,20 +5,50 @@
 // level: 'easy' = basic 2D shapes, 'medium' = extended 2D + 3D shapes
 export const SHAPES_2D_EASY = [
   { name: 'driehoek', sides: 3, svg: 'driehoek', description: '3 zijden' },
-  { name: 'vierkant', sides: 4, svg: 'vierkant', description: '4 gelijke zijden, 4 rechte hoeken' },
-  { name: 'rechthoek', sides: 4, svg: 'rechthoek', description: '4 zijden, tegenoverliggende zijden even lang' },
+  {
+    name: 'vierkant',
+    sides: 4,
+    svg: 'vierkant',
+    description: '4 gelijke zijden, 4 rechte hoeken',
+  },
+  {
+    name: 'rechthoek',
+    sides: 4,
+    svg: 'rechthoek',
+    description: '4 zijden, tegenoverliggende zijden even lang',
+  },
   { name: 'cirkel', sides: 0, svg: 'cirkel', description: 'Rond, geen hoeken' },
 ];
 
 export const SHAPES_2D_MEDIUM = [
   ...SHAPES_2D_EASY,
-  { name: 'ruit', sides: 4, svg: 'ruit', description: '4 gelijke zijden, geen rechte hoeken' },
-  { name: 'parallellogram', sides: 4, svg: 'parallellogram', description: 'Overstaande zijden evenwijdig' },
-  { name: 'trapezium', sides: 4, svg: 'trapezium', description: 'Minstens 1 paar evenwijdige zijden' },
+  {
+    name: 'ruit',
+    sides: 4,
+    svg: 'ruit',
+    description: '4 gelijke zijden, geen rechte hoeken',
+  },
+  {
+    name: 'parallellogram',
+    sides: 4,
+    svg: 'parallellogram',
+    description: 'Overstaande zijden evenwijdig',
+  },
+  {
+    name: 'trapezium',
+    sides: 4,
+    svg: 'trapezium',
+    description: 'Minstens 1 paar evenwijdige zijden',
+  },
   { name: 'vijfhoek', sides: 5, svg: 'vijfhoek', description: '5 zijden' },
   { name: 'zeshoek', sides: 6, svg: 'zeshoek', description: '6 zijden' },
   { name: 'achthoek', sides: 8, svg: 'achthoek', description: '8 zijden' },
-  { name: 'ovaal', sides: 0, svg: 'ovaal', description: 'Langwerpig rond, geen hoeken' },
+  {
+    name: 'ovaal',
+    sides: 0,
+    svg: 'ovaal',
+    description: 'Langwerpig rond, geen hoeken',
+  },
 ];
 
 export const SHAPES_3D = [
@@ -31,14 +61,29 @@ export const SHAPES_3D = [
 
 // Legacy compat: flat list used by symmetry + memory
 export const SHAPES = [
-  ...SHAPES_2D_MEDIUM.map(s => ({ ...s, emoji: s.svg })),
-  { name: 'ster', sides: 10, emoji: 'ster', svg: 'ster', angles: null, regular: 'ster' },
+  ...SHAPES_2D_MEDIUM.map((s) => ({ ...s, emoji: s.svg })),
+  {
+    name: 'ster',
+    sides: 10,
+    emoji: 'ster',
+    svg: 'ster',
+    angles: null,
+    regular: 'ster',
+  },
 ];
 
 // Properties for quiz questions about shapes
 export const SHAPE_PROPERTIES = [
-  { question: (s) => `Hoeveel zijden heeft een ${s.name}?`, answer: (s) => s.sides, type: 'sides' },
-  { question: (s) => `Welke vorm heeft ${s.sides} zijden?`, answer: (s) => s.name, type: 'name' },
+  {
+    question: (s) => `Hoeveel zijden heeft een ${s.name}?`,
+    answer: (s) => s.sides,
+    type: 'sides',
+  },
+  {
+    question: (s) => `Welke vorm heeft ${s.sides} zijden?`,
+    answer: (s) => s.name,
+    type: 'name',
+  },
 ];
 
 // ── Symmetry data ────────────────────────────────────────────────────
@@ -59,7 +104,12 @@ export const SYMMETRY_SHAPES_MEDIUM = [
   { name: 'ovaal', svg: 'ovaal', lines: 2, hasSymmetry: true },
   { name: 'vijfhoek', svg: 'vijfhoek', lines: 5, hasSymmetry: true },
   { name: 'zeshoek', svg: 'zeshoek', lines: 6, hasSymmetry: true },
-  { name: 'parallellogram', svg: 'parallellogram', lines: 0, hasSymmetry: false },
+  {
+    name: 'parallellogram',
+    svg: 'parallellogram',
+    lines: 0,
+    hasSymmetry: false,
+  },
 ];
 
 // Legacy compat
@@ -139,10 +189,10 @@ const MEDIUM_CONVERSIONS = [
 const generateRectangleProblem = (level) => {
   let width, height;
   if (level === 'easy') {
-    width = Math.floor(Math.random() * 8) + 2;  // 2-9
+    width = Math.floor(Math.random() * 8) + 2; // 2-9
     height = Math.floor(Math.random() * 8) + 2;
   } else {
-    width = Math.floor(Math.random() * 15) + 3;  // 3-17
+    width = Math.floor(Math.random() * 15) + 3; // 3-17
     height = Math.floor(Math.random() * 15) + 3;
   }
   const perimeter = 2 * (width + height);
@@ -165,9 +215,9 @@ const generateRectangleProblem = (level) => {
 const generateSquareProblem = (level) => {
   let side;
   if (level === 'easy') {
-    side = Math.floor(Math.random() * 9) + 2;  // 2-10
+    side = Math.floor(Math.random() * 9) + 2; // 2-10
   } else {
-    side = Math.floor(Math.random() * 18) + 3;  // 3-20
+    side = Math.floor(Math.random() * 18) + 3; // 3-20
   }
   const perimeter = 4 * side;
   const area = side * side;
@@ -236,45 +286,49 @@ export function generateVormenQuestion(level = 'easy') {
   if (include3D && roll < 0.25) {
     // 3D shape recognition: "Wat voor vorm is dit?"
     const shape = SHAPES_3D[Math.floor(Math.random() * SHAPES_3D.length)];
-    const others = SHAPES_3D.filter(s => s.name !== shape.name);
+    const others = SHAPES_3D.filter((s) => s.name !== shape.name);
     const shuffled = others.sort(() => Math.random() - 0.5);
     return {
       question: 'Welke 3D-vorm is dit?',
       correctAnswer: shape.name,
-      wrongAnswers: shuffled.slice(0, 3).map(s => s.name),
+      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
       svg: shape.svg,
       is3D: true,
     };
   }
 
   // 2D shapes
-  const shapesWithSides = pool2D.filter(s => s.sides > 0);
+  const shapesWithSides = pool2D.filter((s) => s.sides > 0);
   const useNameQuestion = Math.random() < 0.5;
   const useRecognition = level === 'medium' && Math.random() < 0.4;
 
   if (useRecognition) {
     // "Welke vorm is dit?" with SVG shown
     const shape = pool2D[Math.floor(Math.random() * pool2D.length)];
-    const others = pool2D.filter(s => s.name !== shape.name);
+    const others = pool2D.filter((s) => s.name !== shape.name);
     const shuffled = others.sort(() => Math.random() - 0.5);
     return {
       question: 'Welke vorm is dit?',
       correctAnswer: shape.name,
-      wrongAnswers: shuffled.slice(0, 3).map(s => s.name),
+      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
       svg: shape.svg,
     };
   }
 
   if (useNameQuestion) {
     // "Hoeveel zijden heeft een ...?"
-    const shape = shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
+    const shape =
+      shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
     const correctAnswer = String(shape.sides);
     const wrongSet = new Set();
     let attempts = 0;
     while (wrongSet.size < 3 && attempts < 50) {
       attempts++;
       const offset = Math.floor(Math.random() * 5) + 1;
-      const wrong = Math.random() < 0.5 ? shape.sides + offset : Math.max(2, shape.sides - offset);
+      const wrong =
+        Math.random() < 0.5
+          ? shape.sides + offset
+          : Math.max(2, shape.sides - offset);
       if (wrong !== shape.sides) wrongSet.add(String(wrong));
     }
     return {
@@ -285,14 +339,15 @@ export function generateVormenQuestion(level = 'easy') {
     };
   } else {
     // "Welke vorm heeft N zijden?"
-    const shape = shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
+    const shape =
+      shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
     const correctAnswer = shape.name;
-    const others = shapesWithSides.filter(s => s.name !== shape.name);
+    const others = shapesWithSides.filter((s) => s.name !== shape.name);
     const shuffled = others.sort(() => Math.random() - 0.5);
     return {
       question: `Welke vorm heeft ${shape.sides} zijden?`,
       correctAnswer,
-      wrongAnswers: shuffled.slice(0, 3).map(s => s.name),
+      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
       svg: shape.svg,
     };
   }
@@ -338,7 +393,9 @@ export function generateSymmetrieQuestion(level = 'easy') {
   }
 
   // "Hoeveel symmetrielijnen?" — only shapes with 1 ≤ lines ≤ 4
-  const lineShapes = pool.filter(s => s.hasSymmetry && s.lines >= 1 && s.lines <= 4);
+  const lineShapes = pool.filter(
+    (s) => s.hasSymmetry && s.lines >= 1 && s.lines <= 4,
+  );
   const shape = lineShapes[Math.floor(Math.random() * lineShapes.length)];
   const correctAnswer = String(shape.lines);
   const wrongSet = new Set();
@@ -366,14 +423,19 @@ export function generateSymmetrieQuestion(level = 'easy') {
  * @returns {{ question: string, correctAnswer: number, wrongAnswers: number[], fromUnit: string, toUnit: string }}
  */
 export function generateEenhedenQuestion(level = 'easy') {
-  const pool = level === 'easy' ? EASY_CONVERSIONS : [...EASY_CONVERSIONS, ...MEDIUM_CONVERSIONS];
+  const pool =
+    level === 'easy'
+      ? EASY_CONVERSIONS
+      : [...EASY_CONVERSIONS, ...MEDIUM_CONVERSIONS];
   const conv = pool[Math.floor(Math.random() * pool.length)];
 
   const wrongSet = new Set();
   let attempts = 0;
   while (wrongSet.size < 3 && attempts < 50) {
     attempts++;
-    const factor = [0.1, 0.5, 2, 5, 10, 0.25, 0.01][Math.floor(Math.random() * 7)];
+    const factor = [0.1, 0.5, 2, 5, 10, 0.25, 0.01][
+      Math.floor(Math.random() * 7)
+    ];
     const wrong = +(conv.answer * factor).toPrecision(4);
     if (wrong !== conv.answer && wrong > 0) wrongSet.add(wrong);
   }
@@ -399,7 +461,10 @@ export function generateEenhedenQuestion(level = 'easy') {
  * @returns {{ left: string, right: string }[]}
  */
 export function generateEenhedenMemoryPairs(count = 4, level = 'easy') {
-  const pool = level === 'easy' ? EASY_CONVERSIONS : [...EASY_CONVERSIONS, ...MEDIUM_CONVERSIONS];
+  const pool =
+    level === 'easy'
+      ? EASY_CONVERSIONS
+      : [...EASY_CONVERSIONS, ...MEDIUM_CONVERSIONS];
   const shuffled = pool.sort(() => Math.random() - 0.5);
   const usedAnswers = new Set();
   const pairs = [];
@@ -433,7 +498,11 @@ export function generateEenhedenMemoryPairs(count = 4, level = 'easy') {
  * @returns {{ question: string, answer: number, unit: string, shape: string, type: string, width?: number, height?: number, side?: number, sides?: number[] }}
  */
 export function generateOmtrekOppervlakteQuestion(level = 'easy') {
-  const generators = [generateRectangleProblem, generateSquareProblem, generateTriangleProblem];
+  const generators = [
+    generateRectangleProblem,
+    generateSquareProblem,
+    generateTriangleProblem,
+  ];
   const gen = generators[Math.floor(Math.random() * generators.length)];
   const problem = gen(level);
 
@@ -443,7 +512,10 @@ export function generateOmtrekOppervlakteQuestion(level = 'easy') {
   while (wrongSet.size < 3 && attempts < 50) {
     attempts++;
     const offset = Math.floor(Math.random() * 10) + 1;
-    const wrong = Math.random() < 0.5 ? problem.answer + offset : Math.max(1, problem.answer - offset);
+    const wrong =
+      Math.random() < 0.5
+        ? problem.answer + offset
+        : Math.max(1, problem.answer - offset);
     if (wrong !== problem.answer) wrongSet.add(wrong);
   }
   while (wrongSet.size < 3) {

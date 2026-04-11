@@ -33,8 +33,10 @@ describe('generateVormenQuestion', () => {
   });
 
   it('medium level can produce 3D or extended 2D questions', () => {
-    const all3DNames = SHAPES_3D.map(s => s.name);
-    const extendedNames = SHAPES_2D_MEDIUM.filter(s => !SHAPES_2D_EASY.some(e => e.name === s.name)).map(s => s.name);
+    const all3DNames = SHAPES_3D.map((s) => s.name);
+    const extendedNames = SHAPES_2D_MEDIUM.filter(
+      (s) => !SHAPES_2D_EASY.some((e) => e.name === s.name),
+    ).map((s) => s.name);
     const allAdvanced = [...all3DNames, ...extendedNames];
 
     let foundAdvanced = false;
@@ -49,8 +51,10 @@ describe('generateVormenQuestion', () => {
   });
 
   it('easy level only uses basic shapes', () => {
-    const easyNames = SHAPES_2D_EASY.map(s => s.name);
-    const easySides = SHAPES_2D_EASY.filter(s => s.sides > 0).map(s => String(s.sides));
+    const easyNames = SHAPES_2D_EASY.map((s) => s.name);
+    const easySides = SHAPES_2D_EASY.filter((s) => s.sides > 0).map((s) =>
+      String(s.sides),
+    );
     const allowed = [...easyNames, ...easySides];
     for (let i = 0; i < 50; i++) {
       const q = generateVormenQuestion('easy');
@@ -79,7 +83,7 @@ describe('generateSymmetrieQuestion', () => {
   });
 
   it('easy level only uses easy shapes', () => {
-    const easyNames = SYMMETRY_SHAPES_EASY.map(s => s.name);
+    const easyNames = SYMMETRY_SHAPES_EASY.map((s) => s.name);
     for (let i = 0; i < 30; i++) {
       const q = generateSymmetrieQuestion('easy');
       expect(easyNames).toContain(q.shapeName);
@@ -106,7 +110,7 @@ describe('generateSymmetrieQuestion', () => {
       if (!q.isYesNo) {
         expect(Number(q.correctAnswer)).toBeGreaterThanOrEqual(1);
         expect(Number(q.correctAnswer)).toBeLessThanOrEqual(4);
-        q.wrongAnswers.forEach(w => {
+        q.wrongAnswers.forEach((w) => {
           expect(Number(w)).toBeGreaterThanOrEqual(1);
           expect(Number(w)).toBeLessThanOrEqual(4);
         });
@@ -115,14 +119,14 @@ describe('generateSymmetrieQuestion', () => {
   });
 
   it('SYMMETRY_SHAPES_EASY is subset of SYMMETRY_SHAPES_MEDIUM', () => {
-    const mediumNames = SYMMETRY_SHAPES_MEDIUM.map(s => s.name);
-    SYMMETRY_SHAPES_EASY.forEach(s => {
+    const mediumNames = SYMMETRY_SHAPES_MEDIUM.map((s) => s.name);
+    SYMMETRY_SHAPES_EASY.forEach((s) => {
       expect(mediumNames).toContain(s.name);
     });
   });
 
   it('all shapes have svg keys', () => {
-    [...SYMMETRY_SHAPES_EASY, ...SYMMETRY_SHAPES_MEDIUM].forEach(s => {
+    [...SYMMETRY_SHAPES_EASY, ...SYMMETRY_SHAPES_MEDIUM].forEach((s) => {
       expect(s.svg).toBeTruthy();
     });
   });
@@ -146,7 +150,7 @@ describe('generateEenhedenQuestion', () => {
   it('wrong answers are all positive', () => {
     for (let i = 0; i < 20; i++) {
       const q = generateEenhedenQuestion('easy');
-      q.wrongAnswers.forEach(w => expect(w).toBeGreaterThan(0));
+      q.wrongAnswers.forEach((w) => expect(w).toBeGreaterThan(0));
     }
   });
 });
@@ -155,7 +159,7 @@ describe('generateEenhedenMemoryPairs', () => {
   it('returns requested number of pairs', () => {
     const pairs = generateEenhedenMemoryPairs(4, 'easy');
     expect(pairs.length).toBe(4);
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).toBeTruthy();
       expect(p.right).toBeTruthy();
     });
@@ -163,7 +167,7 @@ describe('generateEenhedenMemoryPairs', () => {
 
   it('pairs have different left and right values', () => {
     const pairs = generateEenhedenMemoryPairs(4, 'easy');
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).not.toBe(p.right);
     });
   });
@@ -211,7 +215,7 @@ describe('generateVormenMemoryPairs', () => {
   it('returns requested number of pairs with valid content (easy)', () => {
     const pairs = generateVormenMemoryPairs(4, 'easy');
     expect(pairs.length).toBe(4);
-    pairs.forEach(p => {
+    pairs.forEach((p) => {
       expect(p.left).toBeTruthy();
       expect(p.right).toBeTruthy();
       expect(p.svg).toBeTruthy();
@@ -222,7 +226,7 @@ describe('generateVormenMemoryPairs', () => {
     let found3D = false;
     for (let i = 0; i < 30; i++) {
       const pairs = generateVormenMemoryPairs(6, 'medium');
-      if (pairs.some(p => SHAPES_3D.some(s => s.name === p.left))) {
+      if (pairs.some((p) => SHAPES_3D.some((s) => s.name === p.left))) {
         found3D = true;
         break;
       }
@@ -233,7 +237,7 @@ describe('generateVormenMemoryPairs', () => {
 
 describe('SHAPES data', () => {
   it('all legacy SHAPES have required fields', () => {
-    SHAPES.forEach(s => {
+    SHAPES.forEach((s) => {
       expect(s.name).toBeTruthy();
       expect(typeof s.sides).toBe('number');
       expect(s.svg).toBeTruthy();
@@ -241,12 +245,12 @@ describe('SHAPES data', () => {
   });
 
   it('SHAPES_2D_EASY has basic shapes', () => {
-    const names = SHAPES_2D_EASY.map(s => s.name);
+    const names = SHAPES_2D_EASY.map((s) => s.name);
     expect(names).toContain('driehoek');
     expect(names).toContain('vierkant');
     expect(names).toContain('rechthoek');
     expect(names).toContain('cirkel');
-    SHAPES_2D_EASY.forEach(s => {
+    SHAPES_2D_EASY.forEach((s) => {
       expect(s.svg).toBeTruthy();
       expect(s.description).toBeTruthy();
     });
@@ -254,18 +258,18 @@ describe('SHAPES data', () => {
 
   it('SHAPES_2D_MEDIUM includes easy shapes plus extras', () => {
     expect(SHAPES_2D_MEDIUM.length).toBeGreaterThan(SHAPES_2D_EASY.length);
-    const names = SHAPES_2D_MEDIUM.map(s => s.name);
+    const names = SHAPES_2D_MEDIUM.map((s) => s.name);
     expect(names).toContain('ruit');
     expect(names).toContain('trapezium');
   });
 
   it('SHAPES_3D has 3D shapes', () => {
     expect(SHAPES_3D.length).toBeGreaterThanOrEqual(5);
-    const names = SHAPES_3D.map(s => s.name);
+    const names = SHAPES_3D.map((s) => s.name);
     expect(names).toContain('kubus');
     expect(names).toContain('bol');
     expect(names).toContain('kegel');
-    SHAPES_3D.forEach(s => {
+    SHAPES_3D.forEach((s) => {
       expect(s.svg).toBeTruthy();
       expect(s.description).toBeTruthy();
     });
@@ -274,7 +278,7 @@ describe('SHAPES data', () => {
 
 describe('SYMMETRY_SHAPES data', () => {
   it('all shapes have required fields', () => {
-    SYMMETRY_SHAPES.forEach(s => {
+    SYMMETRY_SHAPES.forEach((s) => {
       expect(s.name).toBeTruthy();
       expect(typeof s.lines).toBe('number');
       expect(typeof s.hasSymmetry).toBe('boolean');

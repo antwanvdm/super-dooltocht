@@ -66,6 +66,21 @@ const GAME_COMPONENTS = {
   'digitaalMemory': lazy(() => lazyRetry(() => import('../../minigames/DigitaalMemory'))),
   'digitaalConnect': lazy(() => lazyRetry(() => import('../../minigames/DigitaalConnect'))),
   'veiligheidQuiz': lazy(() => lazyRetry(() => import('../../minigames/VeiligheidQuiz'))),
+  // Topografie
+  'topoNederlandQuiz': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandQuiz'))),
+  'topoNederlandMemory': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandMemory'))),
+  'topoNederlandKaart': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandKaart'))),
+  'topoWereldQuiz': lazy(() => lazyRetry(() => import('../../minigames/TopoWereldQuiz'))),
+  'topoWereldMemory': lazy(() => lazyRetry(() => import('../../minigames/TopoWereldMemory'))),
+  'topoWereldKaart': lazy(() => lazyRetry(() => import('../../minigames/TopoWereldKaart'))),
+  'topoEuropaQuiz': lazy(() => lazyRetry(() => import('../../minigames/TopoEuropaQuiz'))),
+  'topoEuropaMemory': lazy(() => lazyRetry(() => import('../../minigames/TopoEuropaMemory'))),
+  'topoEuropaKaart': lazy(() => lazyRetry(() => import('../../minigames/TopoEuropaKaart'))),
+  // Verkeer
+  'verkeerBordenQuiz': lazy(() => lazyRetry(() => import('../../minigames/VerkeerBordenQuiz'))),
+  'verkeerBordenMemory': lazy(() => lazyRetry(() => import('../../minigames/VerkeerBordenMemory'))),
+  'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('../../minigames/VerkeerRegelsQuiz'))),
+  'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('../../minigames/VerkeerRegelsMemory'))),
 };
 
 /**
@@ -154,11 +169,26 @@ function BossBattleModal({ theme, mathSettings, totalRounds, onVictory, playedGa
     }
   };
 
+  // Games where progress would be lost on restart (memory, puzzles)
+  // These just play the fail sound and let the minigame handle retries.
+  const PERSISTENT_GAMES = new Set([
+    'memory', 'clockMemory', 'englishMemory', 'fractionMemory',
+    'kalenderMemory', 'omrekenMemory', 'rijmMemory', 'vocabularyMemory',
+    'woordsoortMemory', 'digitaalMemory', 'vormenMemory', 'eenhedenMemory',
+    'topoNederlandMemory', 'topoEuropaMemory', 'topoWereldMemory', 'verkeerBordenMemory',
+    'verkeerRegelsMemory', 'topoNederlandKaart', 'topoEuropaKaart', 'topoWereldKaart',
+    'sudoku', 'tectonic', 'binary', 'chess',
+  ]);
+
   const handleRoundFailure = () => {
-    // Show taunt screen before retrying
+    playSound?.('challenge-fail');
+    if (PERSISTENT_GAMES.has(gameType)) {
+      // Let the minigame handle retries internally
+      return;
+    }
+    // Quiz / input / other games: show boss taunt, then load a new challenge
     setPhaseMessage(BOSS_TAUNTS[Math.floor(Math.random() * BOSS_TAUNTS.length)]);
     setPhase('taunt');
-    playSound?.('challenge-fail');
     setTimeout(() => {
       const type = pickRandomGameType(mathSettings, playedGameTypes || []);
       setGameType(type);
