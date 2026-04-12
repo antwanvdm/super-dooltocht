@@ -830,7 +830,12 @@ describe('getAvailableGameTypes', () => {
 
     it('should combine windrichtingen with other topo sub-categories', () => {
       const types = getAvailableGameTypes({
-        enabledOperations: { windrichtingen: true, nederland: true, europa: true, wereld: true },
+        enabledOperations: {
+          windrichtingen: true,
+          nederland: true,
+          europa: true,
+          wereld: true,
+        },
       });
       expect(types).toContain('windrichtingenKompas');
       expect(types.length).toBe(10);

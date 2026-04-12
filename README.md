@@ -1,6 +1,6 @@
 # 🦸🧩🕹 Super Dooltocht (Super Maze Adventure)
 
-An educational math and language game for elementary school children, built with React and Tailwind CSS.
+An educational math, clock, language and general knowledge game for elementary school children, built with React and Tailwind CSS.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![React Router](https://img.shields.io/badge/React%20Router-7-CA4245?logo=reactrouter&logoColor=white)
@@ -117,8 +117,8 @@ This game aims to be:
 
 ### Language (Taal)
 
-- **Spelling** – Practice Dutch spelling rules across 10 word categories:
-  - Hakwoord, zingwoord, luchtwoord, plankwoord, eer/oor/eur/eel, aai/ooi/oei, eeuw/ieuw, langermaakwoord, verkleinwoord, meervoud
+- **Spelling** – Practice Dutch spelling rules across 13 word categories:
+  - Hakwoord, zingwoord, luchtwoord, plankwoord, eer/oor/eur/eel, aai/ooi/oei, eeuw/ieuw, langermaakwoord, verkleinwoord, meervoud, lange klank, samenstelling, hoofdletters
   - Challenge types: pick the category, connect words to rules, type the word, meervoud & verkleinwoord transforms
 - **Rijmen (Rhyming)** – Practice recognizing rhyming words:
   - Challenge types: match rhyming pairs, rijm memory
@@ -132,6 +132,49 @@ This game aims to be:
   - Challenge types: multiple choice, true or false
 - **English** – Basic English vocabulary practice:
   - Challenge types: multiple choice, memory, connect pairs, fill in the blank, type the word
+
+### Geometry (Meetkunde)
+
+- **Vormen (Shapes)** – 2D and 3D shape recognition:
+  - Challenge types: quiz (identify shapes by properties), memory (match shapes with names)
+- **Symmetrie (Symmetry)** – Recognize lines of symmetry in shapes:
+  - Challenge types: quiz
+- **Eenheden (Unit Conversion)** – Convert length, weight, and volume:
+  - Challenge types: quiz, memory (match equivalent units)
+- **Omtrek & Oppervlakte (Perimeter & Area)** – Calculate perimeter and area:
+  - Challenge types: quiz
+
+### Digital Literacy (Digitale Geletterdheid)
+
+- **Computerkennis (Computer Terms)** – 30+ technology terms (browser, URL, wifi, wachtwoord, email, cloud, etc.):
+  - Challenge types: quiz, memory, connect (match terms with definitions)
+- **Veiligheid (Online Safety)** – Recognize safe vs. unsafe online behavior:
+  - Challenge types: scenario-based quiz
+- **Mediawijsheid (Media Literacy)** – Media awareness and critical thinking:
+  - Challenge types: scenario-based quiz
+
+### Geography (Topografie)
+
+- **Windrichtingen (Compass Directions)** – Interactive compass rose game:
+  - Easy: 4 main directions (N, O, Z, W) + sun questions, all labels visible
+  - Medium: 8 directions (also NO, NW, ZO, ZW), only N label shown
+  - Hard: No labels, rotation/turn questions ("kwartslag naar rechts") with start direction arrow
+- **Nederland (Netherlands)** – Cities, rivers, provinces, landmarks:
+  - Easy: well-known places, Medium: provinces & capitals
+  - Challenge types: quiz, memory, interactive map
+- **Europa (Europe)** – European countries, capitals, landmarks:
+  - Easy: Western & Southern Europe, Medium: all countries
+  - Challenge types: quiz, memory, interactive map
+- **De Wereld (The World)** – Continents, oceans, capitals, mountain ranges:
+  - Easy: continents & famous countries, Medium: capitals & neighbors
+  - Challenge types: quiz, memory, interactive map
+
+### Traffic Safety (Verkeer)
+
+- **Verkeersborden (Traffic Signs)** – 20+ common signs (stop, voorrang, snelheid, parkeren, etc.):
+  - Challenge types: quiz, memory
+- **Verkeersregels (Traffic Rules)** – 20+ traffic situations and rules:
+  - Challenge types: quiz, memory
 
 ### Adventure Settings
 
@@ -152,7 +195,7 @@ This game aims to be:
 - 🎭 **Emoji Character Selection** – Choose your own avatar
 - 💾 **Auto-save** – Game progress automatically saved
 - ⚙️ **Flexible Settings** – Configure math operations and difficulty per child
-- 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), Tijdsbesef (time awareness), Rekenen met Tijd (time calculation), and Taal (language)
+- 📂 **Exercise Categories** – Switch between Rekenen (math), Klokkijken (clock reading), Tijdsbesef (time awareness), Rekenen met Tijd (time calculation), Taal (language), Meetkunde (geometry), Digitaal (digital literacy), Topografie (geography), and Verkeer (traffic safety)
 - 📱 **Touch Controls** – D-pad overlay for touchscreen devices
 - 🔊 **Read-Aloud (Voorlezen)** – Text-to-speech button on language minigames (Spelling, Vocabulary, Reading, English) using the browser's SpeechSynthesis API. Uses Dutch (`nl-NL`) or English (`en-GB`) voices depending on the context. Works independently of the sound/music toggle.
 - 🎵 **Sound & Music** _(feature-toggled, currently off)_ – Background music per theme with Howler.js, SFX for game events (correct/wrong answer, friend found, victory, etc.). Controlled by a single `AUDIO_FEATURE_ENABLED` constant in `AudioProvider.jsx`.
@@ -166,7 +209,7 @@ This game aims to be:
 
 ### Developer Tools
 
-- 🎮 **Minigame Preview Page** – Test all ~58 minigames in isolation at `/#/preview-minigames` (bypasses player code authentication). Each category has configurable settings (difficulty, ranges, spelling categories, etc.) so you can test different configurations without starting an adventure.
+- 🎮 **Minigame Preview Page** – Test all ~76 minigames in isolation at `/#/preview-minigames` (bypasses player code authentication). Each category has configurable settings (difficulty, ranges, spelling categories, etc.) so you can test different configurations without starting an adventure.
 - 🔄 **Lazy Import Retry** – Dynamic imports wrapped with `lazyRetry()` to gracefully handle stale chunk references after deployments (auto-reloads once per session on import failure).
 
 ## 🚀 Getting Started
@@ -227,9 +270,10 @@ src/
 │   │   └── modals/         # In-game modals (boss battle, win, help, settings, ...)
 │   ├── home/           # Settings panel components
 │   │   ├── RekenPanel.jsx, TaalPanel.jsx, TijdPanel.jsx, PuzzelPanel.jsx
+│   │   ├── MeetkundePanel.jsx, DigitaalPanel.jsx, TopografiePanel.jsx, VerkeerPanel.jsx
 │   │   ├── ThemeSelector.jsx, EmojiPicker.jsx, AdventureLengthPicker.jsx
 │   │   └── ContinueModal.jsx
-│   ├── minigames/      # Educational challenges (~58 components)
+│   ├── minigames/      # Educational challenges (~76 components)
 │   │   ├── ChallengeModal.jsx    # Modal wrapper & game type router
 │   │   ├── MathPuzzle.jsx        # Fill-in-the-blank worksheet
 │   │   ├── MultipleChoice.jsx    # Multiple choice questions
@@ -249,8 +293,10 @@ src/
 │   │   ├── *Money*.jsx / *Pay*.jsx / *Change*.jsx  # Money minigames
 │   │   ├── Rijm*.jsx             # Rhyming minigames
 │   │   ├── Woordsoort*.jsx       # Parts of speech minigames
-│   │   ├── Fraction*.jsx         # Fraction minigames
-│   │   ├── ChessGame.jsx         # Checkmate puzzles (Lichess DB)
+│   │   ├── Fraction*.jsx         # Fraction minigames│   │   ├── Vormen*.jsx / Symmetrie*.jsx / Eenheden*.jsx / OmtrekOppervlakte*.jsx  # Geometry minigames
+│   │   ├── Digitaal*.jsx / Veiligheid*.jsx / MediaWijsheid*.jsx  # Digital literacy minigames
+│   │   ├── Topo*.jsx / WindrichtingenKompas.jsx  # Geography minigames
+│   │   ├── Verkeer*.jsx           # Traffic safety minigames│   │   ├── ChessGame.jsx         # Checkmate puzzles (Lichess DB)
 │   │   ├── PuzzleRulesCard.jsx   # Shared puzzle rules overlay
 │   │   └── PlaceValueGame.jsx, LovingHeartsGame.jsx, ...
 │   ├── chess-pieces/        # SVG chess piece images (cburnett, CC BY-SA)
@@ -284,6 +330,10 @@ src/
 │   ├── languageData.js          # Language data registry
 │   ├── timeAwarenessData.js     # Calendar/season quiz generation
 │   ├── timeCalculationData.js   # Time calculation problem generation
+│   ├── meetkundeData.js         # Geometry shapes, symmetry, units, area data
+│   ├── digitaalData.js          # Computer terms, safety & media literacy data
+│   ├── topografieData.js        # Geography quiz data (NL, EU, world, compass)
+│   ├── verkeerData.js           # Traffic signs & rules data
 │   ├── themes/                  # Individual theme files
 │   │   ├── space.js, ocean.js, jungle.js, castle.js, ...
 │   │   └── (12 themes total)
@@ -349,7 +399,7 @@ The project has two layers of testing:
 
 ### Unit Tests (Vitest)
 
-~512 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, clock adapters, time awareness/calculation data, puzzle generators (sudoku, tectonic, binary, chess), game selection (round-robin), and edge cases.
+~609 unit tests covering math problem generation, maze generation (including multi-floor), language adapters, clock adapters, time awareness/calculation data, puzzle generators (sudoku, tectonic, binary, chess), geometry/digital literacy/geography/traffic data, game selection (round-robin), and edge cases.
 
 ```bash
 # Run all unit tests
@@ -364,7 +414,7 @@ npm run test:ui
 
 ### E2E Tests (Playwright)
 
-~103 end-to-end tests covering settings, adventure flow, gameplay mechanics (including multi-floor XL mode), minigame preview, and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
+~122 end-to-end tests covering settings, adventure flow, gameplay mechanics (including multi-floor XL mode), minigame preview, and error scenarios. Tests inject deterministic game state via localStorage for reliable, repeatable results.
 
 ```bash
 # Run all E2E tests (headless)
