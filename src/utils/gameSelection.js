@@ -90,9 +90,11 @@ export const DIGITAAL_GAMES = [
   'digitaalMemory',
   'digitaalConnect',
   'veiligheidQuiz',
+  'mediawijsheidQuiz',
 ];
 
 // Topografie minigames
+export const WINDRICHTINGEN_GAMES = ['windrichtingenKompas'];
 export const NEDERLAND_GAMES = [
   'topoNederlandQuiz',
   'topoNederlandMemory',
@@ -109,6 +111,7 @@ export const WERELD_GAMES = [
   'topoWereldKaart',
 ];
 export const TOPOGRAFIE_GAMES = [
+  ...WINDRICHTINGEN_GAMES,
   ...NEDERLAND_GAMES,
   ...EUROPA_GAMES,
   ...WERELD_GAMES,
@@ -184,7 +187,9 @@ export const GAME_NAMES = {
   digitaalMemory: 'Digitaal Memory',
   digitaalConnect: 'Begrippen verbinden',
   veiligheidQuiz: 'Online veiligheid',
+  mediawijsheidQuiz: 'Mediawijsheid',
 
+  windrichtingenKompas: 'Windrichtingen kompas',
   topoNederlandQuiz: 'Nederland quiz',
   topoNederlandMemory: 'Nederland Memory',
   topoNederlandKaart: 'Nederland kaart',
@@ -339,13 +344,15 @@ export const getAvailableGameTypes = (mathSettings) => {
   if (hasComputerkennis) {
     availableTypes.push('digitaalQuiz', 'digitaalMemory', 'digitaalConnect');
   }
-  if (hasVeiligheid || hasMediawijsheid) {
+  if (hasVeiligheid) {
     availableTypes.push('veiligheidQuiz');
-    // Also add general digitaalQuiz if not already added
-    if (!hasComputerkennis) availableTypes.push('digitaalQuiz');
+  }
+  if (hasMediawijsheid) {
+    availableTypes.push('mediawijsheidQuiz');
   }
 
   // Topografie
+  if (enabled.windrichtingen) availableTypes.push(...WINDRICHTINGEN_GAMES);
   if (enabled.nederland) availableTypes.push(...NEDERLAND_GAMES);
   if (enabled.europa) availableTypes.push(...EUROPA_GAMES);
   if (enabled.wereld) availableTypes.push(...WERELD_GAMES);

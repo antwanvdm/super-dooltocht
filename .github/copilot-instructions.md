@@ -77,6 +77,10 @@ server/
 - **Rekenen met Tijd (Time Calculation):** Duration, forward/backward time
 - **Taal (Language):** Spelling rules (incl. verkleinwoord & meervoud), rijmen, woordsoorten, vocabulary, reading comprehension, English
 - **Puzzels (Puzzles):** Sudoku, tectonic, binary, chess
+- **Meetkunde (Geometry):** Shapes (vormen), symmetry, perimeter & area, unit conversion
+- **Digitaal (Digital Literacy):** Computer knowledge, online safety, media literacy
+- **Topografie (Geography):** Netherlands, Europe, World — quiz, memory, interactive map
+- **Verkeer (Traffic Safety):** Traffic signs, traffic rules
 
 ### Game Modes
 
@@ -131,6 +135,12 @@ server/
 
 Each minigame component must have exactly **one** game mechanic. Never combine two hidden/separate game modes into a single minigame component (e.g. mixing "pick the category" with "pick the transform" in one file). If a component needs to behave differently based on settings, split it into separate minigame files instead.
 
+Concrete anti-patterns to avoid:
+
+- **Random sub-category mixing:** A quiz component that uses `Math.random()` to pick between different content domains (e.g. randomly serving computerkennis OR veiligheid OR mediawijsheid questions). Each content domain must be its own component.
+- **Conditional generator switching:** A component that checks multiple `enabledOperations` flags and picks a random generator from the enabled ones. Instead, create one component per generator/domain.
+- **Content variation is OK:** A single quiz that varies _within_ one topic (e.g. different question formats about shapes) is fine — it's the same game mechanic and content domain.
+
 ### Minigame Feedback Rules
 
 Feedback after a correct or incorrect answer must be **motivational and never reveal the correct answer**. The child gets another attempt, so revealing the answer would remove the learning challenge.
@@ -177,8 +187,9 @@ When adding a new setting or minigame:
 3. Use `generateMathProblem()` for math content
 4. Add to `GAME_TYPES` array in `ChallengeModal.jsx`
 5. Update the player settings modal in `MazeGame.jsx`
-6. Write unit tests for any new generation logic
-7. Ensure mobile-first responsive design
+6. **Update `MinigamePreview.jsx`** — add the lazy import to `GAME_COMPONENTS`, add the game type to the correct `CATEGORIES` entry, and add any needed `PREVIEW_SETTINGS` fields
+7. Write unit tests for any new generation logic
+8. Ensure mobile-first responsive design
 
 ### Adding a New Theme
 
@@ -192,7 +203,19 @@ When adding a new setting or minigame:
 2. Store/load via `localStorage.js` helpers (use `safeGet`/`safeSet`)
 3. Pass through to components via settings object
 4. **Update the in-game settings modal** in `MazeGame.jsx`
-5. Use `??` (not `||`) for boolean defaults to preserve saved `false` values
+5. **Update `MinigamePreview.jsx`** if the setting affects available game types
+6. Use `??` (not `||`) for boolean defaults to preserve saved `false` values
+
+### Adding a New Exercise Category
+
+1. Create a panel component in `src/components/home/` (e.g. `MeetkundePanel.jsx`)
+2. Add the panel + tab button in `Home.jsx`
+3. Register game types in `gameSelection.js` (`getAvailableGameTypes` + GAME_NAMES)
+4. Add minigame components, register in `ChallengeModal.jsx` and `BossBattleModal.jsx`
+5. **Update `MinigamePreview.jsx`** — add the category to `CATEGORIES` array with all game types, add lazy imports to `GAME_COMPONENTS`, and add any `PREVIEW_SETTINGS` fields
+6. **Update E2E helpers** — add the tab label to `startAdventure()` in `e2e/helpers.js` (`tabLabels` + `operationLabels` + any active color classes in `isAlreadyActive`)
+7. Add unit tests for data generators and `getAvailableGameTypes` in `gameSelection.test.js`
+8. Add E2E settings tests in `e2e/settings.spec.js` and adventure start tests in `e2e/play-adventure.spec.js`
 
 ## Language
 

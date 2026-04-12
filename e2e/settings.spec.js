@@ -2,6 +2,23 @@
 import { test, expect } from '@playwright/test';
 import { navigateToHome } from './helpers.js';
 
+/** Click a category tab button, scoped to the tab grid to avoid theme collisions. */
+const TAB_LABELS = {
+  Rekenen: '🔢 Rekenen',
+  Tijd: '⏰ Tijd',
+  Taal: '📝 Taal',
+  Puzzels: '🧠 Puzzels',
+  Meten: '📐 Meten',
+  Digitaal: '💻 Digitaal',
+  Topo: '🗺️ Topo',
+  Verkeer: '🚲 Verkeer',
+};
+function categoryTab(page, name) {
+  return page
+    .getByTestId('category-tabs')
+    .getByRole('button', { name: TAB_LABELS[name] ?? name, exact: true });
+}
+
 test.describe('Home – Settings flow', () => {
   test.beforeEach(async ({ page }) => {
     await navigateToHome(page);
@@ -22,7 +39,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('can switch to Tijd category', async ({ page }) => {
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    await categoryTab(page, 'Tijd').click();
 
     await expect(
       page.locator('label').filter({ hasText: 'Klokkijken' }),
@@ -36,7 +53,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('can switch to Taal category', async ({ page }) => {
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
 
     await expect(
       page.locator('label').filter({ hasText: 'Spelling' }).first(),
@@ -53,18 +70,43 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('can switch between all categories', async ({ page }) => {
-    // Rekenen → Tijd → Taal → Rekenen
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    // Rekenen → Tijd → Taal → Puzzels → Meten → Digitaal → Topo → Verkeer → Rekenen
+    await categoryTab(page, 'Tijd').click();
     await expect(
       page.locator('label').filter({ hasText: 'Klokkijken' }),
     ).toBeVisible();
 
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
     await expect(
       page.locator('label').filter({ hasText: 'Spelling' }).first(),
     ).toBeVisible();
 
-    await page.getByRole('button', { name: 'Rekenen' }).click();
+    await categoryTab(page, 'Puzzels').click();
+    await expect(
+      page.locator('label').filter({ hasText: 'Sudoku' }),
+    ).toBeVisible();
+
+    await categoryTab(page, 'Meten').click();
+    await expect(
+      page.locator('label').filter({ hasText: 'Vormen' }).first(),
+    ).toBeVisible();
+
+    await categoryTab(page, 'Digitaal').click();
+    await expect(
+      page.locator('label').filter({ hasText: 'Computerkennis' }),
+    ).toBeVisible();
+
+    await categoryTab(page, 'Topo').click();
+    await expect(
+      page.locator('label').filter({ hasText: 'Nederland' }),
+    ).toBeVisible();
+
+    await categoryTab(page, 'Verkeer').click();
+    await expect(
+      page.locator('label').filter({ hasText: 'Verkeersborden' }),
+    ).toBeVisible();
+
+    await categoryTab(page, 'Rekenen').click();
     await expect(
       page.locator('label').filter({ hasText: 'Plussommen' }),
     ).toBeVisible();
@@ -142,7 +184,7 @@ test.describe('Home – Settings flow', () => {
   test('Klokkijken shows clock level options (enabled by default)', async ({
     page,
   }) => {
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    await categoryTab(page, 'Tijd').click();
     // Clock is already enabled by default — level options should be visible
     await expect(page.getByText('Klokkijken niveau:')).toBeVisible();
     await expect(
@@ -154,7 +196,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Klokkijken shows extra options (woorden, 24h)', async ({ page }) => {
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    await categoryTab(page, 'Tijd').click();
     // Clock is already enabled by default — extra options should be visible
     await expect(page.getByText('Extra opties:')).toBeVisible();
     await expect(
@@ -166,7 +208,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Tijdsbesef shows topic checkboxes', async ({ page }) => {
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    await categoryTab(page, 'Tijd').click();
     // Tijdsbesef is OFF by default, click to enable
     await page.locator('label').filter({ hasText: 'Tijdsbesef' }).click();
 
@@ -183,7 +225,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Rekenen met tijd shows level options', async ({ page }) => {
-    await page.getByRole('button', { name: 'Tijd' }).click();
+    await categoryTab(page, 'Tijd').click();
     // The label "Rekenen met tijd" in the operations list
     await page
       .locator('label')
@@ -200,7 +242,7 @@ test.describe('Home – Settings flow', () => {
   // ─── Taal options ─────────────────────────────────────────────────────────
 
   test('Spelling shows category checkboxes', async ({ page }) => {
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
     await page.locator('label').filter({ hasText: 'Spelling' }).first().click();
 
     await expect(page.getByText('Spellingcategorieën:')).toBeVisible();
@@ -213,7 +255,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Woordenschat shows theme vocabulary toggle', async ({ page }) => {
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
     await page.locator('label').filter({ hasText: 'Woordenschat' }).click();
 
     await expect(
@@ -224,7 +266,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Begrijpend lezen shows reading level options', async ({ page }) => {
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
     await page.locator('label').filter({ hasText: 'Begrijpend lezen' }).click();
 
     await expect(
@@ -236,7 +278,7 @@ test.describe('Home – Settings flow', () => {
   });
 
   test('Engels shows level and direction options', async ({ page }) => {
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await categoryTab(page, 'Taal').click();
     await page
       .locator('label')
       .filter({ hasText: 'Leer Engelse woordjes' })
@@ -298,6 +340,114 @@ test.describe('Home – Settings flow', () => {
       .filter({ hasText: 'Red 2 vriendjes' });
     await kortLabel.click();
     await expect(kortLabel).toHaveClass(/bg-amber-500/);
+  });
+
+  // ─── Puzzels operations ───────────────────────────────────────────────────
+
+  test('can switch to Puzzels category', async ({ page }) => {
+    await categoryTab(page, 'Puzzels').click();
+
+    await expect(
+      page.locator('label').filter({ hasText: 'Sudoku' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Tectonic' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Binair' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Schaken' }),
+    ).toBeVisible();
+  });
+
+  test('toggling Sudoku shows level options', async ({ page }) => {
+    await categoryTab(page, 'Puzzels').click();
+    await page.locator('label').filter({ hasText: 'Sudoku' }).click();
+
+    await expect(page.getByText('4×4 rooster')).toBeVisible();
+  });
+
+  // ─── Meetkunde operations ─────────────────────────────────────────────────
+
+  test('can switch to Meten category', async ({ page }) => {
+    await categoryTab(page, 'Meten').click();
+
+    await expect(
+      page.locator('label').filter({ hasText: 'Vormen' }).first(),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Symmetrie' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Omtrek & oppervlakte' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Eenheden omrekenen' }),
+    ).toBeVisible();
+  });
+
+  test('toggling Vormen shows level options', async ({ page }) => {
+    await categoryTab(page, 'Meten').click();
+    // Vormen is enabled by default — level options should already be visible
+    await expect(page.getByText('Basisvormen')).toBeVisible();
+  });
+
+  // ─── Digitaal operations ──────────────────────────────────────────────────
+
+  test('can switch to Digitaal category', async ({ page }) => {
+    await categoryTab(page, 'Digitaal').click();
+
+    await expect(
+      page.locator('label').filter({ hasText: 'Computerkennis' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Online veiligheid' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Mediawijsheid' }),
+    ).toBeVisible();
+  });
+
+  // ─── Topografie operations ────────────────────────────────────────────────
+
+  test('can switch to Topo category', async ({ page }) => {
+    await categoryTab(page, 'Topo').click();
+
+    await expect(
+      page.locator('label').filter({ hasText: 'Nederland' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Europa' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'De wereld' }),
+    ).toBeVisible();
+  });
+
+  test('toggling Nederland shows level options', async ({ page }) => {
+    await categoryTab(page, 'Topo').click();
+    // Nederland is enabled by default — level options should already be visible
+    await expect(page.getByText('Steden, rivieren, landmarks')).toBeVisible();
+  });
+
+  // ─── Verkeer operations ───────────────────────────────────────────────────
+
+  test('can switch to Verkeer category', async ({ page }) => {
+    await categoryTab(page, 'Verkeer').click();
+
+    await expect(
+      page.locator('label').filter({ hasText: 'Verkeersborden' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Verkeersregels' }),
+    ).toBeVisible();
+  });
+
+  test('toggling Verkeersborden shows level options', async ({ page }) => {
+    await categoryTab(page, 'Verkeer').click();
+    // Verkeersborden is enabled by default — level options should already be visible
+    await expect(page.getByText('Basisborden')).toBeVisible();
   });
 
   // ─── World selection ──────────────────────────────────────────────────────

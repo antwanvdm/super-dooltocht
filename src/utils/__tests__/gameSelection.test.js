@@ -619,6 +619,19 @@ describe('getAvailableGameTypes', () => {
           rijmen: true,
           woordsoorten: true,
           fractions: true,
+          vormen: true,
+          symmetrie: true,
+          eenheden: true,
+          omtrekOppervlakte: true,
+          computerkennis: true,
+          veiligheid: true,
+          mediawijsheid: true,
+          nederland: true,
+          europa: true,
+          wereld: true,
+          borden: true,
+          regels: true,
+          windrichtingen: true,
         },
         clock24h: true,
         clockWords: true,
@@ -632,7 +645,7 @@ describe('getAvailableGameTypes', () => {
       const types = getAvailableGameTypes(settings);
 
       // Should include types from all categories
-      expect(types.length).toBeGreaterThan(20);
+      expect(types.length).toBeGreaterThan(40);
       expect(types).toContain('multiple-choice');
       expect(types).toContain('makeAmount');
       expect(types).toContain('clockMultipleChoice');
@@ -657,6 +670,195 @@ describe('getAvailableGameTypes', () => {
       expect(types).toContain('fractionIdentify');
       expect(types).toContain('fractionCompare');
       expect(types).toContain('fractionMemory');
+      // Meetkunde
+      expect(types).toContain('vormenQuiz');
+      expect(types).toContain('symmetrieQuiz');
+      expect(types).toContain('eenhedenQuiz');
+      expect(types).toContain('omtrekOppervlakteQuiz');
+      // Digitaal
+      expect(types).toContain('digitaalQuiz');
+      expect(types).toContain('digitaalMemory');
+      expect(types).toContain('digitaalConnect');
+      expect(types).toContain('veiligheidQuiz');
+      expect(types).toContain('mediawijsheidQuiz');
+      // Topografie
+      expect(types).toContain('topoNederlandQuiz');
+      expect(types).toContain('topoEuropaKaart');
+      expect(types).toContain('topoWereldMemory');
+      expect(types).toContain('windrichtingenKompas');
+      // Verkeer
+      expect(types).toContain('verkeerBordenQuiz');
+      expect(types).toContain('verkeerRegelsQuiz');
+    });
+  });
+
+  describe('Meetkunde games', () => {
+    it('should include vormen games when vormen is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { vormen: true },
+      });
+      expect(types).toContain('vormenQuiz');
+      expect(types).toContain('vormenMemory');
+    });
+
+    it('should include symmetrieQuiz when symmetrie is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { symmetrie: true },
+      });
+      expect(types).toContain('symmetrieQuiz');
+      expect(types).not.toContain('vormenQuiz');
+    });
+
+    it('should include eenheden games when eenheden is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { eenheden: true },
+      });
+      expect(types).toContain('eenhedenQuiz');
+      expect(types).toContain('eenhedenMemory');
+    });
+
+    it('should include omtrekOppervlakteQuiz when omtrekOppervlakte is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { omtrekOppervlakte: true },
+      });
+      expect(types).toContain('omtrekOppervlakteQuiz');
+    });
+
+    it('should combine multiple meetkunde sub-categories', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: {
+          vormen: true,
+          symmetrie: true,
+          eenheden: true,
+          omtrekOppervlakte: true,
+        },
+      });
+      expect(types).toContain('vormenQuiz');
+      expect(types).toContain('vormenMemory');
+      expect(types).toContain('symmetrieQuiz');
+      expect(types).toContain('eenhedenQuiz');
+      expect(types).toContain('eenhedenMemory');
+      expect(types).toContain('omtrekOppervlakteQuiz');
+      expect(types.length).toBe(6);
+    });
+  });
+
+  describe('Digitale geletterdheid games', () => {
+    it('should include digitaal games when computerkennis is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { computerkennis: true },
+      });
+      expect(types).toContain('digitaalQuiz');
+      expect(types).toContain('digitaalMemory');
+      expect(types).toContain('digitaalConnect');
+    });
+
+    it('should include veiligheidQuiz when veiligheid is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { veiligheid: true },
+      });
+      expect(types).toContain('veiligheidQuiz');
+      expect(types).not.toContain('mediawijsheidQuiz');
+    });
+
+    it('should include mediawijsheidQuiz when mediawijsheid is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { mediawijsheid: true },
+      });
+      expect(types).toContain('mediawijsheidQuiz');
+      expect(types).not.toContain('veiligheidQuiz');
+    });
+
+    it('should include all digitaal games when all three are enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: {
+          computerkennis: true,
+          veiligheid: true,
+          mediawijsheid: true,
+        },
+      });
+      expect(types).toContain('digitaalQuiz');
+      expect(types).toContain('digitaalMemory');
+      expect(types).toContain('digitaalConnect');
+      expect(types).toContain('veiligheidQuiz');
+      expect(types).toContain('mediawijsheidQuiz');
+    });
+  });
+
+  describe('Topografie games', () => {
+    it('should include Nederland games when nederland is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { nederland: true },
+      });
+      expect(types).toContain('topoNederlandQuiz');
+      expect(types).toContain('topoNederlandMemory');
+      expect(types).toContain('topoNederlandKaart');
+    });
+
+    it('should include Europa games when europa is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { europa: true },
+      });
+      expect(types).toContain('topoEuropaQuiz');
+      expect(types).toContain('topoEuropaMemory');
+      expect(types).toContain('topoEuropaKaart');
+    });
+
+    it('should include Wereld games when wereld is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { wereld: true },
+      });
+      expect(types).toContain('topoWereldQuiz');
+      expect(types).toContain('topoWereldMemory');
+      expect(types).toContain('topoWereldKaart');
+    });
+
+    it('should combine all sub-categories', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { nederland: true, europa: true, wereld: true },
+      });
+      expect(types.length).toBe(9);
+    });
+
+    it('should include windrichtingen game when windrichtingen is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { windrichtingen: true },
+      });
+      expect(types).toContain('windrichtingenKompas');
+      expect(types).toHaveLength(1);
+    });
+
+    it('should combine windrichtingen with other topo sub-categories', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { windrichtingen: true, nederland: true, europa: true, wereld: true },
+      });
+      expect(types).toContain('windrichtingenKompas');
+      expect(types.length).toBe(10);
+    });
+  });
+
+  describe('Verkeer games', () => {
+    it('should include borden games when borden is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { borden: true },
+      });
+      expect(types).toContain('verkeerBordenQuiz');
+      expect(types).toContain('verkeerBordenMemory');
+    });
+
+    it('should include regels games when regels is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { regels: true },
+      });
+      expect(types).toContain('verkeerRegelsQuiz');
+      expect(types).toContain('verkeerRegelsMemory');
+    });
+
+    it('should combine borden + regels', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { borden: true, regels: true },
+      });
+      expect(types.length).toBe(4);
     });
   });
 });
@@ -719,6 +921,7 @@ describe('GAME_NAMES', () => {
       'fractionIdentify',
       'fractionCompare',
       'fractionMemory',
+      'windrichtingenKompas',
     ];
 
     for (const type of allGameTypes) {

@@ -18,6 +18,10 @@ import {
   WOORDSOORTEN_GAMES,
   FRACTION_GAMES,
   PUZZLE_GAMES,
+  MEETKUNDE_GAMES,
+  DIGITAAL_GAMES,
+  TOPOGRAFIE_GAMES,
+  VERKEER_GAMES,
 } from '../utils/gameSelection';
 
 // Lazy-loaded minigame components (same as ChallengeModal)
@@ -73,6 +77,35 @@ const GAME_COMPONENTS = {
   'fractionIdentify': lazy(() => lazyRetry(() => import('./minigames/FractionIdentify'))),
   'fractionCompare': lazy(() => lazyRetry(() => import('./minigames/FractionCompare'))),
   'fractionMemory': lazy(() => lazyRetry(() => import('./minigames/FractionMemory'))),
+  // Meetkunde
+  'vormenQuiz': lazy(() => lazyRetry(() => import('./minigames/VormenQuiz'))),
+  'vormenMemory': lazy(() => lazyRetry(() => import('./minigames/VormenMemory'))),
+  'symmetrieQuiz': lazy(() => lazyRetry(() => import('./minigames/SymmetrieQuiz'))),
+  'eenhedenQuiz': lazy(() => lazyRetry(() => import('./minigames/EenhedenQuiz'))),
+  'eenhedenMemory': lazy(() => lazyRetry(() => import('./minigames/EenhedenMemory'))),
+  'omtrekOppervlakteQuiz': lazy(() => lazyRetry(() => import('./minigames/OmtrekOppervlakteQuiz'))),
+  // Digitaal
+  'digitaalQuiz': lazy(() => lazyRetry(() => import('./minigames/DigitaalQuiz'))),
+  'digitaalMemory': lazy(() => lazyRetry(() => import('./minigames/DigitaalMemory'))),
+  'digitaalConnect': lazy(() => lazyRetry(() => import('./minigames/DigitaalConnect'))),
+  'veiligheidQuiz': lazy(() => lazyRetry(() => import('./minigames/VeiligheidQuiz'))),
+  'mediawijsheidQuiz': lazy(() => lazyRetry(() => import('./minigames/MediaWijsheidQuiz'))),
+  // Topografie
+  'windrichtingenKompas': lazy(() => lazyRetry(() => import('./minigames/WindrichtingenKompas'))),
+  'topoNederlandQuiz': lazy(() => lazyRetry(() => import('./minigames/TopoNederlandQuiz'))),
+  'topoNederlandMemory': lazy(() => lazyRetry(() => import('./minigames/TopoNederlandMemory'))),
+  'topoNederlandKaart': lazy(() => lazyRetry(() => import('./minigames/TopoNederlandKaart'))),
+  'topoEuropaQuiz': lazy(() => lazyRetry(() => import('./minigames/TopoEuropaQuiz'))),
+  'topoEuropaMemory': lazy(() => lazyRetry(() => import('./minigames/TopoEuropaMemory'))),
+  'topoEuropaKaart': lazy(() => lazyRetry(() => import('./minigames/TopoEuropaKaart'))),
+  'topoWereldQuiz': lazy(() => lazyRetry(() => import('./minigames/TopoWereldQuiz'))),
+  'topoWereldMemory': lazy(() => lazyRetry(() => import('./minigames/TopoWereldMemory'))),
+  'topoWereldKaart': lazy(() => lazyRetry(() => import('./minigames/TopoWereldKaart'))),
+  // Verkeer
+  'verkeerBordenQuiz': lazy(() => lazyRetry(() => import('./minigames/VerkeerBordenQuiz'))),
+  'verkeerBordenMemory': lazy(() => lazyRetry(() => import('./minigames/VerkeerBordenMemory'))),
+  'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('./minigames/VerkeerRegelsQuiz'))),
+  'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('./minigames/VerkeerRegelsMemory'))),
 };
 
 // Categories with their game types, emoji, colour, and configurable settings
@@ -235,6 +268,50 @@ const CATEGORIES = [
     ],
   },
   {
+    name: 'Meetkunde',
+    emoji: '📐',
+    color: 'from-teal-500 to-cyan-600',
+    games: [...MEETKUNDE_GAMES, 'symmetrieQuiz'],
+    settings: [
+      { key: 'meetkundeLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+      ]},
+    ],
+  },
+  {
+    name: 'Digitaal',
+    emoji: '💻',
+    color: 'from-sky-500 to-blue-600',
+    games: DIGITAAL_GAMES,
+    settings: [
+      { key: 'digitaalLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+      ]},
+    ],
+  },
+  {
+    name: 'Topografie',
+    emoji: '🗺️',
+    color: 'from-emerald-500 to-green-600',
+    games: TOPOGRAFIE_GAMES,
+    settings: [
+      { key: 'topoLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' }, { value: 'hard', label: 'Moeilijk' },
+      ]},
+    ],
+  },
+  {
+    name: 'Verkeer',
+    emoji: '🚦',
+    color: 'from-red-500 to-orange-600',
+    games: VERKEER_GAMES,
+    settings: [
+      { key: 'verkeerLevel', label: 'Niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+      ]},
+    ],
+  },
+  {
     name: 'Puzzels',
     emoji: '🧠',
     color: 'from-violet-500 to-fuchsia-600',
@@ -302,6 +379,10 @@ const PREVIEW_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
+  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', eenheden: 'easy', omtrekOppervlakte: 'easy' },
+  digitaalLevel: 'easy',
+  topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
+  verkeerLevel: { borden: 'easy', regels: 'easy' },
 };
 
 function MinigamePreview() {
@@ -344,14 +425,28 @@ function MinigamePreview() {
     });
   };
 
-  const getSettingValue = (categoryName, settingKey) =>
-    overrides[categoryName]?.[settingKey] ?? PREVIEW_SETTINGS[settingKey];
+  const getSettingValue = (categoryName, settingKey) => {
+    const raw = overrides[categoryName]?.[settingKey] ?? PREVIEW_SETTINGS[settingKey];
+    // Object-shaped levels (topoLevel, meetkundeLevel, verkeerLevel) — return first sub-value for the select
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) return Object.values(raw)[0];
+    return raw;
+  };
 
   const getSettings = (categoryName) => {
     const merged = { ...PREVIEW_SETTINGS, ...(overrides[categoryName] || {}) };
     // Map chess-specific override into puzzleLevel object
     if (merged.chessLevel) {
       merged.puzzleLevel = { ...merged.puzzleLevel, chess: merged.chessLevel };
+    }
+    // When a flat string override replaces an object-shaped level, expand it
+    // so all sub-keys get updated (e.g. topoLevel: 'medium' → { nederland: 'medium', ... })
+    for (const key of ['topoLevel', 'meetkundeLevel', 'verkeerLevel']) {
+      if (typeof merged[key] === 'string') {
+        const template = PREVIEW_SETTINGS[key];
+        merged[key] = Object.fromEntries(
+          Object.keys(template).map((k) => [k, merged[key]]),
+        );
+      }
     }
     // Inject fetched chess puzzles
     merged.chessPuzzles = chessPuzzles;

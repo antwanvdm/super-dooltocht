@@ -66,7 +66,9 @@ const GAME_COMPONENTS = {
   'digitaalMemory': lazy(() => lazyRetry(() => import('../../minigames/DigitaalMemory'))),
   'digitaalConnect': lazy(() => lazyRetry(() => import('../../minigames/DigitaalConnect'))),
   'veiligheidQuiz': lazy(() => lazyRetry(() => import('../../minigames/VeiligheidQuiz'))),
+  'mediawijsheidQuiz': lazy(() => lazyRetry(() => import('../../minigames/MediaWijsheidQuiz'))),
   // Topografie
+  'windrichtingenKompas': lazy(() => lazyRetry(() => import('../../minigames/WindrichtingenKompas'))),
   'topoNederlandQuiz': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandQuiz'))),
   'topoNederlandMemory': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandMemory'))),
   'topoNederlandKaart': lazy(() => lazyRetry(() => import('../../minigames/TopoNederlandKaart'))),

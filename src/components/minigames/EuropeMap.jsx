@@ -12,7 +12,7 @@ const ID_TO_KEY = {
 };
 
 const COUNTRY_NAMES = {
-  nl: 'Nederland', be: 'België', de: 'Duitsland', fr: 'Frankrijk', gb: 'Groot-Brittannië',
+  nl: 'Nederland', be: 'België', de: 'Duitsland', fr: 'Frankrijk', gb: 'Verenigd Koninkrijk',
   es: 'Spanje', pt: 'Portugal', it: 'Italië', ch: 'Zwitserland', at: 'Oostenrijk',
   dk: 'Denemarken', se: 'Zweden', no: 'Noorwegen', fi: 'Finland', pl: 'Polen',
   cz: 'Tsjechië', ie: 'Ierland', lu: 'Luxemburg', gr: 'Griekenland', hu: 'Hongarije',

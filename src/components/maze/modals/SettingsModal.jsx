@@ -370,6 +370,16 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 <p className="text-sm text-slate-700">Kritisch kijken naar media</p>
               </div>
             )}
+            {mathSettings.enabledOperations.windrichtingen && (
+              <div className="bg-amber-50 rounded-xl p-4">
+                <h4 className="font-bold text-amber-800 mb-2">🧭 Windrichtingen</h4>
+                <p className="text-sm text-amber-700">Niveau: <strong>
+                  {mathSettings.topoLevel?.windrichtingen === 'easy' && 'Makkelijk'}
+                  {mathSettings.topoLevel?.windrichtingen === 'medium' && 'Gemiddeld'}
+                  {!mathSettings.topoLevel?.windrichtingen && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
             {mathSettings.enabledOperations.nederland && (
               <div className="bg-amber-50 rounded-xl p-4">
                 <h4 className="font-bold text-amber-800 mb-2">🇳🇱 Nederland</h4>

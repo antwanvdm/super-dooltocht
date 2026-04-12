@@ -55,8 +55,8 @@ const DEFAULT_SETTINGS = {
   meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false },
   meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy' },
   digitaalOps: { computerkennis: true, veiligheid: true, mediawijsheid: false },
-  topoOps: { nederland: true, europa: false, wereld: false },
-  topoLevel: { nederland: 'easy', europa: 'easy', wereld: 'easy' },
+  topoOps: { windrichtingen: false, nederland: true, europa: false, wereld: false },
+  topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
   verkeerOps: { borden: true, regels: false },
   verkeerLevel: { borden: 'easy', regels: 'easy' },
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
@@ -417,7 +417,7 @@ function Home({ disabled = false }) {
           </div>
 
           {/* Category Tabs */}
-          <div className="grid grid-cols-4 gap-2 md:gap-3 mb-6 md:mb-8 md:max-w-2xl md:mx-auto">
+          <div data-testid="category-tabs" className="grid grid-cols-4 gap-2 md:gap-3 mb-6 md:mb-8 md:max-w-2xl md:mx-auto">
             {[
               { key: 'rekenen', label: 'Rekenen', icon: '🔢', disabled: false },
               { key: 'tijd', label: 'Tijd', icon: '⏰', disabled: false },

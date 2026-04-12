@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { generateComputerTermQuestion } from '../../utils/digitaalData';
+import { generateMediawijsheidQuestion } from '../../utils/digitaalData';
 
-function DigitaalQuiz({ onSuccess, onFailure }) {
+function MediaWijsheidQuiz({ onSuccess, onFailure }) {
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    const q = generateComputerTermQuestion();
+    const q = generateMediawijsheidQuestion();
     const allOptions = [
       { text: q.correctAnswer, correct: true },
       ...q.wrongAnswers.map(a => ({ text: a, correct: false })),
@@ -38,15 +38,15 @@ function DigitaalQuiz({ onSuccess, onFailure }) {
   return (
     <div className="text-center">
       <div className="mb-4 sm:mb-6">
-        <p className="text-gray-600 text-sm sm:text-lg mb-2">💻 Digitale geletterdheid</p>
-        <div className="inline-block bg-gradient-to-br from-slate-100 to-gray-100 rounded-2xl px-4 sm:px-8 py-4 sm:py-6 border-2 border-slate-200">
+        <p className="text-gray-600 text-sm sm:text-lg mb-2">📱 Mediawijsheid</p>
+        <div className="inline-block bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl px-4 sm:px-8 py-4 sm:py-6 border-2 border-purple-200">
           <p className="text-base sm:text-xl font-bold text-gray-800">{problem.question}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 max-w-xl mx-auto">
         {options.map((option, index) => {
-          let btnClass = 'bg-white border-2 border-gray-200 text-gray-700 hover:border-slate-400 hover:bg-slate-50';
+          let btnClass = 'bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-400 hover:bg-purple-50';
           if (showFeedback && selected === index) {
             btnClass = option.correct
               ? 'bg-green-500 text-white border-2 border-green-600 scale-[1.02]'
@@ -70,11 +70,11 @@ function DigitaalQuiz({ onSuccess, onFailure }) {
         <div className={`mt-4 p-3 rounded-xl text-sm sm:text-base ${
           options[selected]?.correct ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
         }`}>
-          {options[selected]?.correct ? '🎉 Helemaal goed!' : '💪 Bijna! Probeer nog eens!'}
+          {options[selected]?.correct ? '🎉 Goed zo! Slim omgaan met media.' : '💪 Bijna! Probeer nog eens!'}
         </div>
       )}
     </div>
   );
 }
 
-export default DigitaalQuiz;
+export default MediaWijsheidQuiz;

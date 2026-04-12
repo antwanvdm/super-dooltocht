@@ -167,8 +167,116 @@ test.describe('Play adventure – Taal', () => {
   });
 });
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Maze interaction
+test.describe('Play adventure – Puzzels', () => {
+  test('start a Sudoku adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'puzzels',
+      operation: 'sudoku',
+      theme: 'castle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Schaken adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'puzzels',
+      operation: 'chess',
+      theme: 'dino',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+});
+
+test.describe('Play adventure – Meetkunde', () => {
+  test('start a Vormen adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'meetkunde',
+      operation: 'vormen',
+      theme: 'ocean',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Symmetrie adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'meetkunde',
+      operation: 'symmetrie',
+      theme: 'candy',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+});
+
+test.describe('Play adventure – Digitaal', () => {
+  test('start a Computerkennis adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'digitaal',
+      operation: 'computerkennis',
+      theme: 'space',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+});
+
+test.describe('Play adventure – Topografie', () => {
+  test('start a Nederland adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'topografie',
+      operation: 'nederland',
+      theme: 'farm',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Europa adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'topografie',
+      operation: 'europa',
+      theme: 'jungle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a De wereld adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'topografie',
+      operation: 'wereld',
+      theme: 'pirates',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+});
+
+test.describe('Play adventure – Verkeer', () => {
+  test('start a Verkeersborden adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'verkeer',
+      operation: 'borden',
+      theme: 'sports',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Verkeersregels adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'verkeer',
+      operation: 'regels',
+      theme: 'music',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+});
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 test.describe('Maze interaction', () => {
@@ -392,14 +500,20 @@ test.describe('Multiple exercise combinations', () => {
   test('Taal: spelling + vocabulary + reading combined', async ({ page }) => {
     await navigateToHome(page);
 
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await page
+      .getByTestId('category-tabs')
+      .getByRole('button', { name: '📝 Taal', exact: true })
+      .click();
     await page
       .locator('label')
       .filter({ hasText: 'Oefen spellingcategorieën' })
       .click();
     await page.locator('label').filter({ hasText: 'Woordenschat' }).click();
     await page.locator('label').filter({ hasText: 'Begrijpend lezen' }).click();
-    await page.locator('section button').filter({ hasText: 'Kasteel' }).click();
+    await page
+      .getByTestId('theme-selector')
+      .getByRole('button', { name: 'Kasteel' })
+      .click();
     await page.getByRole('button', { name: /Start avontuur/i }).click();
 
     await page.waitForURL(/\/#\/maze\//);
@@ -409,7 +523,10 @@ test.describe('Multiple exercise combinations', () => {
   test('Taal: all taal operations enabled', async ({ page }) => {
     await navigateToHome(page);
 
-    await page.getByRole('button', { name: 'Taal' }).click();
+    await page
+      .getByTestId('category-tabs')
+      .getByRole('button', { name: '📝 Taal', exact: true })
+      .click();
     await page
       .locator('label')
       .filter({ hasText: 'Oefen spellingcategorieën' })
@@ -421,8 +538,8 @@ test.describe('Multiple exercise combinations', () => {
       .filter({ hasText: 'Leer Engelse woordjes' })
       .click();
     await page
-      .locator('section button')
-      .filter({ hasText: 'Dinosaurus' })
+      .getByTestId('theme-selector')
+      .getByRole('button', { name: 'Dinosaurus' })
       .click();
     await page.getByRole('button', { name: /Start avontuur/i }).click();
 
@@ -477,8 +594,8 @@ test.describe('Multiple exercise combinations', () => {
       await navigateToHome(page);
       await page.locator('label').filter({ hasText: 'Plussommen' }).click();
       await page
-        .locator('section button')
-        .filter({ hasText: themeName })
+        .getByTestId('theme-selector')
+        .getByRole('button', { name: themeName })
         .click();
       await page.getByRole('button', { name: /Start avontuur/i }).click();
       await page.waitForURL(/\/#\/maze\//);

@@ -1,32 +1,20 @@
 import { useState, useEffect } from 'react';
-import { generateVeiligheidQuestion, generateMediawijsheidQuestion } from '../../utils/digitaalData';
+import { generateVeiligheidQuestion } from '../../utils/digitaalData';
 
-function VeiligheidQuiz({ mathSettings, onSuccess, onFailure }) {
+function VeiligheidQuiz({ onSuccess, onFailure }) {
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    const hasVeiligheid = mathSettings?.enabledOperations?.veiligheid ?? true;
-    const hasMediawijsheid = mathSettings?.enabledOperations?.mediawijsheid ?? true;
-
-    let q;
-    if (hasVeiligheid && hasMediawijsheid) {
-      q = Math.random() < 0.5 ? generateVeiligheidQuestion() : generateMediawijsheidQuestion();
-    } else if (hasMediawijsheid) {
-      q = generateMediawijsheidQuestion();
-    } else {
-      q = generateVeiligheidQuestion();
-    }
-
+    const q = generateVeiligheidQuestion();
     const allOptions = [
       { text: q.correctAnswer, correct: true },
       ...q.wrongAnswers.map(a => ({ text: a, correct: false })),
     ].sort(() => Math.random() - 0.5);
     setProblem(q);
     setOptions(allOptions);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSelect = (option, index) => {

@@ -3,6 +3,17 @@ export default function TopografiePanel({ settings, dispatch }) {
 
   const levelSections = [
     {
+      key: 'windrichtingen',
+      show: topoOps.windrichtingen,
+      icon: '🧭',
+      label: 'Windrichtingen:',
+      options: [
+        { key: 'easy', label: 'Makkelijk', desc: 'N, O, Z, W + zon komt op/gaat onder' },
+        { key: 'medium', label: 'Gemiddeld', desc: 'Ook NO, NW, ZO, ZW + tegenovergesteld' },
+        { key: 'hard', label: 'Moeilijk', desc: 'Draaien, kwartslag, halve slag' },
+      ],
+    },
+    {
       key: 'nederland',
       show: topoOps.nederland,
       icon: '🇳🇱',
@@ -45,6 +56,7 @@ export default function TopografiePanel({ settings, dispatch }) {
         </h3>
         <div className="space-y-3 sm:space-y-4">
           {[
+            { key: 'windrichtingen', label: 'Windrichtingen', icon: '🧭', desc: 'Noord, oost, zuid, west op het kompas' },
             { key: 'nederland', label: 'Nederland', icon: '🇳🇱', desc: 'Steden, rivieren, polders en landmarks' },
             { key: 'europa', label: 'Europa', icon: '🇪🇺', desc: 'Landen van Europa op de kaart' },
             { key: 'wereld', label: 'De wereld', icon: '🌍', desc: 'Continenten, oceanen en landen' },
@@ -72,7 +84,7 @@ export default function TopografiePanel({ settings, dispatch }) {
             </label>
           ))}
         </div>
-        {!topoOps.nederland && !topoOps.europa && !topoOps.wereld && (
+        {!topoOps.windrichtingen && !topoOps.nederland && !topoOps.europa && !topoOps.wereld && (
           <p className="mt-4 text-sm text-red-500 font-medium text-center">
             ⚠️ Kies minstens één soort oefening
           </p>

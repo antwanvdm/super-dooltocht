@@ -60,6 +60,15 @@ const NEDERLAND_EASY = [
     answer: 'Een polder',
     wrongAnswers: ['Een eiland', 'Een berg', 'Een bos'],
   },
+  {
+    question: 'Welke Waddeneilanden horen bij Nederland? (TV-TAS)',
+    answer: 'Texel, Vlieland, Terschelling, Ameland, Schiermonnikoog',
+    wrongAnswers: [
+      'Texel, Ameland, Schiermonnikoog',
+      'Texel, Vlieland, Ameland, Borkum',
+      'Terschelling, Ameland, Schiermonnikoog, Rottumerplaat',
+    ],
+  },
 ];
 
 const NEDERLAND_MEDIUM = [
@@ -205,6 +214,15 @@ const EUROPA_EASY = [
     answer: 'Frankrijk',
     wrongAnswers: ['Italië', 'Spanje', 'België'],
   },
+  {
+    question: 'Welke landen horen bij het Verenigd Koninkrijk?',
+    answer: 'Engeland, Schotland, Wales en Noord-Ierland',
+    wrongAnswers: [
+      'Engeland, Schotland en Ierland',
+      'Engeland en Schotland',
+      'Engeland, Wales en Ierland',
+    ],
+  },
 ];
 
 const EUROPA_MEDIUM = [
@@ -277,6 +295,9 @@ const EUROPA_MEMORY_EASY = [
   { left: '🇪🇸 Spanje', right: 'Madrid' },
   { left: '🇮🇹 Italië', right: 'Rome' },
   { left: '🇬🇧 Verenigd Koninkrijk', right: 'Londen' },
+  { left: '🗼 Eiffeltoren', right: 'Frankrijk' },
+  { left: '👢 Land als een laars', right: 'Italië' },
+  { left: '🧀 Kaasland', right: 'Nederland' },
 ];
 
 const EUROPA_MEMORY_MEDIUM = [
@@ -403,6 +424,21 @@ const WERELD_MEDIUM = [
     answer: 'De Nijl',
     wrongAnswers: ['De Amazone', 'De Mississippi', 'De Yangtze'],
   },
+  {
+    question: 'Hoe heet het hoogste gebergte ter wereld?',
+    answer: 'De Himalaya',
+    wrongAnswers: ['De Andes', 'De Alpen', 'De Rocky Mountains'],
+  },
+  {
+    question: 'Hoe heet de hoogste berg ter wereld?',
+    answer: 'De Mount Everest',
+    wrongAnswers: ['De K2', 'De Mont Blanc', 'De Kilimanjaro'],
+  },
+  {
+    question: 'In welk gebergte ligt de Mont Blanc?',
+    answer: 'De Alpen',
+    wrongAnswers: ['De Pyreneeën', 'De Andes', 'De Rocky Mountains'],
+  },
 ];
 
 const WERELD_MEMORY_EASY = [
@@ -412,6 +448,9 @@ const WERELD_MEMORY_EASY = [
   { left: '🗽 Vrijheidsbeeld', right: 'Noord-Amerika' },
   { left: '🌊 Grootste oceaan', right: 'Stille Oceaan' },
   { left: '🦘 Kangoeroes', right: 'Oceanië' },
+  { left: '🏔️ Hoogste berg', right: 'Mount Everest' },
+  { left: '🏜️ Grootste woestijn', right: 'Sahara' },
+  { left: '🌊 Langste rivier', right: 'Nijl' },
 ];
 
 const WERELD_MEMORY_MEDIUM = [
@@ -422,6 +461,86 @@ const WERELD_MEMORY_MEDIUM = [
   { left: '🇺🇸 Verenigde Staten', right: 'Washington D.C.' },
   { left: '🇨🇦 Canada', right: 'Ottawa' },
 ];
+
+// ---------------------------------------------------------------------------
+// WINDRICHTINGEN
+// ---------------------------------------------------------------------------
+const HOOFDRICHTINGEN = ['Noord', 'Oost', 'Zuid', 'West'];
+const TUSSENRICHTINGEN = ['Noordoost', 'Noordwest', 'Zuidoost', 'Zuidwest'];
+const ALLE_RICHTINGEN = [...HOOFDRICHTINGEN, ...TUSSENRICHTINGEN];
+
+// Angle mapping: 0° = north, clockwise
+const RICHTING_GRADEN = {
+  Noord: 0, Noordoost: 45, Oost: 90, Zuidoost: 135,
+  Zuid: 180, Zuidwest: 225, West: 270, Noordwest: 315,
+};
+
+const WIND_EASY = [
+  { type: 'wijs', question: 'Wijs naar het noorden', answer: 'Noord' },
+  { type: 'wijs', question: 'Wijs naar het oosten', answer: 'Oost' },
+  { type: 'wijs', question: 'Wijs naar het zuiden', answer: 'Zuid' },
+  { type: 'wijs', question: 'Wijs naar het westen', answer: 'West' },
+  { type: 'wijs', question: 'Waar gaat de zon op?', answer: 'Oost' },
+  { type: 'wijs', question: 'Waar gaat de zon onder?', answer: 'West' },
+  { type: 'wijs', question: 'Welke richting is boven op de kaart?', answer: 'Noord' },
+  { type: 'wijs', question: 'Welke richting is rechts op de kaart?', answer: 'Oost' },
+  { type: 'wijs', question: 'Welke richting is onder op de kaart?', answer: 'Zuid' },
+  { type: 'wijs', question: 'Welke richting is links op de kaart?', answer: 'West' },
+];
+
+const WIND_MEDIUM = [
+  { type: 'wijs', question: 'Wijs naar het noordoosten', answer: 'Noordoost' },
+  { type: 'wijs', question: 'Wijs naar het noordwesten', answer: 'Noordwest' },
+  { type: 'wijs', question: 'Wijs naar het zuidoosten', answer: 'Zuidoost' },
+  { type: 'wijs', question: 'Wijs naar het zuidwesten', answer: 'Zuidwest' },
+  { type: 'wijs', question: 'De zon staat laag in het oosten. Het is dus...', answer: 'Oost' },
+  { type: 'wijs', question: 'De zon staat laag in het westen. Het is dus...', answer: 'West' },
+  { type: 'wijs', question: 'Tussen noord en oost ligt...', answer: 'Noordoost' },
+  { type: 'wijs', question: 'Tussen zuid en west ligt...', answer: 'Zuidwest' },
+  { type: 'wijs', question: 'Tussen noord en west ligt...', answer: 'Noordwest' },
+  { type: 'wijs', question: 'Tussen zuid en oost ligt...', answer: 'Zuidoost' },
+  { type: 'wijs', question: 'Het tegenovergestelde van noordoost is...', answer: 'Zuidwest' },
+  { type: 'wijs', question: 'Het tegenovergestelde van noordwest is...', answer: 'Zuidoost' },
+];
+
+const WIND_HARD = [
+  { type: 'draai', question: 'Je kijkt naar het noorden en draait een kwartslag naar rechts. Welke richting kijk je?', answer: 'Oost', startDirection: 'Noord' },
+  { type: 'draai', question: 'Je kijkt naar het noorden en draait een kwartslag naar links. Welke richting kijk je?', answer: 'West', startDirection: 'Noord' },
+  { type: 'draai', question: 'Je kijkt naar het oosten en draait een kwartslag naar rechts. Welke richting kijk je?', answer: 'Zuid', startDirection: 'Oost' },
+  { type: 'draai', question: 'Je kijkt naar het westen en draait een kwartslag naar links. Welke richting kijk je?', answer: 'Zuid', startDirection: 'West' },
+  { type: 'draai', question: 'Je kijkt naar het zuiden en draait een halve slag. Welke richting kijk je?', answer: 'Noord', startDirection: 'Zuid' },
+  { type: 'draai', question: 'Je kijkt naar het oosten en draait een halve slag. Welke richting kijk je?', answer: 'West', startDirection: 'Oost' },
+  { type: 'draai', question: 'Je loopt naar het noorden en slaat linksaf. Welke richting loop je?', answer: 'West', startDirection: 'Noord' },
+  { type: 'draai', question: 'Je loopt naar het zuiden en slaat rechtsaf. Welke richting loop je?', answer: 'West', startDirection: 'Zuid' },
+  { type: 'draai', question: 'Je loopt naar het westen en slaat rechtsaf. Welke richting loop je?', answer: 'Noord', startDirection: 'West' },
+  { type: 'draai', question: 'Je loopt naar het oosten en slaat linksaf. Welke richting loop je?', answer: 'Noord', startDirection: 'Oost' },
+  { type: 'draai', question: 'De wind komt uit het noordwesten. Je draait je rug naar de wind. Welke richting kijk je?', answer: 'Zuidoost', startDirection: 'Noordwest' },
+  { type: 'draai', question: 'De wind komt uit het zuidwesten. Je draait je rug naar de wind. Welke richting kijk je?', answer: 'Noordoost', startDirection: 'Zuidwest' },
+  { type: 'draai', question: 'Je fietst naar het noorden. Je slaat rechtsaf en dan weer rechtsaf. Welke richting fiets je?', answer: 'Zuid', startDirection: 'Noord' },
+];
+
+/**
+ * Generate a compass question.
+ * Returns { question, answer, directions, angleDeg }.
+ * `directions` = the list of clickable directions on the compass.
+ * `angleDeg` = the correct angle (0=N, clockwise) for highlighting.
+ */
+export function generateWindrichtingenQuestion(level = 'easy') {
+  const pool = level === 'easy'
+    ? WIND_EASY
+    : level === 'hard'
+      ? [...WIND_EASY, ...WIND_MEDIUM, ...WIND_HARD]
+      : [...WIND_EASY, ...WIND_MEDIUM];
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  const directions = level === 'easy' ? HOOFDRICHTINGEN : ALLE_RICHTINGEN;
+  return {
+    question: item.question,
+    answer: item.answer,
+    directions,
+    angleDeg: RICHTING_GRADEN[item.answer],
+    ...(item.startDirection && { startDirection: item.startDirection, startAngleDeg: RICHTING_GRADEN[item.startDirection] }),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Generators

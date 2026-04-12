@@ -151,10 +151,21 @@ export async function startAdventure(
 ) {
   await navigateToHome(page);
 
-  // Select exercise category tab
+  // Select exercise category tab (scoped to the tab grid to avoid theme name collisions)
   if (category !== 'rekenen') {
-    const tabLabels = { tijd: 'Tijd', taal: 'Taal' };
-    await page.getByRole('button', { name: tabLabels[category] }).click();
+    const tabLabels = {
+      tijd: '⏰ Tijd',
+      taal: '📝 Taal',
+      puzzels: '🧠 Puzzels',
+      meetkunde: '📐 Meten',
+      digitaal: '💻 Digitaal',
+      topografie: '🗺️ Topo',
+      verkeer: '🚲 Verkeer',
+    };
+    const tabGrid = page.getByTestId('category-tabs');
+    await tabGrid
+      .getByRole('button', { name: tabLabels[category], exact: true })
+      .click();
   }
 
   // Enable the operation — use the checkbox label
@@ -176,6 +187,28 @@ export async function startAdventure(
     vocabulary: 'Woordenschat',
     reading: 'Begrijpend lezen',
     english: 'Engels',
+    // puzzels
+    sudoku: 'Sudoku',
+    tectonic: 'Tectonic',
+    binary: 'Binair',
+    chess: 'Schaken',
+    // meetkunde
+    vormen: 'Vormen',
+    symmetrie: 'Symmetrie',
+    omtrekOppervlakte: 'Omtrek & oppervlakte',
+    eenheden: 'Eenheden omrekenen',
+    // digitaal
+    computerkennis: 'Computerkennis',
+    veiligheid: 'Online veiligheid',
+    mediawijsheid: 'Mediawijsheid',
+    // topografie
+    windrichtingen: 'Windrichtingen',
+    nederland: 'Nederland',
+    europa: 'Europa',
+    wereld: 'De wereld',
+    // verkeer
+    borden: 'Verkeersborden',
+    regels: 'Verkeersregels',
   };
   const opLabel = operationLabels[operation];
   if (opLabel) {
@@ -185,7 +218,11 @@ export async function startAdventure(
       (el) =>
         el.classList.contains('bg-blue-500') ||
         el.classList.contains('bg-sky-500') ||
-        el.classList.contains('bg-rose-500'),
+        el.classList.contains('bg-rose-500') ||
+        el.classList.contains('bg-violet-500') ||
+        el.classList.contains('bg-teal-500') ||
+        el.classList.contains('bg-slate-600') ||
+        el.classList.contains('bg-amber-500'),
     );
     if (!isAlreadyActive) {
       await label.click();
@@ -220,7 +257,10 @@ export async function startAdventure(
     traffic: 'Verkeer',
   };
   const themeName = themeNames[theme] || theme;
-  await page.locator('section button').filter({ hasText: themeName }).click();
+  await page
+    .getByTestId('theme-selector')
+    .getByRole('button', { name: themeName })
+    .click();
 
   // Click start
   await page.getByRole('button', { name: /Start avontuur/i }).click();

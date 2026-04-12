@@ -8,7 +8,7 @@ export default function ThemeSelector({ selectedTheme, setSelectedTheme }) {
         <h3 className="text-xl md:text-2xl font-bold text-gray-800">Kies je wereld</h3>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div data-testid="theme-selector" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {Object.values(THEMES).map((theme) => (
           <button
             key={theme.id}
