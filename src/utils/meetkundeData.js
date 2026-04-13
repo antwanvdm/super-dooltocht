@@ -52,11 +52,11 @@ export const SHAPES_2D_MEDIUM = [
 ];
 
 export const SHAPES_3D = [
-  { name: 'kubus', svg: 'kubus', description: 'Zoals een dobbelsteen' },
-  { name: 'balk', svg: 'balk', description: 'Rechthoekige doos' },
-  { name: 'bol', svg: 'bol', description: 'Zoals een bal' },
-  { name: 'cilinder', svg: 'cilinder', description: 'Zoals een blikje' },
-  { name: 'kegel', svg: 'kegel', description: 'Zoals een ijsje' },
+  { name: 'kubus', svg: 'kubus', description: 'Zoals een dobbelsteen', faces: 6, looksLike2D: 'vierkant' },
+  { name: 'balk', svg: 'balk', description: 'Rechthoekige doos', faces: 6, looksLike2D: 'rechthoek' },
+  { name: 'bol', svg: 'bol', description: 'Zoals een bal', faces: 0, looksLike2D: 'cirkel' },
+  { name: 'cilinder', svg: 'cilinder', description: 'Zoals een blikje', faces: 2, looksLike2D: 'cirkel' },
+  { name: 'kegel', svg: 'kegel', description: 'Zoals een ijsje', faces: 1, looksLike2D: 'driehoek' },
 ];
 
 // Legacy compat: flat list used by symmetry + memory
@@ -281,29 +281,13 @@ export function generateVormenQuestion(level = 'easy') {
   const pool2D = level === 'easy' ? SHAPES_2D_EASY : SHAPES_2D_MEDIUM;
   const include3D = level === 'medium';
 
-  // Decide question type
+  // Question type weights per level
+  // Easy: countSides, nameFromSides, identifySVG, roundShape
+  // Medium: countSides, nameFromSides, identifySVG, nameFromDescription, identify3D, count3DFaces, nameFrom2D, roundShape
   const roll = Math.random();
-  if (include3D && roll < 0.25) {
-    // 3D shape recognition: "Wat voor vorm is dit?"
-    const shape = SHAPES_3D[Math.floor(Math.random() * SHAPES_3D.length)];
-    const others = SHAPES_3D.filter((s) => s.name !== shape.name);
-    const shuffled = others.sort(() => Math.random() - 0.5);
-    return {
-      question: 'Welke 3D-vorm is dit?',
-      correctAnswer: shape.name,
-      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
-      svg: shape.svg,
-      is3D: true,
-    };
-  }
 
-  // 2D shapes
-  const shapesWithSides = pool2D.filter((s) => s.sides > 0);
-  const useNameQuestion = Math.random() < 0.5;
-  const useRecognition = level === 'medium' && Math.random() < 0.4;
-
-  if (useRecognition) {
-    // "Welke vorm is dit?" with SVG shown
+  // ---------- identifySVG (both levels) ----------
+  if (roll < 0.2) {
     const shape = pool2D[Math.floor(Math.random() * pool2D.length)];
     const others = pool2D.filter((s) => s.name !== shape.name);
     const shuffled = others.sort(() => Math.random() - 0.5);
@@ -314,6 +298,101 @@ export function generateVormenQuestion(level = 'easy') {
       svg: shape.svg,
     };
   }
+
+  // ---------- roundShape (cirkel/ovaal coverage) ----------
+  if (roll < 0.3) {
+    const roundShapes = pool2D.filter((s) => s.sides === 0);
+    const shape = roundShapes[Math.floor(Math.random() * roundShapes.length)];
+    const others = pool2D.filter((s) => s.name !== shape.name);
+    const shuffled = others.sort(() => Math.random() - 0.5);
+    return {
+      question: shape.description,
+      correctAnswer: shape.name,
+      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+      svg: shape.svg,
+    };
+  }
+
+  // ---------- Medium-only question types ----------
+  if (include3D) {
+    // nameFromDescription: identify quadrilaterals by description
+    if (roll < 0.45) {
+      const vierhoeken = pool2D.filter((s) => s.sides === 4);
+      const shape = vierhoeken[Math.floor(Math.random() * vierhoeken.length)];
+      const others = pool2D.filter((s) => s.name !== shape.name);
+      const shuffled = others.sort(() => Math.random() - 0.5);
+      return {
+        question: `Welke vorm past bij: ${shape.description}?`,
+        correctAnswer: shape.name,
+        wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+        svg: shape.svg,
+      };
+    }
+
+    // identify3D: show SVG, pick the name
+    if (roll < 0.55) {
+      const shape = SHAPES_3D[Math.floor(Math.random() * SHAPES_3D.length)];
+      const others = SHAPES_3D.filter((s) => s.name !== shape.name);
+      const shuffled = others.sort(() => Math.random() - 0.5);
+      return {
+        question: 'Welke 3D-vorm is dit?',
+        correctAnswer: shape.name,
+        wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+        svg: shape.svg,
+        is3D: true,
+      };
+    }
+
+    // count3DFaces: "Hoeveel vlakken heeft een ...?"
+    if (roll < 0.65) {
+      const shapesWithFaces = SHAPES_3D.filter((s) => s.faces > 0);
+      const shape = shapesWithFaces[Math.floor(Math.random() * shapesWithFaces.length)];
+      const correctAnswer = String(shape.faces);
+      const wrongSet = new Set();
+      let attempts = 0;
+      while (wrongSet.size < 3 && attempts < 50) {
+        attempts++;
+        const offset = Math.floor(Math.random() * 5) + 1;
+        const wrong = Math.random() < 0.5 ? shape.faces + offset : Math.max(1, shape.faces - offset);
+        if (wrong !== shape.faces) wrongSet.add(String(wrong));
+      }
+      return {
+        question: `Hoeveel vlakken heeft een ${shape.name}?`,
+        correctAnswer,
+        wrongAnswers: [...wrongSet].slice(0, 3),
+        svg: shape.svg,
+        is3D: true,
+      };
+    }
+
+    // nameFrom2D: "Welke 3D-vorm lijkt op een cirkel?" → bol
+    if (roll < 0.75) {
+      // Pick shapes with unique 2D mapping for unambiguous answers
+      const uniqueMap = {};
+      for (const s of SHAPES_3D) {
+        if (!uniqueMap[s.looksLike2D]) uniqueMap[s.looksLike2D] = [];
+        uniqueMap[s.looksLike2D].push(s);
+      }
+      const unambiguous = SHAPES_3D.filter(
+        (s) => uniqueMap[s.looksLike2D].length === 1,
+      );
+      const pool = unambiguous.length > 0 ? unambiguous : SHAPES_3D;
+      const shape = pool[Math.floor(Math.random() * pool.length)];
+      const others = SHAPES_3D.filter((s) => s.name !== shape.name);
+      const shuffled = others.sort(() => Math.random() - 0.5);
+      return {
+        question: `Welke 3D-vorm lijkt op een ${shape.looksLike2D}?`,
+        correctAnswer: shape.name,
+        wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+        svg: shape.svg,
+        is3D: true,
+      };
+    }
+  }
+
+  // ---------- countSides + nameFromSides (both levels) ----------
+  const shapesWithSides = pool2D.filter((s) => s.sides > 0);
+  const useNameQuestion = Math.random() < 0.5;
 
   if (useNameQuestion) {
     // "Hoeveel zijden heeft een ...?"
@@ -338,16 +417,27 @@ export function generateVormenQuestion(level = 'easy') {
       svg: shape.svg,
     };
   } else {
-    // "Welke vorm heeft N zijden?"
-    const shape =
-      shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
-    const correctAnswer = shape.name;
-    const others = shapesWithSides.filter((s) => s.name !== shape.name);
-    const shuffled = others.sort(() => Math.random() - 0.5);
+    // "Welke vorm heeft N zijden?" — only unambiguous shapes
+    const unambiguous = shapesWithSides.filter((s) => {
+      return shapesWithSides.filter((o) => o.sides === s.sides).length === 1;
+    });
+    if (unambiguous.length > 0) {
+      const shape = unambiguous[Math.floor(Math.random() * unambiguous.length)];
+      const others = shapesWithSides.filter((s) => s.name !== shape.name);
+      const shuffled = others.sort(() => Math.random() - 0.5);
+      return {
+        question: `Welke vorm heeft ${shape.sides} zijden?`,
+        correctAnswer: shape.name,
+        wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+        svg: shape.svg,
+      };
+    }
+    // Fallback to countSides
+    const shape = shapesWithSides[Math.floor(Math.random() * shapesWithSides.length)];
     return {
-      question: `Welke vorm heeft ${shape.sides} zijden?`,
-      correctAnswer,
-      wrongAnswers: shuffled.slice(0, 3).map((s) => s.name),
+      question: `Hoeveel zijden heeft een ${shape.name}?`,
+      correctAnswer: String(shape.sides),
+      wrongAnswers: [...new Set([String(shape.sides + 1), String(shape.sides + 2), String(Math.max(2, shape.sides - 1))])].slice(0, 3),
       svg: shape.svg,
     };
   }
@@ -541,26 +631,14 @@ export function generateVormenMemoryPairs(count = 4, level = 'easy') {
   const pairs = [];
   const usedNames = new Set();
 
-  // On medium, reserve at least 1 slot for a 3D shape
-  const max2D = include3D ? Math.max(1, count - 1) : count;
+  // On medium, include max 2 3D shapes for a good mix
+  const max3D = include3D ? Math.min(2, count - 1) : 0;
 
-  const shuffled2D = [...pool2D].sort(() => Math.random() - 0.5);
-  for (const shape of shuffled2D) {
-    if (pairs.length >= max2D) break;
-    if (usedNames.has(shape.name)) continue;
-    usedNames.add(shape.name);
-    pairs.push({
-      left: shape.name,
-      right: shape.sides > 0 ? `${shape.sides} zijden` : shape.description,
-      svg: shape.svg,
-    });
-  }
-
-  // Fill remaining with 3D shapes
+  // Add 3D shapes first (max 2)
   if (include3D) {
     const shuffled3D = [...SHAPES_3D].sort(() => Math.random() - 0.5);
     for (const shape of shuffled3D) {
-      if (pairs.length >= count) break;
+      if (pairs.length >= max3D) break;
       if (usedNames.has(shape.name)) continue;
       usedNames.add(shape.name);
       pairs.push({
@@ -569,6 +647,19 @@ export function generateVormenMemoryPairs(count = 4, level = 'easy') {
         svg: shape.svg,
       });
     }
+  }
+
+  // Fill remaining with 2D shapes
+  const shuffled2D = [...pool2D].sort(() => Math.random() - 0.5);
+  for (const shape of shuffled2D) {
+    if (pairs.length >= count) break;
+    if (usedNames.has(shape.name)) continue;
+    usedNames.add(shape.name);
+    pairs.push({
+      left: shape.name,
+      right: shape.sides > 0 ? `${shape.sides} zijden` : shape.description,
+      svg: shape.svg,
+    });
   }
 
   return pairs;

@@ -178,6 +178,7 @@ export async function startAdventure(
     placeValue: 'Getallen begrijpen',
     lovingHearts: 'Verliefde harten',
     money: 'Rekenen met geld',
+    fractions: 'Breuken',
     // tijd
     clock: 'Klokkijken',
     timeAwareness: 'Tijdsbesef',
@@ -187,6 +188,8 @@ export async function startAdventure(
     vocabulary: 'Woordenschat',
     reading: 'Begrijpend lezen',
     english: 'Engels',
+    rijmen: 'Rijmen',
+    woordsoorten: 'Woordsoorten',
     // puzzels
     sudoku: 'Sudoku',
     tectonic: 'Tectonic',

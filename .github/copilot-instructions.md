@@ -177,6 +177,7 @@ When adding a new setting or minigame:
 2. Add the minigame component to `ChallengeModal.jsx` (`GAME_TYPES` array)
 3. **Update the player/settings modal** in `MazeGame.jsx` to show the new setting — this modal shows active exercise configuration during gameplay
 4. Pass the setting through `mathSettings` (or equivalent) to the minigame
+5. **Update the `canStart` validation** in `Home.jsx` — every new sub-operation flag must be included in the `canStart` condition for its category, otherwise the Start button stays disabled when only that operation is selected
 
 ## Common Tasks
 
@@ -204,7 +205,8 @@ When adding a new setting or minigame:
 3. Pass through to components via settings object
 4. **Update the in-game settings modal** in `MazeGame.jsx`
 5. **Update `MinigamePreview.jsx`** if the setting affects available game types
-6. Use `??` (not `||`) for boolean defaults to preserve saved `false` values
+6. **Update the `canStart` validation** in `Home.jsx` — add the new flag to the correct category's OR-chain so the Start button enables when only this setting is active
+7. Use `??` (not `||`) for boolean defaults to preserve saved `false` values
 
 ### Adding a New Exercise Category
 
@@ -213,9 +215,10 @@ When adding a new setting or minigame:
 3. Register game types in `gameSelection.js` (`getAvailableGameTypes` + GAME_NAMES)
 4. Add minigame components, register in `ChallengeModal.jsx` and `BossBattleModal.jsx`
 5. **Update `MinigamePreview.jsx`** — add the category to `CATEGORIES` array with all game types, add lazy imports to `GAME_COMPONENTS`, and add any `PREVIEW_SETTINGS` fields
-6. **Update E2E helpers** — add the tab label to `startAdventure()` in `e2e/helpers.js` (`tabLabels` + `operationLabels` + any active color classes in `isAlreadyActive`)
-7. Add unit tests for data generators and `getAvailableGameTypes` in `gameSelection.test.js`
-8. Add E2E settings tests in `e2e/settings.spec.js` and adventure start tests in `e2e/play-adventure.spec.js`
+6. **Add the category + all sub-operations to the `canStart` validation** in `Home.jsx` — every sub-operation flag must appear in the OR-chain so the Start button enables when any single sub-operation is selected
+7. **Update E2E helpers** — add the tab label to `startAdventure()` in `e2e/helpers.js` (`tabLabels` + `operationLabels` + any active color classes in `isAlreadyActive`)
+8. Add unit tests for data generators and `getAvailableGameTypes` in `gameSelection.test.js`
+9. Add E2E settings tests in `e2e/settings.spec.js` and adventure start tests in `e2e/play-adventure.spec.js`
 
 ## Language
 

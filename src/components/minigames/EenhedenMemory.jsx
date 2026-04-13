@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { generateEenhedenMemoryPairs } from '../../utils/meetkundeData';
+import EenhedenReferenceCard from './EenhedenReferenceCard';
 
-function EenhedenMemory({ mathSettings, onSuccess, onFailure }) {
+function EenhedenMemory({ mathSettings, onSuccess, onFailure, theme }) {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
   const [wrongPair, setWrongPair] = useState([]);
   const [canFlip, setCanFlip] = useState(true);
+  const [showReference, setShowReference] = useState(false);
 
   useEffect(() => {
     const level = mathSettings?.meetkundeLevel?.eenheden || 'easy';
@@ -54,9 +56,17 @@ function EenhedenMemory({ mathSettings, onSuccess, onFailure }) {
 
   return (
     <div>
-      <p className="text-base sm:text-xl text-gray-600 text-center mb-4 sm:mb-6">
-        Zoek de maten die bij elkaar horen!
-      </p>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <p className="text-base sm:text-xl text-gray-600">
+          Zoek de maten die bij elkaar horen!
+        </p>
+        <button
+          onClick={() => setShowReference(true)}
+          className="text-xs sm:text-sm bg-teal-100 hover:bg-teal-200 text-teal-700 px-3 py-1.5 rounded-lg font-medium transition-colors flex-shrink-0 ml-2"
+        >
+          📋 Spiekkaart
+        </button>
+      </div>
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
         {cards.map((card, index) => {
           const isFlipped = flipped.includes(index) || matched.includes(index);
@@ -86,6 +96,7 @@ function EenhedenMemory({ mathSettings, onSuccess, onFailure }) {
           );
         })}
       </div>
+      {showReference && <EenhedenReferenceCard onClose={() => setShowReference(false)} theme={theme} />}
     </div>
   );
 }

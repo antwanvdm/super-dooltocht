@@ -364,7 +364,7 @@ function Home({ disabled = false }) {
     || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
     || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden)
     || exerciseCategory === 'digitaal' && (digitaalOps.computerkennis || digitaalOps.veiligheid || digitaalOps.mediawijsheid)
-    || exerciseCategory === 'topografie' && (topoOps.nederland || topoOps.europa || topoOps.wereld)
+    || exerciseCategory === 'topografie' && (topoOps.windrichtingen || topoOps.nederland || topoOps.europa || topoOps.wereld)
     || exerciseCategory === 'verkeer' && (verkeerOps.borden || verkeerOps.regels)
     || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions);
   const canLaunch = canStart && selectedTheme;

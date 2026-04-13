@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { generateOmtrekOppervlakteQuestion } from '../../utils/meetkundeData';
+import EenhedenReferenceCard from './EenhedenReferenceCard';
 
-function OmtrekOppervlakteQuiz({ mathSettings, onSuccess, onFailure }) {
+function OmtrekOppervlakteQuiz({ mathSettings, onSuccess, onFailure, theme }) {
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showReference, setShowReference] = useState(false);
 
   useEffect(() => {
     const level = mathSettings?.meetkundeLevel?.omtrekOppervlakte || 'easy';
@@ -69,6 +71,14 @@ function OmtrekOppervlakteQuiz({ mathSettings, onSuccess, onFailure }) {
   return (
     <div className="text-center">
       <div className="mb-4 sm:mb-6">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setShowReference(true)}
+            className="text-xs sm:text-sm bg-teal-100 hover:bg-teal-200 text-teal-700 px-3 py-1.5 rounded-lg font-medium transition-colors"
+          >
+            📋 Spiekkaart
+          </button>
+        </div>
         <p className="text-gray-600 text-sm sm:text-lg mb-2">
           {problem.type === 'perimeter' ? '📏 Bereken de omtrek' : '📐 Bereken de oppervlakte'}
         </p>
@@ -113,6 +123,8 @@ function OmtrekOppervlakteQuiz({ mathSettings, onSuccess, onFailure }) {
             : '💪 Bijna! Probeer nog eens!'}
         </div>
       )}
+
+      {showReference && <EenhedenReferenceCard onClose={() => setShowReference(false)} theme={theme} showFormulas />}
     </div>
   );
 }

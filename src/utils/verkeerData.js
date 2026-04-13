@@ -241,7 +241,7 @@ const REGELS_EASY = [
   },
   {
     question: 'Wat moet je aan hebben op je fiets als het donker is?',
-    answer: 'Wit licht voor, rood achter',
+    answer: 'Wit licht voor, rood licht achter',
     wrongAnswers: [
       'Alleen rood licht voor',
       'Geen licht nodig',

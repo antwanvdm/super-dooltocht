@@ -91,6 +91,16 @@ test.describe('Play adventure – Rekenen', () => {
     });
     await expectMazeLoaded(page);
   });
+
+  test('start a Breuken adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'rekenen',
+      operation: 'fractions',
+      theme: 'dino',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
 });
 
 test.describe('Play adventure – Tijd', () => {
@@ -165,6 +175,26 @@ test.describe('Play adventure – Taal', () => {
     });
     await expectMazeLoaded(page);
   });
+
+  test('start a Rijmen adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'taal',
+      operation: 'rijmen',
+      theme: 'candy',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Woordsoorten adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'taal',
+      operation: 'woordsoorten',
+      theme: 'farm',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
 });
 
 test.describe('Play adventure – Puzzels', () => {
@@ -183,6 +213,26 @@ test.describe('Play adventure – Puzzels', () => {
       category: 'puzzels',
       operation: 'chess',
       theme: 'dino',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Tectonic adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'puzzels',
+      operation: 'tectonic',
+      theme: 'ocean',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Binair adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'puzzels',
+      operation: 'binary',
+      theme: 'space',
       length: 'short',
     });
     await expectMazeLoaded(page);
@@ -209,6 +259,26 @@ test.describe('Play adventure – Meetkunde', () => {
     });
     await expectMazeLoaded(page);
   });
+
+  test('start an Omtrek & oppervlakte adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'meetkunde',
+      operation: 'omtrekOppervlakte',
+      theme: 'castle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start an Eenheden omrekenen adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'meetkunde',
+      operation: 'eenheden',
+      theme: 'pirates',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
 });
 
 test.describe('Play adventure – Digitaal', () => {
@@ -217,6 +287,26 @@ test.describe('Play adventure – Digitaal', () => {
       category: 'digitaal',
       operation: 'computerkennis',
       theme: 'space',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start an Online veiligheid adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'digitaal',
+      operation: 'veiligheid',
+      theme: 'castle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Mediawijsheid adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'digitaal',
+      operation: 'mediawijsheid',
+      theme: 'jungle',
       length: 'short',
     });
     await expectMazeLoaded(page);
@@ -249,6 +339,16 @@ test.describe('Play adventure – Topografie', () => {
       category: 'topografie',
       operation: 'wereld',
       theme: 'pirates',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Windrichtingen adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'topografie',
+      operation: 'windrichtingen',
+      theme: 'ocean',
       length: 'short',
     });
     await expectMazeLoaded(page);

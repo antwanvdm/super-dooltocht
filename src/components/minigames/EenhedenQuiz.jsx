@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { generateEenhedenQuestion } from '../../utils/meetkundeData';
+import EenhedenReferenceCard from './EenhedenReferenceCard';
 
-function EenhedenQuiz({ mathSettings, onSuccess, onFailure }) {
+function EenhedenQuiz({ mathSettings, onSuccess, onFailure, theme }) {
   const [problem, setProblem] = useState(null);
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showReference, setShowReference] = useState(false);
 
   useEffect(() => {
     const level = mathSettings?.meetkundeLevel?.eenheden || 'easy';
@@ -40,6 +42,14 @@ function EenhedenQuiz({ mathSettings, onSuccess, onFailure }) {
   return (
     <div className="text-center">
       <div className="mb-4 sm:mb-6">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setShowReference(true)}
+            className="text-xs sm:text-sm bg-teal-100 hover:bg-teal-200 text-teal-700 px-3 py-1.5 rounded-lg font-medium transition-colors"
+          >
+            📋 Spiekkaart
+          </button>
+        </div>
         <p className="text-gray-600 text-sm sm:text-lg mb-2">Reken om!</p>
         <div className="inline-block bg-gradient-to-br from-teal-100 to-cyan-100 rounded-2xl px-6 sm:px-10 py-4 sm:py-6 border-2 border-teal-200">
           <p className="text-2xl sm:text-4xl font-bold text-gray-800">{problem.question}</p>
@@ -77,6 +87,8 @@ function EenhedenQuiz({ mathSettings, onSuccess, onFailure }) {
             : '💪 Bijna! Probeer nog eens!'}
         </div>
       )}
+
+      {showReference && <EenhedenReferenceCard onClose={() => setShowReference(false)} theme={theme} />}
     </div>
   );
 }
