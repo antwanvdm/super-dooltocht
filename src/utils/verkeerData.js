@@ -191,6 +191,7 @@ const BORDEN_MEMORY_EASY = [
   { right: 'Verboden te fietsen', svg: 'verbodenfietsen' },
   { right: '30 km zone', svg: 'zone30' },
   { right: 'Eenrichtingsweg', svg: 'eenrichtingsweg' },
+  { right: 'Pas op, voetgangers', svg: 'pasopVoetgangers' },
 ];
 
 const BORDEN_MEMORY_MEDIUM = [
@@ -204,6 +205,8 @@ const BORDEN_MEMORY_MEDIUM = [
   { right: 'Fiets- en bromfietspad', svg: 'fietsBromfietspad' },
   { right: 'Ruiterpad', svg: 'ruiterpad' },
   { right: 'Spoorwegovergang', svg: 'spoorwegovergang' },
+  { right: 'Gesloten voor alle voertuigen', svg: 'geslotenVoorAlleVoertuigen' },
+  { right: 'Verboden voor fietsen en bromfietsen', svg: 'verbodenFietsBromfiets' },
 ];
 
 // ---------------------------------------------------------------------------
