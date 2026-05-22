@@ -42,6 +42,17 @@ export default function MeetkundePanel({ settings, dispatch }) {
         { key: 'medium', label: 'Gemiddeld', desc: 'Lastigere omrekeningen' },
       ],
     },
+    {
+      key: 'coordinaten',
+      show: meetkundeOps.coordinaten,
+      icon: '📍',
+      label: 'Coördinaten:',
+      options: [
+        { key: 'easy', label: 'Makkelijk', desc: '3×3 raster, simpele vragen' },
+        { key: 'medium', label: 'Gemiddeld', desc: '4×4 raster, verplaatsingsvragen' },
+        { key: 'hard', label: 'Moeilijk', desc: '5×5 raster, routes & windrichtingen' },
+      ],
+    },
   ];
 
   const visibleSections = levelSections.filter(s => s.show);
@@ -59,6 +70,7 @@ export default function MeetkundePanel({ settings, dispatch }) {
             { key: 'symmetrie', label: 'Symmetrie', icon: '🪞', desc: 'Symmetrielijnen en spiegeling' },
             { key: 'omtrekOppervlakte', label: 'Omtrek & oppervlakte', icon: '📏', desc: 'Bereken omtrek en oppervlakte' },
             { key: 'eenheden', label: 'Eenheden omrekenen', icon: '⚖️', desc: 'cm/m/km, g/kg, ml/L' },
+            { key: 'coordinaten', label: 'Coördinaten', icon: '📍', desc: 'Rastercoördinaten & routes' },
           ].map(({ key, label, icon, desc }) => (
             <label
               key={key}
@@ -83,7 +95,7 @@ export default function MeetkundePanel({ settings, dispatch }) {
             </label>
           ))}
         </div>
-        {!meetkundeOps.vormen && !meetkundeOps.symmetrie && !meetkundeOps.omtrekOppervlakte && !meetkundeOps.eenheden && (
+        {!meetkundeOps.vormen && !meetkundeOps.symmetrie && !meetkundeOps.omtrekOppervlakte && !meetkundeOps.eenheden && !meetkundeOps.coordinaten && (
           <p className="mt-4 text-sm text-red-500 font-medium text-center">
             ⚠️ Kies minstens één soort oefening
           </p>

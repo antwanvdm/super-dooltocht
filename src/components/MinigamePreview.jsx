@@ -84,6 +84,9 @@ const GAME_COMPONENTS = {
   'eenhedenQuiz': lazy(() => lazyRetry(() => import('./minigames/EenhedenQuiz'))),
   'eenhedenMemory': lazy(() => lazyRetry(() => import('./minigames/EenhedenMemory'))),
   'omtrekOppervlakteQuiz': lazy(() => lazyRetry(() => import('./minigames/OmtrekOppervlakteQuiz'))),
+  'coordinaatQuiz': lazy(() => lazyRetry(() => import('./minigames/CoordinaatQuiz'))),
+  'coordinaatMemory': lazy(() => lazyRetry(() => import('./minigames/CoordinaatMemory'))),
+  'routeQuiz': lazy(() => lazyRetry(() => import('./minigames/RouteQuiz'))),
   // Digitaal
   'digitaalQuiz': lazy(() => lazyRetry(() => import('./minigames/DigitaalQuiz'))),
   'digitaalMemory': lazy(() => lazyRetry(() => import('./minigames/DigitaalMemory'))),
@@ -274,7 +277,7 @@ const CATEGORIES = [
     games: [...MEETKUNDE_GAMES, 'symmetrieQuiz'],
     settings: [
       { key: 'meetkundeLevel', label: 'Niveau', type: 'select', options: [
-        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' }, { value: 'hard', label: 'Moeilijk' },
       ]},
     ],
   },
@@ -379,7 +382,7 @@ const PREVIEW_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
-  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', eenheden: 'easy', omtrekOppervlakte: 'easy' },
+  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', eenheden: 'easy', omtrekOppervlakte: 'easy', coordinaten: 'easy' },
   digitaalLevel: 'easy',
   topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
   verkeerLevel: { borden: 'easy', regels: 'easy' },

@@ -52,8 +52,8 @@ const DEFAULT_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
-  meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false },
-  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy' },
+  meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false, coordinaten: false },
+  meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy', coordinaten: 'easy' },
   digitaalOps: { computerkennis: true, veiligheid: true, mediawijsheid: false },
   topoOps: { windrichtingen: false, nederland: true, europa: false, wereld: false },
   topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
@@ -362,7 +362,7 @@ function Home({ disabled = false }) {
   const canStart = exerciseCategory === 'tijd' && (tijdOps.clock || (tijdOps.timeAwareness && (timeAwarenessDagen || timeAwarenessMaanden || timeAwarenessSeizoen)) || tijdOps.timeCalculation)
     || exerciseCategory === 'taal' && (taalOps.spelling || taalOps.vocabulary || taalOps.reading || taalOps.english || taalOps.rijmen || taalOps.woordsoorten)
     || exerciseCategory === 'puzzel' && (puzzelOps.sudoku || puzzelOps.tectonic || puzzelOps.binary || puzzelOps.chess)
-    || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden)
+    || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden || meetkundeOps.coordinaten)
     || exerciseCategory === 'digitaal' && (digitaalOps.computerkennis || digitaalOps.veiligheid || digitaalOps.mediawijsheid)
     || exerciseCategory === 'topografie' && (topoOps.windrichtingen || topoOps.nederland || topoOps.europa || topoOps.wereld)
     || exerciseCategory === 'verkeer' && (verkeerOps.borden || verkeerOps.regels)

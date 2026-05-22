@@ -352,6 +352,17 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 </strong></p>
               </div>
             )}
+            {mathSettings.enabledOperations.coordinaten && (
+              <div className="bg-teal-50 rounded-xl p-4">
+                <h4 className="font-bold text-teal-800 mb-2">📍 Coördinaten</h4>
+                <p className="text-sm text-teal-700">Niveau: <strong>
+                  {mathSettings.meetkundeLevel?.coordinaten === 'easy' && 'Makkelijk'}
+                  {mathSettings.meetkundeLevel?.coordinaten === 'medium' && 'Gemiddeld'}
+                  {mathSettings.meetkundeLevel?.coordinaten === 'hard' && 'Moeilijk'}
+                  {!mathSettings.meetkundeLevel?.coordinaten && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
             {mathSettings.enabledOperations.computerkennis && (
               <div className="bg-slate-50 rounded-xl p-4">
                 <h4 className="font-bold text-slate-800 mb-2">🖥️ Computerkennis</h4>

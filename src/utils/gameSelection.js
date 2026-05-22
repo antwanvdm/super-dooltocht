@@ -78,9 +78,15 @@ export const PUZZLE_GAMES = ['sudoku', 'tectonic', 'binary', 'chess'];
 // Meetkunde (Geometry) minigames
 export const VORMEN_GAMES = ['vormenQuiz', 'vormenMemory'];
 export const EENHEDEN_GAMES = ['eenhedenQuiz', 'eenhedenMemory'];
+export const COORDINATEN_GAMES = [
+  'coordinaatQuiz',
+  'coordinaatMemory',
+  'routeQuiz',
+];
 export const MEETKUNDE_GAMES = [
   ...VORMEN_GAMES,
   ...EENHEDEN_GAMES,
+  ...COORDINATEN_GAMES,
   'omtrekOppervlakteQuiz',
 ];
 
@@ -182,6 +188,9 @@ export const GAME_NAMES = {
   eenhedenQuiz: 'Eenheden omrekenen',
   eenhedenMemory: 'Eenheden Memory',
   omtrekOppervlakteQuiz: 'Omtrek & oppervlakte',
+  coordinaatQuiz: 'Coördinaten quiz',
+  coordinaatMemory: 'Coördinaten Memory',
+  routeQuiz: 'Route quiz',
 
   digitaalQuiz: 'Digitale kennis',
   digitaalMemory: 'Digitaal Memory',
@@ -336,6 +345,7 @@ export const getAvailableGameTypes = (mathSettings) => {
   if (hasSymmetrie) availableTypes.push('symmetrieQuiz');
   if (hasOmtrekOppervlakte) availableTypes.push('omtrekOppervlakteQuiz');
   if (hasEenheden) availableTypes.push(...EENHEDEN_GAMES);
+  if (enabled.coordinaten) availableTypes.push(...COORDINATEN_GAMES);
 
   // Digitale geletterdheid
   const hasComputerkennis = enabled.computerkennis;

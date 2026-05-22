@@ -200,6 +200,7 @@ export async function startAdventure(
     symmetrie: 'Symmetrie',
     omtrekOppervlakte: 'Omtrek & oppervlakte',
     eenheden: 'Eenheden omrekenen',
+    coordinaten: 'Coördinaten',
     // digitaal
     computerkennis: 'Computerkennis',
     veiligheid: 'Online veiligheid',

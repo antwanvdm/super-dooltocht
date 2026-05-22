@@ -62,6 +62,10 @@ const GAME_COMPONENTS = {
   'eenhedenQuiz': lazy(() => lazyRetry(() => import('../../minigames/EenhedenQuiz'))),
   'eenhedenMemory': lazy(() => lazyRetry(() => import('../../minigames/EenhedenMemory'))),
   'omtrekOppervlakteQuiz': lazy(() => lazyRetry(() => import('../../minigames/OmtrekOppervlakteQuiz'))),
+  // Coördinaten
+  'coordinaatQuiz': lazy(() => lazyRetry(() => import('../../minigames/CoordinaatQuiz'))),
+  'coordinaatMemory': lazy(() => lazyRetry(() => import('../../minigames/CoordinaatMemory'))),
+  'routeQuiz': lazy(() => lazyRetry(() => import('../../minigames/RouteQuiz'))),
   'digitaalQuiz': lazy(() => lazyRetry(() => import('../../minigames/DigitaalQuiz'))),
   'digitaalMemory': lazy(() => lazyRetry(() => import('../../minigames/DigitaalMemory'))),
   'digitaalConnect': lazy(() => lazyRetry(() => import('../../minigames/DigitaalConnect'))),

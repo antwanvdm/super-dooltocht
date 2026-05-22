@@ -724,6 +724,15 @@ describe('getAvailableGameTypes', () => {
       expect(types).toContain('omtrekOppervlakteQuiz');
     });
 
+    it('should include coordinaten games when coordinaten is enabled', () => {
+      const types = getAvailableGameTypes({
+        enabledOperations: { coordinaten: true },
+      });
+      expect(types).toContain('coordinaatQuiz');
+      expect(types).toContain('coordinaatMemory');
+      expect(types).toContain('routeQuiz');
+    });
+
     it('should combine multiple meetkunde sub-categories', () => {
       const types = getAvailableGameTypes({
         enabledOperations: {
@@ -731,6 +740,7 @@ describe('getAvailableGameTypes', () => {
           symmetrie: true,
           eenheden: true,
           omtrekOppervlakte: true,
+          coordinaten: true,
         },
       });
       expect(types).toContain('vormenQuiz');
@@ -739,7 +749,10 @@ describe('getAvailableGameTypes', () => {
       expect(types).toContain('eenhedenQuiz');
       expect(types).toContain('eenhedenMemory');
       expect(types).toContain('omtrekOppervlakteQuiz');
-      expect(types.length).toBe(6);
+      expect(types).toContain('coordinaatQuiz');
+      expect(types).toContain('coordinaatMemory');
+      expect(types).toContain('routeQuiz');
+      expect(types.length).toBe(9);
     });
   });
 
