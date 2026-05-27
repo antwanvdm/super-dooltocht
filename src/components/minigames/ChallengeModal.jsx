@@ -90,6 +90,9 @@ const GAME_COMPONENTS = {
   'verkeerBordenMemory': lazy(() => lazyRetry(() => import('./VerkeerBordenMemory'))),
   'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('./VerkeerRegelsQuiz'))),
   'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('./VerkeerRegelsMemory'))),
+  'voorrangQuiz': lazy(() => lazyRetry(() => import('./VoorrangQuiz'))),
+  // Getallenrij
+  'getallenrijQuiz': lazy(() => lazyRetry(() => import('./GetallenrijQuiz'))),
 };
 
 function ChallengeModal({ challenge, theme, mathSettings, gameType, onComplete, onClose }) {

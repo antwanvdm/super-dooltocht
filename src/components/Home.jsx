@@ -25,7 +25,7 @@ const PLAYER_EMOJIS = [
 // Default settings used when no saved settings exist
 const DEFAULT_SETTINGS = {
   exerciseCategory: 'rekenen',
-  ops: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false },
+  ops: { add: false, sub: false, mul: false, div: false, placeValue: false, lovingHearts: false, money: false, fractions: false, getallenrij: false },
   maxValue: 100,
   mulTables: 'easy',
   addSubMode: 'beyond',
@@ -52,13 +52,14 @@ const DEFAULT_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
+  getallenrijLevel: 'easy',
   meetkundeOps: { vormen: true, symmetrie: false, omtrekOppervlakte: false, eenheden: false, coordinaten: false },
   meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', omtrekOppervlakte: 'easy', eenheden: 'easy', coordinaten: 'easy' },
   digitaalOps: { computerkennis: true, veiligheid: true, mediawijsheid: false },
   topoOps: { windrichtingen: false, nederland: true, europa: false, wereld: false },
   topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
-  verkeerOps: { borden: true, regels: false },
-  verkeerLevel: { borden: 'easy', regels: 'easy' },
+  verkeerOps: { borden: true, regels: false, voorrang: false },
+  verkeerLevel: { borden: 'easy', regels: 'easy', voorrang: 'easy' },
   puzzelOps: { sudoku: true, tectonic: true, binary: true, chess: false },
   puzzleLevel: { sudoku: 'easy', tectonic: 'easy', binary: 'easy', chess: 'easy' },
   chessThemes: ['mateIn1'],
@@ -87,7 +88,7 @@ const sanitizeSavedMathSettings = (ms) => {
 // Uses nullish coalescing (??) for booleans that can be false, || for the rest.
 const buildInitialSettings = (saved) => ({
   exerciseCategory: saved?.exerciseCategory || DEFAULT_SETTINGS.exerciseCategory,
-  ops: saved?.ops || DEFAULT_SETTINGS.ops,
+  ops: { ...DEFAULT_SETTINGS.ops, ...(saved?.ops || {}) },
   maxValue: saved?.maxValue || DEFAULT_SETTINGS.maxValue,
   mulTables: saved?.mulTables || DEFAULT_SETTINGS.mulTables,
   addSubMode: saved?.addSubMode || DEFAULT_SETTINGS.addSubMode,
@@ -114,13 +115,14 @@ const buildInitialSettings = (saved) => ({
   rijmenLevel: saved?.rijmenLevel || DEFAULT_SETTINGS.rijmenLevel,
   woordsoortenLevel: saved?.woordsoortenLevel || DEFAULT_SETTINGS.woordsoortenLevel,
   fractionLevel: saved?.fractionLevel || DEFAULT_SETTINGS.fractionLevel,
+  getallenrijLevel: saved?.getallenrijLevel || DEFAULT_SETTINGS.getallenrijLevel,
   meetkundeOps: saved?.meetkundeOps || DEFAULT_SETTINGS.meetkundeOps,
   meetkundeLevel: saved?.meetkundeLevel || DEFAULT_SETTINGS.meetkundeLevel,
   digitaalOps: saved?.digitaalOps || DEFAULT_SETTINGS.digitaalOps,
   topoOps: { ...DEFAULT_SETTINGS.topoOps, ...saved?.topoOps },
   topoLevel: { ...DEFAULT_SETTINGS.topoLevel, ...saved?.topoLevel },
-  verkeerOps: saved?.verkeerOps || DEFAULT_SETTINGS.verkeerOps,
-  verkeerLevel: saved?.verkeerLevel || DEFAULT_SETTINGS.verkeerLevel,
+  verkeerOps: { ...DEFAULT_SETTINGS.verkeerOps, ...(saved?.verkeerOps || {}) },
+  verkeerLevel: { ...DEFAULT_SETTINGS.verkeerLevel, ...(saved?.verkeerLevel || {}) },
   puzzelOps: saved?.puzzelOps || DEFAULT_SETTINGS.puzzelOps,
   puzzleLevel: saved?.puzzleLevel || DEFAULT_SETTINGS.puzzleLevel,
   chessThemes: (saved?.chessThemes || DEFAULT_SETTINGS.chessThemes).filter(t => VALID_CHESS_THEMES.has(t)),
@@ -209,7 +211,7 @@ function Home({ disabled = false }) {
     timeAwarenessSeizoen, timeCalcLevel, timeCalc24h, taalOps,
     spellingCategories, includeThemeVocabulary, includeThemeReading,
     readingLevel, englishLevel, englishDirection, rijmenLevel,
-    woordsoortenLevel, fractionLevel, meetkundeOps, meetkundeLevel,
+    woordsoortenLevel, fractionLevel, getallenrijLevel, meetkundeOps, meetkundeLevel,
     digitaalOps, puzzelOps, puzzleLevel, chessThemes,
     topoOps, topoLevel, verkeerOps, verkeerLevel,
     adventureLength, playerEmoji,
@@ -347,6 +349,7 @@ function Home({ disabled = false }) {
         moneyMaxAmount: moneyMaxAmount,
         moneyIncludeCents: moneyIncludeCents,
         fractionLevel: fractionLevel,
+        getallenrijLevel: getallenrijLevel,
       };
     }
 
@@ -365,8 +368,8 @@ function Home({ disabled = false }) {
     || exerciseCategory === 'meetkunde' && (meetkundeOps.vormen || meetkundeOps.symmetrie || meetkundeOps.omtrekOppervlakte || meetkundeOps.eenheden || meetkundeOps.coordinaten)
     || exerciseCategory === 'digitaal' && (digitaalOps.computerkennis || digitaalOps.veiligheid || digitaalOps.mediawijsheid)
     || exerciseCategory === 'topografie' && (topoOps.windrichtingen || topoOps.nederland || topoOps.europa || topoOps.wereld)
-    || exerciseCategory === 'verkeer' && (verkeerOps.borden || verkeerOps.regels)
-    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions);
+    || exerciseCategory === 'verkeer' && (verkeerOps.borden || verkeerOps.regels || verkeerOps.voorrang)
+    || exerciseCategory === 'rekenen' && (ops.add || ops.sub || ops.mul || ops.div || ops.placeValue || ops.lovingHearts || ops.money || ops.fractions || ops.getallenrij);
   const canLaunch = canStart && selectedTheme;
 
   return (

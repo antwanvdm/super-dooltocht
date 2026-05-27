@@ -123,10 +123,18 @@ export const TOPOGRAFIE_GAMES = [
   ...WERELD_GAMES,
 ];
 
+// Getallenrij & patronen minigames
+export const GETALLENRIJ_GAMES = ['getallenrijQuiz'];
+
 // Verkeer minigames
 export const BORDEN_GAMES = ['verkeerBordenQuiz', 'verkeerBordenMemory'];
 export const REGELS_GAMES = ['verkeerRegelsQuiz', 'verkeerRegelsMemory'];
-export const VERKEER_GAMES = [...BORDEN_GAMES, ...REGELS_GAMES];
+export const VOORRANG_GAMES = ['voorrangQuiz'];
+export const VERKEER_GAMES = [
+  ...BORDEN_GAMES,
+  ...REGELS_GAMES,
+  ...VOORRANG_GAMES,
+];
 
 export const GAME_NAMES = {
   'multiple-choice': 'Kies het antwoord',
@@ -213,6 +221,9 @@ export const GAME_NAMES = {
   verkeerBordenMemory: 'Verkeersborden Memory',
   verkeerRegelsQuiz: 'Verkeersregels quiz',
   verkeerRegelsMemory: 'Verkeersregels Memory',
+  voorrangQuiz: 'Voorrangssituaties',
+
+  getallenrijQuiz: 'Getallenrij & patronen',
 };
 
 /**
@@ -253,6 +264,9 @@ export const getAvailableGameTypes = (mathSettings) => {
   }
   if (hasFractions) {
     availableTypes.push(...FRACTION_GAMES);
+  }
+  if (enabled.getallenrij) {
+    availableTypes.push(...GETALLENRIJ_GAMES);
   }
   if (hasClock) {
     availableTypes.push(...CLOCK_GAMES);
@@ -370,6 +384,7 @@ export const getAvailableGameTypes = (mathSettings) => {
   // Verkeer
   if (enabled.borden) availableTypes.push(...BORDEN_GAMES);
   if (enabled.regels) availableTypes.push(...REGELS_GAMES);
+  if (enabled.voorrang) availableTypes.push(...VOORRANG_GAMES);
 
   // Fallback naar multiple-choice als niets beschikbaar
   if (availableTypes.length === 0) {

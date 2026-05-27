@@ -101,6 +101,16 @@ test.describe('Play adventure – Rekenen', () => {
     });
     await expectMazeLoaded(page);
   });
+
+  test('start a Getallenrij adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'rekenen',
+      operation: 'getallenrij',
+      theme: 'space',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
 });
 
 test.describe('Play adventure – Tijd', () => {
@@ -279,6 +289,16 @@ test.describe('Play adventure – Meetkunde', () => {
     });
     await expectMazeLoaded(page);
   });
+
+  test('start a Coördinaten adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'meetkunde',
+      operation: 'coordinaten',
+      theme: 'jungle',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
 });
 
 test.describe('Play adventure – Digitaal', () => {
@@ -371,6 +391,16 @@ test.describe('Play adventure – Verkeer', () => {
       category: 'verkeer',
       operation: 'regels',
       theme: 'music',
+      length: 'short',
+    });
+    await expectMazeLoaded(page);
+  });
+
+  test('start a Voorrangssituaties adventure', async ({ page }) => {
+    await startAdventure(page, {
+      category: 'verkeer',
+      operation: 'voorrang',
+      theme: 'traffic',
       length: 'short',
     });
     await expectMazeLoaded(page);

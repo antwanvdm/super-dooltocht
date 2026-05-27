@@ -146,6 +146,17 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                 </div>
               </div>
             )}
+            {mathSettings.enabledOperations.getallenrij && (
+              <div className="bg-blue-50 rounded-xl p-4">
+                <h4 className="font-bold text-blue-800 mb-2">🔢 Getallenrij & patronen</h4>
+                <p className="text-sm text-blue-700">Niveau: <strong>
+                  {mathSettings.getallenrijLevel === 'easy' && 'Makkelijk'}
+                  {mathSettings.getallenrijLevel === 'medium' && 'Gemiddeld'}
+                  {mathSettings.getallenrijLevel === 'hard' && 'Moeilijk'}
+                  {!mathSettings.getallenrijLevel && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
             {mathSettings.enabledOperations.clock && (
               <div className="bg-indigo-50 rounded-xl p-4">
                 <h4 className="font-bold text-indigo-800 mb-2">🕐 Klokkijken</h4>
@@ -438,6 +449,17 @@ function SettingsModal({ mathSettings, playerEmoji, onClose }) {
                   {mathSettings.verkeerLevel?.regels === 'easy' && 'Makkelijk'}
                   {mathSettings.verkeerLevel?.regels === 'medium' && 'Gemiddeld'}
                   {!mathSettings.verkeerLevel?.regels && 'Makkelijk'}
+                </strong></p>
+              </div>
+            )}
+            {mathSettings.enabledOperations.voorrang && (
+              <div className="bg-sky-50 rounded-xl p-4">
+                <h4 className="font-bold text-sky-800 mb-2">🚦 Voorrangssituaties</h4>
+                <p className="text-sm text-sky-700">Niveau: <strong>
+                  {mathSettings.verkeerLevel?.voorrang === 'easy' && 'Makkelijk'}
+                  {mathSettings.verkeerLevel?.voorrang === 'medium' && 'Gemiddeld'}
+                  {mathSettings.verkeerLevel?.voorrang === 'hard' && 'Moeilijk'}
+                  {!mathSettings.verkeerLevel?.voorrang && 'Makkelijk'}
                 </strong></p>
               </div>
             )}

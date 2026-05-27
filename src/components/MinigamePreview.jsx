@@ -109,6 +109,9 @@ const GAME_COMPONENTS = {
   'verkeerBordenMemory': lazy(() => lazyRetry(() => import('./minigames/VerkeerBordenMemory'))),
   'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('./minigames/VerkeerRegelsQuiz'))),
   'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('./minigames/VerkeerRegelsMemory'))),
+  'voorrangQuiz': lazy(() => lazyRetry(() => import('./minigames/VoorrangQuiz'))),
+  // Getallenrij
+  'getallenrijQuiz': lazy(() => lazyRetry(() => import('./minigames/GetallenrijQuiz'))),
 };
 
 // Categories with their game types, emoji, colour, and configurable settings
@@ -117,7 +120,7 @@ const CATEGORIES = [
     name: 'Rekenen',
     emoji: '🧮',
     color: 'from-blue-500 to-indigo-600',
-    games: [...STANDARD_GAMES, 'placeValue', 'lovingHearts'],
+    games: [...STANDARD_GAMES, 'placeValue', 'lovingHearts', 'getallenrijQuiz'],
     settings: [
       { key: 'maxValue', label: 'Plus/min tot', type: 'select', options: [
         { value: 20, label: '20' }, { value: 50, label: '50' }, { value: 100, label: '100' },
@@ -138,6 +141,10 @@ const CATEGORIES = [
       { key: 'placeValueLevel', label: 'Getallen begrijpen', type: 'select', options: [
         { value: 'tens', label: 'Tientallen' }, { value: 'hundreds', label: 'Honderdtallen' },
         { value: 'thousands', label: 'Duizendtallen' },
+      ]},
+      { key: 'getallenrijLevel', label: 'Getallenrij niveau', type: 'select', options: [
+        { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
       ]},
     ],
   },
@@ -311,6 +318,7 @@ const CATEGORIES = [
     settings: [
       { key: 'verkeerLevel', label: 'Niveau', type: 'select', options: [
         { value: 'easy', label: 'Makkelijk' }, { value: 'medium', label: 'Gemiddeld' },
+        { value: 'hard', label: 'Moeilijk' },
       ]},
     ],
   },
@@ -349,7 +357,8 @@ const PREVIEW_SETTINGS = {
     spelling: true, vocabulary: true, reading: true, english: true,
     timeAwareness: true, timeCalculation: true,
     sudoku: true, tectonic: true, binary: true, chess: true,
-    rijmen: true, woordsoorten: true, fractions: true,
+    rijmen: true, woordsoorten: true, fractions: true, getallenrij: true,
+    borden: true, regels: true, voorrang: true,
   },
   maxValue: 100,
   mulTables: 'easy',
@@ -382,10 +391,11 @@ const PREVIEW_SETTINGS = {
   rijmenLevel: 'easy',
   woordsoortenLevel: 'easy',
   fractionLevel: 'easy',
+  getallenrijLevel: 'easy',
   meetkundeLevel: { vormen: 'easy', symmetrie: 'easy', eenheden: 'easy', omtrekOppervlakte: 'easy', coordinaten: 'easy' },
   digitaalLevel: 'easy',
   topoLevel: { windrichtingen: 'easy', nederland: 'easy', europa: 'easy', wereld: 'easy' },
-  verkeerLevel: { borden: 'easy', regels: 'easy' },
+  verkeerLevel: { borden: 'easy', regels: 'easy', voorrang: 'easy' },
 };
 
 function MinigamePreview() {

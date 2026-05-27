@@ -1,7 +1,7 @@
 export default function RekenPanel({ settings, dispatch, set, canStart }) {
   const {
     ops, maxValue, mulTables, addSubMode, beyondDigits,
-    placeValueLevel, moneyMaxAmount, moneyIncludeCents, fractionLevel,
+    placeValueLevel, moneyMaxAmount, moneyIncludeCents, fractionLevel, getallenrijLevel,
   } = settings;
 
   return (
@@ -21,6 +21,7 @@ export default function RekenPanel({ settings, dispatch, set, canStart }) {
             { key: 'lovingHearts', label: 'Verliefde harten', icon: '💕' },
             { key: 'placeValue', label: 'Getallen begrijpen', icon: '🧮' },
             { key: 'money', label: 'Rekenen met geld', icon: '💶' },
+            { key: 'getallenrij', label: 'Getallenrij & patronen', icon: '🔢' },
           ].map(({ key, label, icon }) => (
             <label
               key={key}
@@ -316,11 +317,48 @@ export default function RekenPanel({ settings, dispatch, set, canStart }) {
               <span className="font-medium">Met centen (5c, 10c, 20c, 50c)</span>
               {moneyIncludeCents && <span>✓</span>}
             </label>
+          </>  
+        )}
+
+        {/* Getallenrij niveau */}
+        {ops.getallenrij && (
+          <>
+            <p className={`text-sm font-medium text-gray-600 mb-2 ${(ops.add || ops.sub || ops.mul || ops.div || ops.fractions || ops.lovingHearts || ops.placeValue || ops.money) ? 'mt-4 pt-4 border-t border-gray-300' : ''}`}>🔢 Getallenrij & patronen — niveau:</p>
+            <div className="space-y-1.5">
+              {[
+                { key: 'easy', label: 'Makkelijk', desc: 'Eenvoudig tellen: +2, +5, +10' },
+                { key: 'medium', label: 'Gemiddeld', desc: 'Grotere stappen en ×2' },
+                { key: 'hard', label: 'Moeilijk', desc: '×3, halveren en wisselende patronen' },
+              ].map(({ key, label, desc }) => (
+                <label
+                  key={key}
+                  className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all text-sm ${
+                    getallenrijLevel === key
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="getallenrijLevel"
+                    value={key}
+                    checked={getallenrijLevel === key}
+                    onChange={(e) => set('getallenrijLevel', e.target.value)}
+                    className="sr-only"
+                  />
+                  <div>
+                    <span className="font-medium">{label}</span>
+                    <span className={`ml-2 text-xs ${getallenrijLevel === key ? 'text-white/80' : 'text-gray-500'}`}>{desc}</span>
+                  </div>
+                  {getallenrijLevel === key && <span>✓</span>}
+                </label>
+              ))}
+            </div>
           </>
         )}
 
         {/* Geen opties geselecteerd */}
-        {!ops.add && !ops.sub && !ops.mul && !ops.div && !ops.placeValue && !ops.lovingHearts && !ops.money && !ops.fractions && (
+        {!ops.add && !ops.sub && !ops.mul && !ops.div && !ops.placeValue && !ops.lovingHearts && !ops.money && !ops.fractions && !ops.getallenrij && (
           <p className="text-sm text-gray-500 italic">Kies eerst een soort som om niveau-opties te zien</p>
         )}
       </div>

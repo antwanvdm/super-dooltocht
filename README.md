@@ -43,6 +43,10 @@ This game aims to be:
   - Always produces whole-number answers (1-10)
   - Same difficulty levels as Keersommen
 - **Place Value (Getallen begrijpen)** – Understanding tens, hundreds, thousands
+- **Number Sequences (Getallenrij & patronen)** – Find the missing number in a sequence:
+  - Easy: small linear steps (+2, +3, +4, +5, +10)
+  - Medium: larger steps or doubling patterns (×2)
+  - Hard: triple, halving, and alternating patterns
 - **Loving Hearts (Verliefde Harten)** – Number pairs that sum to 10
 - **Money (Rekenen met Geld)** – Multiple money-based challenges:
   - Count Money (Geld Tellen)
@@ -143,6 +147,8 @@ This game aims to be:
   - Challenge types: quiz, memory (match equivalent units)
 - **Omtrek & Oppervlakte (Perimeter & Area)** – Calculate perimeter and area:
   - Challenge types: quiz
+- **Coördinaten (Coordinates)** – Read and reason on coordinate grids:
+  - Challenge types: quiz, memory, route
 
 ### Digital Literacy (Digitale Geletterdheid)
 
@@ -175,6 +181,10 @@ This game aims to be:
   - Challenge types: quiz, memory
 - **Verkeersregels (Traffic Rules)** – 20+ traffic situations and rules:
   - Challenge types: quiz, memory
+- **Voorrangssituaties (Priority Situations)** – Focused right-of-way training:
+  - Easy: rechts-voor-links basics
+  - Medium: shark teeth (haaientanden)
+  - Hard: priority roads and roundabouts
 
 ### Adventure Settings
 

@@ -87,6 +87,9 @@ const GAME_COMPONENTS = {
   'verkeerBordenMemory': lazy(() => lazyRetry(() => import('../../minigames/VerkeerBordenMemory'))),
   'verkeerRegelsQuiz': lazy(() => lazyRetry(() => import('../../minigames/VerkeerRegelsQuiz'))),
   'verkeerRegelsMemory': lazy(() => lazyRetry(() => import('../../minigames/VerkeerRegelsMemory'))),
+  'voorrangQuiz': lazy(() => lazyRetry(() => import('../../minigames/VoorrangQuiz'))),
+  // Getallenrij
+  'getallenrijQuiz': lazy(() => lazyRetry(() => import('../../minigames/GetallenrijQuiz'))),
 };
 
 /**

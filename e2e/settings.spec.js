@@ -165,6 +165,20 @@ test.describe('Home – Settings flow', () => {
     ).toBeVisible();
   });
 
+  test('toggling Getallenrij shows level options', async ({ page }) => {
+    await page
+      .locator('label')
+      .filter({ hasText: 'Getallenrij & patronen' })
+      .click();
+
+    await expect(
+      page.getByText('Getallenrij & patronen — niveau:'),
+    ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Moeilijk' }),
+    ).toBeVisible();
+  });
+
   test('enabling plus shows beyond/within tiental options', async ({
     page,
   }) => {
@@ -385,12 +399,25 @@ test.describe('Home – Settings flow', () => {
     await expect(
       page.locator('label').filter({ hasText: 'Eenheden omrekenen' }),
     ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Coördinaten' }),
+    ).toBeVisible();
   });
 
   test('toggling Vormen shows level options', async ({ page }) => {
     await categoryTab(page, 'Meten').click();
     // Vormen is enabled by default — level options should already be visible
     await expect(page.getByText('Basisvormen')).toBeVisible();
+  });
+
+  test('toggling Coördinaten shows level options', async ({ page }) => {
+    await categoryTab(page, 'Meten').click();
+    await page.locator('label').filter({ hasText: 'Coördinaten' }).click();
+
+    await expect(page.getByText('Coördinaten:')).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Moeilijk' }),
+    ).toBeVisible();
   });
 
   // ─── Digitaal operations ──────────────────────────────────────────────────
@@ -442,12 +469,28 @@ test.describe('Home – Settings flow', () => {
     await expect(
       page.locator('label').filter({ hasText: 'Verkeersregels' }),
     ).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Voorrangssituaties' }),
+    ).toBeVisible();
   });
 
   test('toggling Verkeersborden shows level options', async ({ page }) => {
     await categoryTab(page, 'Verkeer').click();
     // Verkeersborden is enabled by default — level options should already be visible
     await expect(page.getByText('Basisborden')).toBeVisible();
+  });
+
+  test('toggling Voorrangssituaties shows level options', async ({ page }) => {
+    await categoryTab(page, 'Verkeer').click();
+    await page
+      .locator('label')
+      .filter({ hasText: 'Voorrangssituaties' })
+      .click();
+
+    await expect(page.getByText('Voorrangssituaties:')).toBeVisible();
+    await expect(
+      page.locator('label').filter({ hasText: 'Moeilijk' }),
+    ).toBeVisible();
   });
 
   // ─── World selection ──────────────────────────────────────────────────────

@@ -22,6 +22,17 @@ export default function VerkeerPanel({ settings, dispatch }) {
         { key: 'medium', label: 'Gemiddeld', desc: 'Voorrang, rotondes, complexe situaties' },
       ],
     },
+    {
+      key: 'voorrang',
+      show: verkeerOps.voorrang,
+      icon: '🚦',
+      label: 'Voorrangssituaties:',
+      options: [
+        { key: 'easy', label: 'Makkelijk', desc: 'Rechts voor links' },
+        { key: 'medium', label: 'Gemiddeld', desc: 'Haaientanden' },
+        { key: 'hard', label: 'Moeilijk', desc: 'Voorrangsweg & rotonde' },
+      ],
+    },
   ];
 
   const visibleSections = levelSections.filter(s => s.show);
@@ -36,8 +47,7 @@ export default function VerkeerPanel({ settings, dispatch }) {
         <div className="space-y-3 sm:space-y-4">
           {[
             { key: 'borden', label: 'Verkeersborden', icon: '🪧', desc: 'Herken borden en hun betekenis' },
-            { key: 'regels', label: 'Verkeersregels', icon: '📋', desc: 'Stoplicht, voorrang, fietsen' },
-          ].map(({ key, label, icon, desc }) => (
+            { key: 'regels', label: 'Verkeersregels', icon: '📋', desc: 'Stoplicht, voorrang, fietsen' },            { key: 'voorrang', label: 'Voorrangssituaties', icon: '🚦', desc: 'Rechts voor links, haaientanden, rotonde' },          ].map(({ key, label, icon, desc }) => (
             <label
               key={key}
               className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
@@ -61,7 +71,7 @@ export default function VerkeerPanel({ settings, dispatch }) {
             </label>
           ))}
         </div>
-        {!verkeerOps.borden && !verkeerOps.regels && (
+        {!verkeerOps.borden && !verkeerOps.regels && !verkeerOps.voorrang && (
           <p className="mt-4 text-sm text-red-500 font-medium text-center">
             ⚠️ Kies minstens één soort oefening
           </p>

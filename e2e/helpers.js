@@ -179,6 +179,7 @@ export async function startAdventure(
     lovingHearts: 'Verliefde harten',
     money: 'Rekenen met geld',
     fractions: 'Breuken',
+    getallenrij: 'Getallenrij & patronen',
     // tijd
     clock: 'Klokkijken',
     timeAwareness: 'Tijdsbesef',
@@ -213,6 +214,7 @@ export async function startAdventure(
     // verkeer
     borden: 'Verkeersborden',
     regels: 'Verkeersregels',
+    voorrang: 'Voorrangssituaties',
   };
   const opLabel = operationLabels[operation];
   if (opLabel) {
