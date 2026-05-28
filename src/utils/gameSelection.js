@@ -27,6 +27,7 @@ export const VOCABULARY_GAMES = [
   'vocabularyMatch',
   'vocabularyMemory',
   'vocabularyFillIn',
+  'vocabularyGalgje',
 ];
 
 // Reading comprehension minigames
@@ -160,6 +161,7 @@ export const GAME_NAMES = {
   vocabularyMatch: 'Woordenschat',
   vocabularyMemory: 'Woorden Memory',
   vocabularyFillIn: 'Vul het woord in',
+  vocabularyGalgje: 'Galgje',
   readingComprehension: 'Begrijpend lezen',
   readingTrueFalse: 'Waar of niet waar',
   englishMultipleChoice: 'Engels vertalen',

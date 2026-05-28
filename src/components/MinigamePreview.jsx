@@ -49,6 +49,7 @@ const GAME_COMPONENTS = {
   'vocabularyMatch': lazy(() => lazyRetry(() => import('./minigames/VocabularyMatch'))),
   'vocabularyMemory': lazy(() => lazyRetry(() => import('./minigames/VocabularyMemory'))),
   'vocabularyFillIn': lazy(() => lazyRetry(() => import('./minigames/VocabularyFillIn'))),
+  'vocabularyGalgje': lazy(() => lazyRetry(() => import('./minigames/GalgjeGame'))),
   'readingComprehension': lazy(() => lazyRetry(() => import('./minigames/ReadingComprehension'))),
   'readingTrueFalse': lazy(() => lazyRetry(() => import('./minigames/ReadingTrueFalse'))),
   'englishMultipleChoice': lazy(() => lazyRetry(() => import('./minigames/EnglishMultipleChoice'))),
