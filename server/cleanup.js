@@ -15,7 +15,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-const MONTHS = 3;
+const MONTHS = 6;
 const dryRun = !process.argv.includes('--confirm');
 
 await mongoose.connect(MONGODB_URI);
