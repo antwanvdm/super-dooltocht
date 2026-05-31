@@ -105,7 +105,7 @@ function MazeGame() {
   // Leeft in MazeGame (niet in ChallengeModal) omdat ChallengeModal
   // elke keer opnieuw gemount wordt per challenge.
   const playedGameTypesRef = useRef([]);
-  const chessPuzzlesRef = useRef([]);
+  const [chessPuzzles, setChessPuzzles] = useState([]);
   const [activeGameType, setActiveGameType] = useState(null);
   const [lastCompletedPos, setLastCompletedPos] = useState(null); // Voorkom direct opnieuw triggeren
   const [lastPortalPos, setLastPortalPos] = useState(null); // Voorkom heen-en-weer portaal loop
@@ -137,7 +137,7 @@ function MazeGame() {
     const chessLevel = (typeof mathSettings.puzzleLevel === 'object' ? mathSettings.puzzleLevel?.chess : mathSettings.puzzleLevel) || 'easy';
     const chessThemes = mathSettings.chessThemes || [];
     fetchChessPuzzles({ chessLevel, chessThemes }, 25)
-      .then(puzzles => { chessPuzzlesRef.current = puzzles; })
+      .then(puzzles => { setChessPuzzles(puzzles); })
       .catch(() => { /* server niet bereikbaar — speler ziet gewoon geen schaakpuzzels */ });
   }, [mathSettings]);
 
@@ -670,7 +670,7 @@ function MazeGame() {
     }
 
     // Herlaad schaakpuzzels als de pool bijna leeg is
-    if (chessPuzzlesRef.current.length < 5) loadChessPuzzles();
+    if (chessPuzzles.length < 5) loadChessPuzzles();
   };
 
   const handleChallengeClose = () => {
@@ -949,7 +949,7 @@ function MazeGame() {
         <ChallengeModal
           challenge={activeChallenge}
           theme={theme}
-          mathSettings={{ ...mathSettings, chessPuzzles: chessPuzzlesRef.current }}
+          mathSettings={{ ...mathSettings, chessPuzzles }}
           gameType={activeGameType}
           onComplete={handleChallengeComplete}
           onClose={handleChallengeClose}
@@ -960,7 +960,7 @@ function MazeGame() {
       {bossBattle && (
         <BossBattleModal
           theme={theme}
-          mathSettings={{ ...mathSettings, chessPuzzles: chessPuzzlesRef.current }}
+          mathSettings={{ ...mathSettings, chessPuzzles }}
           totalRounds={adventureLength === 'long' || adventureLength === 'xl' ? 3 : 2}
           onVictory={handleBossVictory}
           playedGameTypes={playedGameTypesRef.current}

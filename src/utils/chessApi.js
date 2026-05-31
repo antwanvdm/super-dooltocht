@@ -45,7 +45,8 @@ export async function fetchChessPuzzles(
     if (attempt < 2)
       await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
   }
-  if (!response?.ok) throw lastError ?? new Error(`Chess API error: ${response?.status}`);
+  if (!response?.ok)
+    throw lastError ?? new Error(`Chess API error: ${response?.status}`);
 
   const puzzles = await response.json();
 
